@@ -21,16 +21,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //エンドポイント
     final HttpLink httpLink = HttpLink(
       'https://api.github.com/graphql',
     );
 
+    //token (githubから取得)
     final AuthLink authLink = AuthLink(
       getToken: () async => 'Bearer ${await getTokenFromJson()}',
     );
 
+    //!?!?!?!?!?!
     final Link link = authLink.concat(httpLink);
 
+    //接続用のclientクラスを作成
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
         link: link,
@@ -44,6 +48,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Repository View'),
         ),
+        //GraphQLProviderでラップすることで使える
         body: GraphQLProvider(
           client: client,
           child: const MainPage(),
@@ -71,10 +76,10 @@ class MainPage extends StatelessWidget{
           return Card(
             child: ListTile(
               title: Text(
-                repository["name" ?? ""],
+                repository["name"],
                 style: textTheme.headline5,
               ),
-              subtitle: Text(repository["description" ?? ""] ?? "no description"),
+              subtitle: Text(repository["description"] ?? "no description"),
             ),
           );
         }
