@@ -12,3 +12,55 @@ String readRepositories = """
         }
       }
     """;
+String readOrgRepositories = """
+query ReadOrgRepositories(\$orgName: String!){
+  organization(login: \$orgName){
+    name,
+    login,
+    teams(first: 100){
+      totalCount,
+      edges{
+        node{
+          name,
+          description,
+          repositories(first: 100){
+            totalCount,
+            edges{
+              node{
+                name,
+                description,
+                url,
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+    """;
+// String readOrgRepositories = """
+// query ReadOrgRepositories(\$orgName: String!){
+//   organization(login: \$orgName){
+//     name,
+//     login,
+//     teams(first: 100){
+//       totalCount,
+//       edges{
+//         node{
+//           name,
+//           description,
+//           repositories(first: 100){
+//             totalCount,
+//             edges{
+//               node{
+//                 nameWithOwner
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+//     """;

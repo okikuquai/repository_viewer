@@ -347,4 +347,4 @@ windows
 linux
 ios
 web
-lib/secret_token.json
+assets/secret_token.json
