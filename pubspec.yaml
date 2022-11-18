@@ -39,6 +39,8 @@ dependencies:
   graphql: ^5.1.1
   graphql_flutter: ^5.1.0
   url_launcher: ^6.1.6
+  flutter_hooks: ^0.18.5+1
+  hooks_riverpod: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +52,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  graphql_codegen: ^0.11.2
+  build_runner: ^2.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

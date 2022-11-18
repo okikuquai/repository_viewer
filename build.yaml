@@ -1,0 +1,10 @@
+targets:
+  $default:
+    builders:
+      graphql_codegen:
+        options:
+          scopes:
+            - lib/graphql/**
+          clients:
+            - graphql
+            - graphql_flutter
