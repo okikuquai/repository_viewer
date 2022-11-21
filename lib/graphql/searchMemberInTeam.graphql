@@ -1,4 +1,4 @@
-query searchRepositoriesInTeam($orgName: String!, $TeamName: String!, $first: Int!, $after: String) {
+query searchMemberInTeam($orgName: String!, $TeamName: String!, $first: Int!, $after: String) {
 	organization(login: $orgName){
 		team(slug: $TeamName){
 			members(first: $first, after: $after){

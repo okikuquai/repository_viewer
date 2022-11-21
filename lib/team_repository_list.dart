@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import './repository_view.dart';
 import './graphql/searchRepositoriesInTeam.graphql.dart';
 
-class TeamRepositoryList extends StatelessWidget {
+class TeamRepositoryList extends HookConsumerWidget {
   const TeamRepositoryList({Key? key, required this.teamName})
       : super(key: key);
   final String teamName;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$searchRepositoriesInTeam(
       Options$Query$searchRepositoriesInTeam(
-          variables: Variables$Query$searchRepositoriesInTeam(orgName: "nml-nakameguro", first: 15, TeamName: teamName)
+          variables: Variables$Query$searchRepositoriesInTeam(orgName: "nml-nakameguro", first: 100, TeamName: teamName)
       ),
     );
 
@@ -29,12 +30,26 @@ class TeamRepositoryList extends StatelessWidget {
       final repositories = qryResult.result.parsedData!.organization!.team!.repositories.edges!;
       final teamsCount = repositories.length;
 
-      return ListView.builder(
-          itemCount: teamsCount,
-          itemBuilder: (context, index) {
-            final TextTheme textTheme = Theme.of(context).textTheme;
-            final repository = repositories[index]!.node;
-            return Card(
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(teamName),
+            actions: [
+              IconButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => TeamRepositoryList(teamName: teamName),
+                    ),
+                  ),
+                  icon: const Icon(Icons.groups)
+              )
+            ],
+          ),
+          body: ListView.builder(
+            itemCount: teamsCount,
+            itemBuilder: (context, index) {
+              final TextTheme textTheme = Theme.of(context).textTheme;
+              final repository = repositories[index]!.node;
+              return Card(
                 child: ListTile(
                   title: Text(
                     repository.name,
@@ -47,8 +62,9 @@ class TeamRepositoryList extends StatelessWidget {
                     ),
                   ),
                 )
-            );
-          }
+              );
+            }
+          ),
       );
     }
     else{
