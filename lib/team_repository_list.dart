@@ -1,59 +1,58 @@
 import 'package:flutter/material.dart';
 import './repository_view.dart';
-import './graphql/organization.graphql.dart';
+import './graphql/searchRepositoriesInTeam.graphql.dart';
 
 class TeamRepositoryList extends StatelessWidget {
-  const TeamRepositoryList({Key? key, required this.teamrepositories})
+  const TeamRepositoryList({Key? key, required this.teamName})
       : super(key: key);
-  final Query$ReadOrgRepositories$organization$teams$edges$node? teamrepositories;
+  final String teamName;
 
   @override
   Widget build(BuildContext context) {
-    //Team情報がなかった時はpopしてメッセージを表示する
-    //Widgetに関してのretuenはこれでいいのだろうか...
-    if (teamrepositories == null) {
-      const snackBar = SnackBar(
-        content: Text('Selected repository has no contains!'),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pop(context);
-      return const Text('Selected repository has no contains!');
-    }
-    else {
+    final qryResult = useQuery$searchRepositoriesInTeam(
+      Options$Query$searchRepositoriesInTeam(
+          variables: Variables$Query$searchRepositoriesInTeam(orgName: "nml-nakameguro", first: 15, TeamName: teamName)
+      ),
+    );
 
-      final repositories = teamrepositories!.repositories.edges;
-      final repositoriesCount = repositories!.length;
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(teamrepositories!.name),
-          ),
-          body: ListView.builder(
-              itemCount: repositoriesCount,
-              itemBuilder: (context, index) {
-                final TextTheme textTheme = Theme
-                    .of(context)
-                    .textTheme;
-                final repository = repositories[index];
-                return Card(
-                  child: ListTile(
-                      title: Text(
-                        repository?.node.name ?? "No Name",
-                        style: textTheme.headline5,
-                      ),
-                      subtitle: Text(repository?.node.name ?? "No Description"),
-                      onTap: () =>
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  RepositoryView(
-                                      repositoryinfo: repository?.node),
-                            ),
-                          )
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      return const Text("Loading");
+    }
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      return Text(qryResult.result.exception.toString());
+    }
+
+    if (qryResult.result.parsedData?.organization?.team?.repositories.edges != null){
+      //nullじゃないことが確定しているので!を使う
+      final repositories = qryResult.result.parsedData!.organization!.team!.repositories.edges!;
+      final teamsCount = repositories.length;
+
+      return ListView.builder(
+          itemCount: teamsCount,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final repository = repositories[index]!.node;
+            return Card(
+                child: ListTile(
+                  title: Text(
+                    repository.name,
+                    style: textTheme.headline5,
                   ),
-                );
-              }
-          )
+                  subtitle: Text(repository.description ?? "no description"),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => RepositoryView(repositoryName: repository.name),
+                    ),
+                  ),
+                )
+            );
+          }
       );
+    }
+    else{
+      return const Text("no Teams in this Organization");
     }
   }
 }

@@ -1,0 +1,9 @@
+query searchRepositoriesInTeam($orgName: String!, $repositoryName: String!, $first: Int!, $after: String) {
+	organization(login: $orgName){
+		repository(name: repositoryName){
+      name,
+      description,
+      url,
+		}
+	}
+}

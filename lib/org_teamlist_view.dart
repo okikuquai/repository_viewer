@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import './graphql/searchTeamsInOrganization.graphql.dart';
 import 'dart:convert';
 import './team_repository_list.dart';
-import './graphql/organization.graphql.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -45,6 +45,12 @@ class OrgTeamList extends StatelessWidget {
           home: Scaffold(
             appBar: AppBar(
               title: const Text('Repository View'),
+              actions: [
+                IconButton(
+                    onPressed: () => {},
+                    icon: const Icon(Icons.groups)
+                )
+              ],
             ),
             body: const MainPage(),
           ),
@@ -58,40 +64,53 @@ class MainPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
-    final qryresult = useQuery$ReadOrgRepositories(
-      Options$Query$ReadOrgRepositories(variables: Variables$Query$ReadOrgRepositories(orgName: "nml-nakameguro")),
+    final qryResult = useQuery$searchTeamsInOrganization(
+      Options$Query$searchTeamsInOrganization(
+          variables: Variables$Query$searchTeamsInOrganization(orgName: "nml-nakameguro", first: 15)
+      ),
     );
-    if (qryresult.result.isLoading) {
-      return Text("Loading");
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      return const Text("Loading");
     }
-    else if (qryresult.result.hasException) {
-      return Text(qryresult.result.exception.toString());
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      return Text(qryResult.result.exception.toString());
     }
 
-    final teams = qryresult.result.parsedData?.organization?.teams.edges;
-    final teamsCount = teams?.length;
+    if (qryResult.result.parsedData?.organization?.teams.edges != null){
+      //nullじゃないことが確定しているので!を使う
+      final teams = qryResult.result.parsedData!.organization!.teams.edges!;
+      //ListViewでnullを表示させないためにnodeの中のチーム名がnullの場合はリストから除外する（名前なしのチームが作成できるかは要確認）
+      teams.removeWhere((element) => element?.node?.name == null);
+      final teamsCount = teams.length;
 
-    return ListView.builder(
-        itemCount: teamsCount,
-        itemBuilder: (context, index) {
-          final TextTheme textTheme = Theme.of(context).textTheme;
-          final team = teams?[index];
-          return Card(
-              child: ListTile(
-                title: Text(
-                  team?.node?.name ?? "no team name",
-                  style: textTheme.headline5,
-                ),
-                subtitle: Text(team?.node?.description ?? "no description"),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => TeamRepositoryList(teamrepositories: team!.node!),
+      return ListView.builder(
+          itemCount: teamsCount,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final team = teams[index]!.node!;
+            return Card(
+                child: ListTile(
+                  title: Text(
+                    team.name,
+                    style: textTheme.headline5,
                   ),
-                ),
-              )
-          );
-        }
-    );
+                  subtitle: Text(team.description ?? "no description"),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => TeamRepositoryList(teamName: team.name),
+                    ),
+                  ),
+                )
+            );
+          }
+      );
+    }
+    else{
+      return const Text("no Teams in this Organization");
+    }
+
 
   }
 }
