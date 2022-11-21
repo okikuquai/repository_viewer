@@ -350,3 +350,4 @@ web
 assets/secret_token.json
 lib/graphql/schema.graphql
 lib/graphql/*.dart
+.DS_Store
