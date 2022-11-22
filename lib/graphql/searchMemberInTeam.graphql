@@ -10,6 +10,7 @@ query searchMemberInTeam($orgName: String!, $TeamName: String!, $first: Int!, $a
 				}
         edges{
           node{
+            login,
             name,
             bio,
             avatarUrl,

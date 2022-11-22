@@ -13,6 +13,7 @@ query searchMemberInOrganization($orgName: String!, $first: Int!, $after: String
             edges{
                 cursor
                 node{
+                    login,
                     name,
                     bio,
                     avatarUrl,

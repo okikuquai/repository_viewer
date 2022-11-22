@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import './graphql/searchMemberInTeam.graphql.dart';
-
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import './graphql/searchMemberInTeam.graphql.dart';
 
 class TeamMemberList extends HookConsumerWidget {
   const TeamMemberList(
@@ -48,17 +49,44 @@ class TeamMemberList extends HookConsumerWidget {
           itemBuilder: (context, index) {
             final TextTheme textTheme = Theme.of(context).textTheme;
             final member = members[index]!.node;
-            return Card(
-                child: ListTile(
-              title: Text(
-                member.name ?? "no name",
-                style: textTheme.headline5,
+            return GestureDetector(
+              onTap: () => launchUrl(Uri.parse(member.url)),
+              child: Card(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 80.0,
+                      width: 80.0,
+                      child: Image.network(
+                        member.avatarUrl,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              member.name ?? "",
+                              style: textTheme.headline6,
+                            ),
+                            Text(member.login,
+                                style: textTheme.labelLarge!
+                                    .apply(color: Colors.black45)),
+                            const SizedBox(height: 10.0),
+                            Text(member.bio ?? ""),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              subtitle: Text(member.bio ?? "no description"),
-            ));
+            );
           });
-    } else {
-      return const Text("This Team has no members");
     }
+    return const Text("This Team has no members");
   }
 }
