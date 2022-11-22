@@ -1,23 +1,23 @@
 query searchMemberInTeam($orgName: String!, $TeamName: String!, $first: Int!, $after: String) {
-    organization(login: $orgName){
-        team(slug: $TeamName){
-            members(first: $first, after: $after){
-                pageInfo {
-                    endCursor
-                    hasNextPage
-                    hasPreviousPage
-                    startCursor
-                }
-                edges{
-                    node{
-                        login,
-                        name,
-                        bio,
-                        avatarUrl,
-                        url
-                    }
-                }
-            }
+  organization(login: $orgName){
+    team(slug: $TeamName){
+      members(first: $first, after: $after){
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
         }
+        edges{
+          node{
+            login,
+            name,
+            bio,
+            avatarUrl,
+            url
+          }
+        }
+      }
     }
+  }
 }

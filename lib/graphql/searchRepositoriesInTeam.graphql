@@ -1,23 +1,23 @@
 query searchRepositoriesInTeam($orgName: String!, $TeamName: String!, $first: Int!, $after: String) {
-    organization(login: $orgName){
-        team(slug: $TeamName) {
-            repositories(
-                first: $first,
-                after: $after){
-                pageInfo{
-                    endCursor
-                    hasNextPage
-                    hasPreviousPage
-                    startCursor
-                }
-                edges{
-                    node{
-                        name,
-                        description,
-                        url
-                    }
-                }
-            }
+  organization(login: $orgName){
+    team(slug: $TeamName) {
+      repositories(
+        first: $first,
+        after: $after){
+        pageInfo{
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
         }
+        edges{
+          node{
+            name,
+            description,
+            url
+          }
+        }
+      }
     }
+  }
 }
