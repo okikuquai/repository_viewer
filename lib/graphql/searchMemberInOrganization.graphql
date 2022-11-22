@@ -1,9 +1,6 @@
 query searchMemberInOrganization($orgName: String!, $first: Int!, $after: String) {
     organization(login: $orgName){
-        membersWithRole(
-            first: $first,
-            after: $after,
-        ) {
+        membersWithRole(first: $first, after: $after) {
             pageInfo{
                 endCursor
                 hasNextPage
