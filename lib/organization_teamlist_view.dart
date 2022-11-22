@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:repositoryviewer/org_members_view.dart';
+import 'package:repositoryviewer/organization_members_view.dart';
 import './graphql/searchTeamsInOrganization.graphql.dart';
 import 'dart:convert';
-import './team_repository_list.dart';
+import './team_repository_view.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
