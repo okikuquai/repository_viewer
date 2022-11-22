@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/team_members_view.dart';
 import './repository_view.dart';
 import './graphql/searchRepositoriesInTeam.graphql.dart';
 
 class TeamRepositoryList extends HookConsumerWidget {
-  const TeamRepositoryList({Key? key, required this.teamName})
+  const TeamRepositoryList({Key? key, required this.teamName, required this.orgName})
       : super(key: key);
   final String teamName;
+  final String orgName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$searchRepositoriesInTeam(
       Options$Query$searchRepositoriesInTeam(
-          variables: Variables$Query$searchRepositoriesInTeam(orgName: "nml-nakameguro", first: 100, TeamName: teamName)
+          variables: Variables$Query$searchRepositoriesInTeam(orgName: orgName, first: 100, TeamName: teamName)
       ),
     );
 
@@ -37,7 +39,7 @@ class TeamRepositoryList extends HookConsumerWidget {
               IconButton(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => TeamRepositoryList(teamName: teamName),
+                      builder: (context) => TeamMemberList(teamName: teamName, orgName: orgName,),
                     ),
                   ),
                   icon: const Icon(Icons.groups)

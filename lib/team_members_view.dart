@@ -4,7 +4,8 @@ import './graphql/searchMemberInTeam.graphql.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class TeamMemberList extends HookConsumerWidget {
-  const TeamMemberList({Key? key, required this.teamName}) : super(key: key);
+  const TeamMemberList({Key? key, required this.teamName, required this.orgName}) : super(key: key);
+  final String orgName;
   final String teamName;
 
   @override
@@ -12,7 +13,7 @@ class TeamMemberList extends HookConsumerWidget {
     final qryResult = useQuery$searchMemberInTeam(
       Options$Query$searchMemberInTeam(
           variables: Variables$Query$searchMemberInTeam(
-              orgName: "nml-nakameguro", first: 100, TeamName: teamName)
+              orgName: orgName, first: 100, TeamName: teamName)
       ),
     );
 

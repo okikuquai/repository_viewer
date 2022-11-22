@@ -8,19 +8,23 @@ import './team_repository_list.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-const orgName = "nml-nakameguro";
 class OrgTeamList extends StatelessWidget {
   const OrgTeamList({super.key});
 
   //JsonファイルからTokenを取得
   Future<String> getTokenFromJson() async {
-    String loadData = await rootBundle.loadString('assets/secret_token.json');
+    String loadData = await rootBundle.loadString('assets/secret_settings.json');
     final jsonResponse = json.decode(loadData);
     return jsonResponse["Token"] ?? "";
   }
+  Future<String> getOrganizationNameFromJson() async {
+    String loadData = await rootBundle.loadString('assets/secret_settings.json');
+    final jsonResponse = json.decode(loadData);
+    return jsonResponse["OrganizationName"] ?? "";
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     //エンドポイント
     final HttpLink httpLink = HttpLink(
       'https://api.github.com/graphql',
@@ -44,14 +48,16 @@ class OrgTeamList extends StatelessWidget {
     return GraphQLProvider(
         client: client,
         child: const MaterialApp(
-          home: MainPage(),
+          home: MainPage(orgName: "nml-nakameguro"),
         ),
     );
   }
 }
 //HookConsumerWidgetを継承
+//クラス名が”MainPage”なのはおかしいので変更する
 class MainPage extends HookConsumerWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({Key? key, required this.orgName}) : super(key: key);
+  final String orgName;
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
@@ -78,7 +84,7 @@ class MainPage extends HookConsumerWidget {
 
       return Scaffold(
         appBar: AppBar(
-          title: Text("Repository Viewer"),
+          title: const Text("Repository Viewer"),
           actions: [
             IconButton(
               onPressed: () => Navigator.of(context).push(
@@ -104,7 +110,7 @@ class MainPage extends HookConsumerWidget {
                   subtitle: Text(team.description ?? "no description"),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => TeamRepositoryList(teamName: team.name),
+                      builder: (context) => TeamRepositoryList(teamName: team.name, orgName: orgName,),
                     ),
                   ),
                 )
@@ -116,7 +122,5 @@ class MainPage extends HookConsumerWidget {
     else{
       return const Text("no Teams in this Organization");
     }
-
-
   }
 }
