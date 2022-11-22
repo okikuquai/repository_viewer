@@ -348,3 +348,8 @@ linux
 ios
 web
 assets/secret_token.json
+
+#graphql関係のファイルは変更毎の差分が大きく、頻繁に変更履歴を見るわけではないので管理対象から外す
+lib/graphql
+
+lib/firebase_options.dart
