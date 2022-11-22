@@ -1,0 +1,25 @@
+query searchMemberInOrganization($orgName: String!, $first: Int!, $after: String) {
+    organization(login: $orgName){
+        membersWithRole(
+            first: $first,
+            after: $after,
+        ) {
+            pageInfo{
+                endCursor
+                hasNextPage
+                hasPreviousPage
+                startCursor
+            }
+            edges{
+                cursor
+                node{
+                    login,
+                    name,
+                    bio,
+                    avatarUrl,
+                    url
+                }
+            }
+        }
+    }
+}

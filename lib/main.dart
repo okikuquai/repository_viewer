@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import './org_teamlist_view.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-void main() async{
+import './organization_teamlist_view.dart';
+
+void main() async {
   //終了を待たないとHive.Openbox()を呼ぶ前にMyAppの方でクエリを呼び出してしまうのでawaitをつける
   await initHiveForFlutter();
-  runApp(const OrgTeamList());
+  runApp(const ProviderScope(child: OrgTeamList()));
 }
-

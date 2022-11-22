@@ -1,46 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'graphql/organization.graphql.dart';
+import './graphql/getReadmeFromRepository.graphql.dart';
 
-class RepositoryView extends StatelessWidget {
-  const RepositoryView({Key? key, required this.repositoryinfo}) : super(key: key);
-  final Query$ReadOrgRepositories$organization$teams$edges$node$repositories$edges$node? repositoryinfo;
+class RepositoryView extends HookConsumerWidget {
+  const RepositoryView(
+      {Key? key,
+      required this.orgName,
+      required this.teamName,
+      required this.repositoryName})
+      : super(key: key);
+  final String orgName;
+  final String teamName;
+  final String repositoryName;
 
   @override
-  Widget build(BuildContext context) {
-    if (repositoryinfo == null) {
-      const snackBar = SnackBar(
-        content: Text('Selected repository has no contains!'),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pop(context);
-      return const Text('Selected repository has no contains!');
-    }
-    else {
-      //名前とURLはあるはず...
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(repositoryinfo!.name),
-          ),
-          body: Column(
-            children: [
-              Text(repositoryinfo?.description ?? "No Description"),
-              InkWell(
-                child: const Text("Jump to repository page"),
-                onTap: () async {
-                  var link = Uri.parse(repositoryinfo!.url);
-                  await launchUrl(link);
+  Widget build(BuildContext context, WidgetRef ref) {
+    String mdString = "Empty";
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final qryResult = useQuery$getReadmeFromRepository(
+      Options$Query$getReadmeFromRepository(
+          variables: Variables$Query$getReadmeFromRepository(
+              orgName: orgName, repositoryName: repositoryName)),
+    );
 
-                  //なぜかfalseになる
-                  // if (await canLaunchUrl(link)) {
-                  //   await launchUrl(link);
-                  // }
-                },
-              ),
-            ],
-          )
-      );
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      mdString = "Loading";
     }
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      mdString = qryResult.result.exception.toString();
+    } else {
+      mdString = qryResult.result.parsedData?.organization?.repository?.object
+              ?.toJson()['text'] ??
+          "Empty";
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(repositoryName),
+        ),
+        body: Column(
+          children: [
+            Padding(
+                padding: const EdgeInsets.all(10),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Text(orgName, style: textTheme.headline4),
+                      Text("$teamName / $repositoryName",
+                          style: textTheme.headline6)
+                    ],
+                  ),
+                )),
+            Row(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () {/* ボタンがタップされた時の処理 */},
+                  icon: const Icon(Icons.favorite),
+                  label: const Text('favorite'),
+                ),
+                OutlinedButton(
+                  onPressed: () {/* ボタンがタップされた時の処理 */},
+                  child: const Text('click here'),
+                )
+              ],
+            ),
+            const Divider(),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Readme",
+                style: textTheme.headline4,
+              ),
+            ),
+            Expanded(
+                child: Container(
+              color: Colors.white24,
+              child: SingleChildScrollView(
+                  // スクロールできるようにしておくのと、パッディングをいれてみやすくしておく
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: MarkdownBody(
+                        data: mdString,
+                      ))),
+            ))
+          ],
+        ));
   }
+
+  //Widget _body(BuildContext context) {}
 }

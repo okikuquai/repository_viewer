@@ -348,8 +348,10 @@ linux
 ios
 web
 assets/secret_token.json
-**/.DS_Store
-#graphql関係のファイルは変更毎の差分が大きく、頻繁に変更履歴を見るわけではないので管理対象から外す
-lib/graphql
+lib/graphql/schema.graphql
+lib/graphql/*.dart
 
-lib/firebase_options.dart
+**/.DS_Store
+
+lib/graphql/.graphqlconfig
+assets/secret_settings.json
