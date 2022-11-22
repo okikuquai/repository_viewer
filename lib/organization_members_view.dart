@@ -9,10 +9,19 @@ class OrgMemberList extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('$orgName Members'),
+      ),
+      body: _body(context)
+    );
+  }
+
+  Widget _body(BuildContext context) {
     final qryResult = useQuery$searchMemberInOrganization(
       Options$Query$searchMemberInOrganization(
           variables: Variables$Query$searchMemberInOrganization(
-              orgName: "nml-nakameguro", first: 100)
+              orgName: "orgName", first: 100)
       ),
     );
 
@@ -25,37 +34,32 @@ class OrgMemberList extends HookConsumerWidget {
       return Text(qryResult.result.exception.toString());
     }
 
-    if (qryResult.result.parsedData?.organization?.membersWithRole.edges != null){
-      final members = qryResult.result.parsedData!.organization!.membersWithRole.edges!;
+    if (qryResult.result.parsedData?.organization?.membersWithRole.edges !=
+        null) {
+      final members = qryResult.result.parsedData!.organization!.membersWithRole
+          .edges!;
       members.removeWhere((element) => element?.node == null);
 
       final membersCount = members.length;
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('$orgName Members'),
-        ),
-        body: ListView.builder(
-            itemCount: membersCount,
-            itemBuilder: (context, index) {
-              final TextTheme textTheme = Theme
-                  .of(context)
-                  .textTheme;
-              final member = members[index]!.node!;
-              return Card(
-                  child: ListTile(
-                    title: Text(
-                      member.name ?? "no name",
-                      style: textTheme.headline5,
-                    ),
-                    subtitle: Text(member.bio ?? "no description"),
-                  )
-              );
-            }
-        ),
+      ListView.builder(
+          itemCount: membersCount,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme
+                .of(context)
+                .textTheme;
+            final member = members[index]!.node!;
+            return Card(
+                child: ListTile(
+                  title: Text(
+                    member.name ?? "no name",
+                    style: textTheme.headline5,
+                  ),
+                  subtitle: Text(member.bio ?? "no description"),
+                )
+            );
+          }
       );
     }
-    else {
-      return const Text("This Organizatino has no members");
-    }
+    return const Text("This Organization has no embers");
   }
 }
