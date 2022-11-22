@@ -1,0 +1,11 @@
+query getReadmeFromRepository($orgName: String!, $repositoryName: String!) {
+	organization(login: $orgName){
+		repository(name: $repositoryName){
+      object(expression: "main:README.md"){
+        ... on Blob{
+          text
+        }
+      }
+		}
+	}
+}

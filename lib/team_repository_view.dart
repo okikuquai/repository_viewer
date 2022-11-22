@@ -71,8 +71,10 @@ class TeamRepositoryList extends HookConsumerWidget {
               subtitle: Text(repository.description ?? "no description"),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      RepositoryView(repositoryName: repository.name),
+                  builder: (context) => RepositoryView(
+                      repositoryName: repository.name,
+                      orgName: orgName,
+                      teamName: teamName),
                 ),
               ),
             ));
