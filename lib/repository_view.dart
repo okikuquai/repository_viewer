@@ -62,10 +62,6 @@ class RepositoryView extends HookConsumerWidget {
                   icon: const Icon(Icons.favorite),
                   label: const Text('favorite'),
                 ),
-                OutlinedButton(
-                  onPressed: () {/* ボタンがタップされた時の処理 */},
-                  child: const Text('click here'),
-                )
               ],
             ),
             const Divider(),

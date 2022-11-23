@@ -67,28 +67,7 @@ class MainPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$searchTeamsInOrganization(
-      Options$Query$searchTeamsInOrganization(
-          variables: Variables$Query$searchTeamsInOrganization(
-              orgName: "nml-nakameguro", first: 100)),
-    );
-    //ロード完了していない場合
-    if (qryResult.result.isLoading) {
-      return const Text("Loading");
-    }
-    //例外スローした場合
-    else if (qryResult.result.hasException) {
-      return Text(qryResult.result.exception.toString());
-    }
-
-    if (qryResult.result.parsedData?.organization?.teams.edges != null) {
-      //nullじゃないことが確定しているので!を使う
-      final teams = qryResult.result.parsedData!.organization!.teams.edges!;
-      //ListViewでnullを表示させないためにnodeの中のチーム名がnullの場合はリストから除外する（名前なしのチームが作成できるかは要確認）
-      teams.removeWhere((element) => element?.node?.name == null);
-      final teamsCount = teams.length;
-
-      return Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text("Repository Viewer"),
           actions: [
@@ -101,31 +80,54 @@ class MainPage extends HookConsumerWidget {
                 icon: const Icon(Icons.groups))
           ],
         ),
-        body: ListView.builder(
-            itemCount: teamsCount,
-            itemBuilder: (context, index) {
-              final TextTheme textTheme = Theme.of(context).textTheme;
-              final team = teams[index]!.node!;
-              return Card(
-                  child: ListTile(
-                title: Text(
-                  team.name,
-                  style: textTheme.headline5,
-                ),
-                subtitle: Text(team.description ?? "no description"),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => TeamRepositoryList(
-                      teamName: team.name,
-                      orgName: orgName,
-                    ),
+        body: _body(context));
+  }
+
+  Widget _body(BuildContext context) {
+    final qryResult = useQuery$searchTeamsInOrganization(
+      Options$Query$searchTeamsInOrganization(
+          variables: Variables$Query$searchTeamsInOrganization(
+              orgName: orgName, first: 100)),
+    );
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      return const Text("Loading");
+    }
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      return Text(qryResult.result.exception.toString());
+    }
+    if (qryResult.result.parsedData?.organization?.teams.edges != null) {
+      //nullじゃないことが確定しているので!を使う
+      final teams = qryResult.result.parsedData!.organization!.teams.edges!;
+      //ListViewでnullを表示させないためにnodeの中のチーム名がnullの場合はリストから除外する（名前なしのチームが作成できるかは要確認）
+      teams.removeWhere((element) => element?.node?.name == null);
+      final teamsCount = teams.length;
+
+      return ListView.builder(
+          itemCount: teamsCount,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final team = teams[index]!.node!;
+            return Card(
+                child: ListTile(
+              title: Text(
+                team.name,
+                style: textTheme.headline5,
+              ),
+              subtitle: Text(team.description ?? "no description"),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => TeamRepositoryList(
+                    teamName: team.name,
+                    orgName: orgName,
                   ),
                 ),
-              ));
-            }),
-      );
-    } else {
-      return const Text("no Teams in this Organization");
+              ),
+            ));
+          });
     }
+
+    return const Text("no Teams in this Organization");
   }
 }
