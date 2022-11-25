@@ -88,8 +88,8 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
                 child: Center(
                   child: Column(
                     children: [
-                      Text(widget.orgName, style: textTheme.headline4),
-                      Text("$widget.orgName / $widget.repositoryName",
+                      Text(widget.repository.name, style: textTheme.headline4),
+                      Text("${widget.orgName} / ${widget.repository.name}",
                           style: textTheme.headline6)
                     ],
                   ),

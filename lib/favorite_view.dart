@@ -11,6 +11,11 @@ class FavoriteRepositories extends HookConsumerWidget {
   const FavoriteRepositories({Key? key, required this.orgName})
       : super(key: key);
   final String orgName;
+  final _tab = const <Tab>[
+    Tab(text: 'Local'),
+    Tab(text: 'Github'),
+    Tab(text: 'Local&Github'),
+  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,13 +24,7 @@ class FavoriteRepositories extends HookConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Favorite Repositories'),
-          bottom: const TabBar(
-            tabs: <Widget>[
-              Tab(icon: Icon(Icons.smartphone)),
-              Tab(icon: Icon(Icons.cloud)),
-              Tab(icon: Icon(Icons.apps)),
-            ],
-          ),
+          bottom: TabBar(tabs: _tab),
         ),
         body: TabBarView(
           children: <Widget>[
