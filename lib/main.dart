@@ -8,5 +8,5 @@ void main() async {
   //終了を待たないとHive.Openbox()を呼ぶ前にMyAppの方でクエリを呼び出してしまうのでawaitをつける
   await initHiveForFlutter();
 
-  runApp(const ProviderScope(child: OrgTeamList()));
+  runApp(const ProviderScope(child: OrgTeamList(orgName: "nml-nakameguro")));
 }

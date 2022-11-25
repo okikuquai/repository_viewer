@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/favorite_repositories.dart';
 
 import './graphql/getReadmeFromRepository.graphql.dart';
+import 'graphql/searchRepositoriesInTeam.graphql.dart';
 
 class RepositoryView extends HookConsumerWidget {
   const RepositoryView(
-      {Key? key,
-      required this.orgName,
-      required this.teamName,
-      required this.repositoryName})
+      {Key? key, required this.orgName, required this.repository})
       : super(key: key);
   final String orgName;
-  final String teamName;
-  final String repositoryName;
+  final Query$searchRepositoriesInTeam$organization$team$repositories$edges$node
+      repository;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String mdString = "Empty";
-    final TextTheme textTheme = Theme.of(context).textTheme;
     final qryResult = useQuery$getReadmeFromRepository(
       Options$Query$getReadmeFromRepository(
           variables: Variables$Query$getReadmeFromRepository(
-              orgName: orgName, repositoryName: repositoryName)),
+              orgName: orgName, repositoryName: repository.name)),
     );
 
     //ロード完了していない場合
@@ -37,10 +35,51 @@ class RepositoryView extends HookConsumerWidget {
               ?.toJson()['text'] ??
           "Empty";
     }
+    return RepositoryViewBody(
+        orgName: orgName, repository: repository, mdString: mdString);
+  }
+
+  //Widget _body(BuildContext context) {}
+}
+
+class RepositoryViewBody extends StatefulWidget {
+  const RepositoryViewBody(
+      {Key? key,
+      required this.orgName,
+      required this.repository,
+      required this.mdString})
+      : super(key: key);
+  final String orgName;
+  final Query$searchRepositoriesInTeam$organization$team$repositories$edges$node
+      repository;
+  final String mdString;
+
+  @override
+  createState() => _RepositoryViewBody();
+}
+
+class _RepositoryViewBody extends State<RepositoryViewBody> {
+  @override
+  Widget build(BuildContext context) {
+    bool isFavorite = favoriteRepository
+        .where((element) => element.name == widget.repository.name)
+        .isNotEmpty;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    void setFavorite() {
+      setState(() {
+        isFavorite != isFavorite;
+      });
+      if (isFavorite) {
+        favoriteRepository
+            .removeWhere((element) => element.name == widget.repository.name);
+      } else {
+        favoriteRepository.add(widget.repository);
+      }
+    }
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(repositoryName),
+          title: Text(widget.repository.name),
         ),
         body: Column(
           children: [
@@ -49,8 +88,8 @@ class RepositoryView extends HookConsumerWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text(orgName, style: textTheme.headline4),
-                      Text("$teamName / $repositoryName",
+                      Text(widget.repository.name, style: textTheme.headline4),
+                      Text("${widget.orgName} / ${widget.repository.name}",
                           style: textTheme.headline6)
                     ],
                   ),
@@ -58,9 +97,12 @@ class RepositoryView extends HookConsumerWidget {
             Row(
               children: [
                 OutlinedButton.icon(
-                  onPressed: () {/* ボタンがタップされた時の処理 */},
-                  icon: const Icon(Icons.favorite),
-                  label: const Text('favorite'),
+                  onPressed: () {
+                    setFavorite();
+                  },
+                  icon:
+                      Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                  label: const Text('Favorite'),
                 ),
               ],
             ),
@@ -81,12 +123,10 @@ class RepositoryView extends HookConsumerWidget {
                   child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: MarkdownBody(
-                        data: mdString,
+                        data: widget.mdString,
                       ))),
             ))
           ],
         ));
   }
-
-  //Widget _body(BuildContext context) {}
 }

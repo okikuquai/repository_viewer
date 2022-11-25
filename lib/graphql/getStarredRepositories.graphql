@@ -1,0 +1,14 @@
+query getStarredRepositories{
+  viewer {
+    login,
+    starredRepositories {
+      edges {
+        node {
+          name,
+          description,
+          url
+        }
+      }
+    }
+  }
+}
