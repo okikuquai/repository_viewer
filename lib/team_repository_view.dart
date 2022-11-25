@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/repository_view.dart';
 import 'package:repositoryviewer/team_members_view.dart';
 
 import './graphql/searchRepositoriesInTeam.graphql.dart';
-import './repository_view.dart';
+import 'favorite_repositories.dart';
 
 class TeamRepositoryList extends HookConsumerWidget {
   const TeamRepositoryList(
@@ -30,11 +32,11 @@ class TeamRepositoryList extends HookConsumerWidget {
               icon: const Icon(Icons.groups))
         ],
       ),
-      body: _body(context),
+      body: _body(context, ref),
     );
   }
 
-  Widget _body(BuildContext context) {
+  Widget _body(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$searchRepositoriesInTeam(
       Options$Query$searchRepositoriesInTeam(
           variables: Variables$Query$searchRepositoriesInTeam(
@@ -52,18 +54,71 @@ class TeamRepositoryList extends HookConsumerWidget {
 
     if (qryResult.result.parsedData?.organization?.team?.repositories.edges !=
         null) {
-      //nullじゃないことが確定しているので!を使う
-      final repositories =
-          qryResult.result.parsedData!.organization!.team!.repositories.edges!;
-      final teamsCount = repositories.length;
+      //ハートの状態を変えるためにStatefulWidgetでリポジトリのリストを表示させる
+      return FavoriteCardList(
+          qryResult: qryResult, orgName: orgName, teamName: teamName);
+    }
+    return const Text("no Teams in this Organization");
+  }
+}
 
-      return ListView.builder(
-          itemCount: teamsCount,
-          itemBuilder: (context, index) {
-            final TextTheme textTheme = Theme.of(context).textTheme;
-            final repository = repositories[index]!.node;
-            return Card(
-                child: ListTile(
+class FavoriteCardList extends StatefulWidget {
+  const FavoriteCardList(
+      {Key? key,
+      required this.qryResult,
+      required this.orgName,
+      required this.teamName})
+      : super(key: key);
+  final QueryHookResult<Query$searchRepositoriesInTeam> qryResult;
+  final String orgName;
+  final String teamName;
+
+  @override
+  createState() => _FavoriteCardList();
+}
+
+class _FavoriteCardList extends State<FavoriteCardList> {
+  @override
+  Widget build(BuildContext context) {
+    //nullじゃないことが確定しているので!を使う
+    final repositories = widget
+        .qryResult.result.parsedData!.organization!.team!.repositories.edges!;
+    final repositoriesCount = repositories.length;
+    var isFavorite = List.generate(
+        repositoriesCount,
+        (index) => favoriteRepository
+            .where((element) => element.name == repositories[index]!.node.name)
+            .isNotEmpty);
+
+    void setFavorite(int index) {
+      setState(() {
+        isFavorite[index] != isFavorite[index];
+      });
+    }
+
+    return ListView.builder(
+        itemCount: repositoriesCount,
+        itemBuilder: (context, index) {
+          final TextTheme textTheme = Theme.of(context).textTheme;
+          final repository = repositories[index]!.node;
+          return Card(
+            child: ListTile(
+              trailing: GestureDetector(
+                child: Icon(
+                    isFavorite[index]
+                        ? Icons.favorite
+                        : Icons.favorite_border_rounded,
+                    color: isFavorite[index] ? Colors.red : null),
+                onTap: () {
+                  setFavorite(index);
+                  if (isFavorite[index]) {
+                    favoriteRepository.removeWhere(
+                        (element) => element.name == repository.name);
+                  } else {
+                    favoriteRepository.add(repository);
+                  }
+                },
+              ),
               title: Text(
                 repository.name,
                 style: textTheme.headline5,
@@ -72,14 +127,11 @@ class TeamRepositoryList extends HookConsumerWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => RepositoryView(
-                      repositoryName: repository.name,
-                      orgName: orgName,
-                      teamName: teamName),
+                      repository: repository, orgName: widget.orgName),
                 ),
               ),
-            ));
-          });
-    }
-    return const Text("no Teams in this Organization");
+            ),
+          );
+        });
   }
 }
