@@ -15,10 +15,10 @@ class OrgMemberList extends HookConsumerWidget {
         appBar: AppBar(
           title: Text('$orgName Members'),
         ),
-        body: _body(context));
+        body: _body());
   }
 
-  Widget _body(BuildContext context) {
+  Widget _body() {
     final qryResult = useQuery$searchMemberInOrganization(
       Options$Query$searchMemberInOrganization(
           variables: Variables$Query$searchMemberInOrganization(
