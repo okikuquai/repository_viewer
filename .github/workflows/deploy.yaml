@@ -13,7 +13,7 @@ jobs:
         with:
           flutter-version: '3.3.8'
       - run: flutter pub get
-      - run: flutter build apk --stacktrace --info
+      - run: flutter build apk --info
       - name: Deploy Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
