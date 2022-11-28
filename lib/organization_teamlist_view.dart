@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/organization_members_view.dart';
+import 'package:repositoryviewer/settings_view.dart';
 
 import './graphql/searchTeamsInOrganization.graphql.dart';
 import './team_repository_view.dart';
@@ -22,7 +23,8 @@ class OrgTeamList extends HookConsumerWidget {
       _OrgTeamListScreen(
         orgName: orgName,
       ),
-      FavoriteRepositories(orgName: orgName)
+      FavoriteRepositories(orgName: orgName),
+      const SettingsScreen()
     ];
     //接続用のclientクラスを作成
     ValueNotifier<GraphQLClient> client = ValueNotifier(
@@ -42,7 +44,9 @@ class OrgTeamList extends HookConsumerWidget {
                   BottomNavigationBarItem(
                       icon: Icon(Icons.home), label: 'Home'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.favorite), label: 'Favorite')
+                      icon: Icon(Icons.favorite), label: 'Favorite'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.settings), label: 'Settings')
                 ],
                 type: BottomNavigationBarType.fixed,
                 fixedColor: Colors.blueAccent,
