@@ -108,8 +108,14 @@ class _OrgTeamListScreen extends HookConsumerWidget {
                   title: Text(
                     team.name,
                     style: textTheme.headline5,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  subtitle: Text(team.description ?? "no description"),
+                  subtitle: Text(
+                    team.description ?? "no description",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => TeamRepositoryList(
