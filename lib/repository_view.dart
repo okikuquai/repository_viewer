@@ -5,6 +5,7 @@ import 'package:repositoryviewer/favorite_repositories.dart';
 
 import './graphql/getReadmeFromRepository.graphql.dart';
 import 'graphql/searchRepositoriesInTeam.graphql.dart';
+import 'loadingAnimation.dart';
 
 class RepositoryView extends HookConsumerWidget {
   const RepositoryView(
@@ -25,7 +26,7 @@ class RepositoryView extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      mdString = "Loading";
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {

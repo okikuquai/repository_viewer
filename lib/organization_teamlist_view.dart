@@ -7,6 +7,7 @@ import 'package:repositoryviewer/organization_members_view.dart';
 import './graphql/searchTeamsInOrganization.graphql.dart';
 import './team_repository_view.dart';
 import 'favorite_view.dart';
+import 'loadingAnimation.dart';
 import 'readSettings.dart';
 
 class OrgTeamList extends HookConsumerWidget {
@@ -18,7 +19,7 @@ class OrgTeamList extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageState = useState(0);
     final screens = [
-      _OrgTeamList_screen(
+      _OrgTeamListScreen(
         orgName: orgName,
       ),
       FavoriteRepositories(orgName: orgName)
@@ -54,9 +55,8 @@ class OrgTeamList extends HookConsumerWidget {
   }
 }
 
-class _OrgTeamList_screen extends HookConsumerWidget {
-  const _OrgTeamList_screen({Key? key, required this.orgName})
-      : super(key: key);
+class _OrgTeamListScreen extends HookConsumerWidget {
+  const _OrgTeamListScreen({Key? key, required this.orgName}) : super(key: key);
   final String orgName;
 
   @override
@@ -68,7 +68,7 @@ class _OrgTeamList_screen extends HookConsumerWidget {
     );
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return const Text("Loading");
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
