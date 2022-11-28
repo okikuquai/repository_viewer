@@ -55,9 +55,12 @@ class OrgMemberList extends HookConsumerWidget {
                     SizedBox(
                       height: 80.0,
                       width: 80.0,
-                      child: Image.network(
-                        member.avatarUrl,
-                        fit: BoxFit.cover,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: NetworkImage(member.avatarUrl))),
                       ),
                     ),
                     Expanded(
