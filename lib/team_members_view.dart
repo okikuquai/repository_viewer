@@ -75,12 +75,22 @@ class TeamMemberList extends HookConsumerWidget {
                             Text(
                               member.name ?? "",
                               style: textTheme.headline6,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(member.login,
-                                style: textTheme.labelLarge!
-                                    .apply(color: Colors.black45)),
+                            Text(
+                              member.login,
+                              style: textTheme.labelLarge!
+                                  .apply(color: Colors.black45),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             const SizedBox(height: 10.0),
-                            Text(member.bio ?? ""),
+                            Text(
+                              member.bio ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
                       ),

@@ -123,8 +123,14 @@ class _FavoriteCardList extends State<FavoriteCardList> {
               title: Text(
                 repository.name,
                 style: textTheme.headline5,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              subtitle: Text(repository.description ?? "no description"),
+              subtitle: Text(
+                repository.description ?? "no description",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => RepositoryView(
