@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import './graphql/searchMemberInOrganization.graphql.dart';
+import 'loadingAnimation.dart';
 
 class OrgMemberList extends HookConsumerWidget {
   const OrgMemberList({Key? key, required this.orgName}) : super(key: key);
@@ -27,7 +28,7 @@ class OrgMemberList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return const Text("Loading");
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {

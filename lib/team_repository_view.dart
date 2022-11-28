@@ -6,6 +6,7 @@ import 'package:repositoryviewer/team_members_view.dart';
 
 import './graphql/searchRepositoriesInTeam.graphql.dart';
 import 'favorite_repositories.dart';
+import 'loadingAnimation.dart';
 
 class TeamRepositoryList extends HookConsumerWidget {
   const TeamRepositoryList(
@@ -45,7 +46,7 @@ class TeamRepositoryList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return const Text("Loading");
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {

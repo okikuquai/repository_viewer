@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import './graphql/searchMemberInTeam.graphql.dart';
+import 'loadingAnimation.dart';
 
 class TeamMemberList extends HookConsumerWidget {
   const TeamMemberList(
@@ -30,7 +31,7 @@ class TeamMemberList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return const Text("Loading");
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {

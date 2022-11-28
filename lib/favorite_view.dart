@@ -5,6 +5,7 @@ import 'package:repositoryviewer/favorite_repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import './graphql/getStarredRepositories.graphql.dart';
+import 'loadingAnimation.dart';
 import 'repository_view.dart';
 
 class FavoriteRepositories extends HookConsumerWidget {
@@ -119,7 +120,7 @@ class StarList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return const Text("Loading");
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
