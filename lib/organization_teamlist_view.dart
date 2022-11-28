@@ -23,7 +23,7 @@ class OrgTeamList extends HookConsumerWidget {
       _OrgTeamListScreen(
         orgName: orgName,
       ),
-      FavoriteRepositories(orgName: orgName),
+      starredRepositories(orgName: orgName),
       const SettingsScreen()
     ];
     //接続用のclientクラスを作成
@@ -44,7 +44,7 @@ class OrgTeamList extends HookConsumerWidget {
                   BottomNavigationBarItem(
                       icon: Icon(Icons.home), label: 'Home'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.favorite), label: 'Favorite'),
+                      icon: Icon(Icons.star), label: 'Star'),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.settings), label: 'Settings')
                 ],

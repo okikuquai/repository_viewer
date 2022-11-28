@@ -8,8 +8,8 @@ import './graphql/getStarredRepositories.graphql.dart';
 import 'loadingAnimation.dart';
 import 'repository_view.dart';
 
-class FavoriteRepositories extends HookConsumerWidget {
-  const FavoriteRepositories({Key? key, required this.orgName})
+class starredRepositories extends HookConsumerWidget {
+  const starredRepositories({Key? key, required this.orgName})
       : super(key: key);
   final String orgName;
   final _tab = const <Tab>[
@@ -24,22 +24,22 @@ class FavoriteRepositories extends HookConsumerWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Favorite Repositories'),
+          title: const Text('Starred Repositories'),
           bottom: TabBar(tabs: _tab),
         ),
         body: TabBarView(
           children: <Widget>[
             Center(
-                child: Scaffold(body: InAppFavoriteCardList(orgName: orgName))),
+                child: Scaffold(body: InAppstarredCardList(orgName: orgName))),
             Center(
                 child: Scaffold(
-                    body: StarList(
-                        orgName: orgName, isMixLocalFavorites: false))),
+                    body:
+                        StarList(orgName: orgName, isMixLocalstarreds: false))),
             Center(
                 child: Scaffold(
                     body: StarList(
               orgName: orgName,
-              isMixLocalFavorites: true,
+              isMixLocalstarreds: true,
             ))),
           ],
         ),
@@ -48,44 +48,41 @@ class FavoriteRepositories extends HookConsumerWidget {
   }
 }
 
-class InAppFavoriteCardList extends StatefulWidget {
-  const InAppFavoriteCardList({Key? key, required this.orgName})
+class InAppstarredCardList extends StatefulWidget {
+  const InAppstarredCardList({Key? key, required this.orgName})
       : super(key: key);
   final String orgName;
   @override
-  createState() => _InAppFavoriteCardList();
+  createState() => _InAppstarredCardList();
 }
 
-class _InAppFavoriteCardList extends State<InAppFavoriteCardList> {
+class _InAppstarredCardList extends State<InAppstarredCardList> {
   @override
   Widget build(BuildContext context) {
-    var isFavorite = List.generate(favoriteRepository.length, (index) => true);
-    void setFavorite(int index) {
+    var isstarred = List.generate(starredRepository.length, (index) => true);
+    void setstarred(int index) {
       setState(() {
-        isFavorite[index] != isFavorite[index];
+        isstarred[index] != isstarred[index];
       });
     }
 
     return ListView.builder(
-        itemCount: favoriteRepository.length,
+        itemCount: starredRepository.length,
         itemBuilder: (context, index) {
           final TextTheme textTheme = Theme.of(context).textTheme;
-          final favrepository = favoriteRepository[index];
+          final favrepository = starredRepository[index];
           return Card(
             child: ListTile(
               trailing: GestureDetector(
-                child: Icon(
-                    isFavorite[index]
-                        ? Icons.favorite
-                        : Icons.favorite_border_rounded,
-                    color: isFavorite[index] ? Colors.red : null),
+                child: Icon(isstarred[index] ? Icons.star : Icons.star_border,
+                    color: isstarred[index] ? Colors.yellow : null),
                 onTap: () {
-                  setFavorite(index);
-                  if (isFavorite[index]) {
-                    favoriteRepository.removeWhere(
+                  setstarred(index);
+                  if (isstarred[index]) {
+                    starredRepository.removeWhere(
                         (element) => element.name == favrepository.name);
                   } else {
-                    favoriteRepository.add(favrepository);
+                    starredRepository.add(favrepository);
                   }
                 },
               ),
@@ -108,10 +105,10 @@ class _InAppFavoriteCardList extends State<InAppFavoriteCardList> {
 
 class StarList extends HookConsumerWidget {
   const StarList(
-      {Key? key, required this.orgName, required this.isMixLocalFavorites})
+      {Key? key, required this.orgName, required this.isMixLocalstarreds})
       : super(key: key);
   final String orgName;
-  final bool isMixLocalFavorites;
+  final bool isMixLocalstarreds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getStarredRepositories(
@@ -131,10 +128,10 @@ class StarList extends HookConsumerWidget {
       final starredRepositories =
           qryResult.result.parsedData!.viewer.starredRepositories.edges!;
 
-      //localのfavoriteリストとgithubのstarをまとめて表示するため、localのfavoriteリストを追加
+      //localのstarredリストとgithubのstarをまとめて表示するため、localのstarredリストを追加
       //typenameとはなんぞや
-      if (isMixLocalFavorites) {
-        for (var tmp in favoriteRepository) {
+      if (isMixLocalstarreds) {
+        for (var tmp in starredRepository) {
           starredRepositories.add(
               Query$getStarredRepositories$viewer$starredRepositories$edges(
                   node:

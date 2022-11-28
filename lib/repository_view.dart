@@ -62,7 +62,7 @@ class RepositoryViewBody extends StatefulWidget {
 class _RepositoryViewBody extends State<RepositoryViewBody> {
   @override
   Widget build(BuildContext context) {
-    bool isFavorite = favoriteRepository
+    bool isFavorite = starredRepository
         .where((element) => element.name == widget.repository.name)
         .isNotEmpty;
     final TextTheme textTheme = Theme.of(context).textTheme;
@@ -71,16 +71,24 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
         isFavorite != isFavorite;
       });
       if (isFavorite) {
-        favoriteRepository
+        starredRepository
             .removeWhere((element) => element.name == widget.repository.name);
       } else {
-        favoriteRepository.add(widget.repository);
+        starredRepository.add(widget.repository);
       }
     }
 
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.repository.name),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  setFavorite();
+                },
+                icon: Icon(isFavorite ? Icons.star : Icons.star_border),
+                color: isFavorite ? Colors.yellow : Colors.white)
+          ],
         ),
         body: Column(
           children: [
@@ -95,18 +103,6 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
                     ],
                   ),
                 )),
-            Row(
-              children: [
-                OutlinedButton.icon(
-                  onPressed: () {
-                    setFavorite();
-                  },
-                  icon:
-                      Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-                  label: const Text('Favorite'),
-                ),
-              ],
-            ),
             const Divider(),
             Align(
               alignment: Alignment.centerLeft,
