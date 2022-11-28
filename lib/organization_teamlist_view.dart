@@ -7,9 +7,9 @@ import 'package:repositoryviewer/settings_view.dart';
 
 import './graphql/searchTeamsInOrganization.graphql.dart';
 import './team_repository_view.dart';
-import 'favorite_view.dart';
 import 'loadingAnimation.dart';
 import 'readSettings.dart';
+import 'starred_view.dart';
 
 class OrgTeamList extends HookConsumerWidget {
   const OrgTeamList({Key? key, required this.orgName}) : super(key: key);
@@ -23,7 +23,7 @@ class OrgTeamList extends HookConsumerWidget {
       _OrgTeamListScreen(
         orgName: orgName,
       ),
-      FavoriteRepositories(orgName: orgName),
+      StarredRepositories(orgName: orgName),
       const SettingsScreen()
     ];
     //接続用のclientクラスを作成
@@ -44,7 +44,7 @@ class OrgTeamList extends HookConsumerWidget {
                   BottomNavigationBarItem(
                       icon: Icon(Icons.home), label: 'Home'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.favorite), label: 'Favorite'),
+                      icon: Icon(Icons.star), label: 'Star'),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.settings), label: 'Settings')
                 ],

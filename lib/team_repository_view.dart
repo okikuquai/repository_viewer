@@ -5,8 +5,8 @@ import 'package:repositoryviewer/repository_view.dart';
 import 'package:repositoryviewer/team_members_view.dart';
 
 import './graphql/searchRepositoriesInTeam.graphql.dart';
-import 'favorite_repositories.dart';
 import 'loadingAnimation.dart';
+import 'starred_repositories.dart';
 
 class TeamRepositoryList extends HookConsumerWidget {
   const TeamRepositoryList(
@@ -87,7 +87,7 @@ class _FavoriteCardList extends State<FavoriteCardList> {
     final repositoriesCount = repositories.length;
     var isFavorite = List.generate(
         repositoriesCount,
-        (index) => favoriteRepository
+        (index) => starredRepository
             .where((element) => element.name == repositories[index]!.node.name)
             .isNotEmpty);
 
@@ -105,18 +105,15 @@ class _FavoriteCardList extends State<FavoriteCardList> {
           return Card(
             child: ListTile(
               trailing: GestureDetector(
-                child: Icon(
-                    isFavorite[index]
-                        ? Icons.favorite
-                        : Icons.favorite_border_rounded,
-                    color: isFavorite[index] ? Colors.red : null),
+                child: Icon(isFavorite[index] ? Icons.star : Icons.star_border,
+                    color: isFavorite[index] ? Colors.yellow : null),
                 onTap: () {
                   setFavorite(index);
                   if (isFavorite[index]) {
-                    favoriteRepository.removeWhere(
+                    starredRepository.removeWhere(
                         (element) => element.name == repository.name);
                   } else {
-                    favoriteRepository.add(repository);
+                    starredRepository.add(repository);
                   }
                 },
               ),
