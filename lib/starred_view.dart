@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/favorite_repositories.dart';
+import 'package:repositoryviewer/starred_repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import './graphql/getStarredRepositories.graphql.dart';

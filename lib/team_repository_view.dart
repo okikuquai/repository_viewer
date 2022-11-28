@@ -5,8 +5,8 @@ import 'package:repositoryviewer/repository_view.dart';
 import 'package:repositoryviewer/team_members_view.dart';
 
 import './graphql/searchRepositoriesInTeam.graphql.dart';
-import 'favorite_repositories.dart';
 import 'loadingAnimation.dart';
+import 'starred_repositories.dart';
 
 class TeamRepositoryList extends HookConsumerWidget {
   const TeamRepositoryList(

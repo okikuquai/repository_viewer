@@ -7,9 +7,9 @@ import 'package:repositoryviewer/settings_view.dart';
 
 import './graphql/searchTeamsInOrganization.graphql.dart';
 import './team_repository_view.dart';
-import 'favorite_view.dart';
 import 'loadingAnimation.dart';
 import 'readSettings.dart';
+import 'starred_view.dart';
 
 class OrgTeamList extends HookConsumerWidget {
   const OrgTeamList({Key? key, required this.orgName}) : super(key: key);
