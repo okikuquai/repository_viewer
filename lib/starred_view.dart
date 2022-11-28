@@ -8,8 +8,8 @@ import './graphql/getStarredRepositories.graphql.dart';
 import 'loadingAnimation.dart';
 import 'repository_view.dart';
 
-class starredRepositories extends HookConsumerWidget {
-  const starredRepositories({Key? key, required this.orgName})
+class StarredRepositories extends HookConsumerWidget {
+  const StarredRepositories({Key? key, required this.orgName})
       : super(key: key);
   final String orgName;
   final _tab = const <Tab>[
@@ -33,13 +33,13 @@ class starredRepositories extends HookConsumerWidget {
                 child: Scaffold(body: InAppstarredCardList(orgName: orgName))),
             Center(
                 child: Scaffold(
-                    body:
-                        StarList(orgName: orgName, isMixLocalstarreds: false))),
+                    body: StarList(
+                        orgName: orgName, isMixLocalStarredList: false))),
             Center(
                 child: Scaffold(
                     body: StarList(
               orgName: orgName,
-              isMixLocalstarreds: true,
+              isMixLocalStarredList: true,
             ))),
           ],
         ),
@@ -70,7 +70,7 @@ class _InAppstarredCardList extends State<InAppstarredCardList> {
         itemCount: starredRepository.length,
         itemBuilder: (context, index) {
           final TextTheme textTheme = Theme.of(context).textTheme;
-          final favrepository = starredRepository[index];
+          final starredrepository = starredRepository[index];
           return Card(
             child: ListTile(
               trailing: GestureDetector(
@@ -80,21 +80,21 @@ class _InAppstarredCardList extends State<InAppstarredCardList> {
                   setstarred(index);
                   if (isstarred[index]) {
                     starredRepository.removeWhere(
-                        (element) => element.name == favrepository.name);
+                        (element) => element.name == starredrepository.name);
                   } else {
-                    starredRepository.add(favrepository);
+                    starredRepository.add(starredrepository);
                   }
                 },
               ),
               title: Text(
-                favrepository.name,
+                starredrepository.name,
                 style: textTheme.headline5,
               ),
-              subtitle: Text(favrepository.description ?? "no description"),
+              subtitle: Text(starredrepository.description ?? "no description"),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => RepositoryView(
-                      repository: favrepository, orgName: widget.orgName),
+                      repository: starredrepository, orgName: widget.orgName),
                 ),
               ),
             ),
@@ -105,10 +105,10 @@ class _InAppstarredCardList extends State<InAppstarredCardList> {
 
 class StarList extends HookConsumerWidget {
   const StarList(
-      {Key? key, required this.orgName, required this.isMixLocalstarreds})
+      {Key? key, required this.orgName, required this.isMixLocalStarredList})
       : super(key: key);
   final String orgName;
-  final bool isMixLocalstarreds;
+  final bool isMixLocalStarredList;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getStarredRepositories(
@@ -130,7 +130,7 @@ class StarList extends HookConsumerWidget {
 
       //localのstarredリストとgithubのstarをまとめて表示するため、localのstarredリストを追加
       //typenameとはなんぞや
-      if (isMixLocalstarreds) {
+      if (isMixLocalStarredList) {
         for (var tmp in starredRepository) {
           starredRepositories.add(
               Query$getStarredRepositories$viewer$starredRepositories$edges(
@@ -154,9 +154,14 @@ class StarList extends HookConsumerWidget {
                 title: Text(
                   starredRepository.name,
                   style: textTheme.headline5,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                subtitle:
-                    Text(starredRepository.description ?? "no description"),
+                subtitle: Text(
+                  starredRepository.description ?? "no description",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 onTap: () => launchUrl(Uri.parse(starredRepository.url)),
               ),
             );

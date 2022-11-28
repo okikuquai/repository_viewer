@@ -23,7 +23,7 @@ class OrgTeamList extends HookConsumerWidget {
       _OrgTeamListScreen(
         orgName: orgName,
       ),
-      starredRepositories(orgName: orgName),
+      StarredRepositories(orgName: orgName),
       const SettingsScreen()
     ];
     //接続用のclientクラスを作成
