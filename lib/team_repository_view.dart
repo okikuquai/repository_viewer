@@ -104,37 +104,40 @@ class _FavoriteCardList extends State<FavoriteCardList> {
           final repository = repositories[index]!.node;
           return Card(
             child: ListTile(
-              trailing: GestureDetector(
-                child: Icon(isFavorite[index] ? Icons.star : Icons.star_border,
-                    color: isFavorite[index] ? Colors.yellow : null),
-                onTap: () {
-                  setFavorite(index);
-                  if (isFavorite[index]) {
-                    starredRepository.removeWhere(
-                        (element) => element.name == repository.name);
-                  } else {
-                    starredRepository.add(repository);
-                  }
-                },
-              ),
-              title: Text(
-                repository.name,
-                style: textTheme.headline5,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                repository.description ?? "no description",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => RepositoryView(
-                      repository: repository, orgName: widget.orgName),
+                trailing: GestureDetector(
+                  child: Icon(
+                      isFavorite[index] ? Icons.star : Icons.star_border,
+                      color: isFavorite[index] ? Colors.yellow : null),
+                  onTap: () {
+                    setFavorite(index);
+                    if (isFavorite[index]) {
+                      starredRepository.removeWhere(
+                          (element) => element.name == repository.name);
+                    } else {
+                      starredRepository.add(repository);
+                    }
+                  },
                 ),
-              ),
-            ),
+                title: Text(
+                  repository.name,
+                  style: textTheme.headline5,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  repository.description ?? "no description",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => RepositoryView(
+                          repository: repository, orgName: widget.orgName),
+                    ),
+                  );
+                  setState(() {});
+                }),
           );
         });
   }
