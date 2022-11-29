@@ -29,6 +29,13 @@ class OrgTeamList extends HookConsumerWidget {
     //接続用のclientクラスを作成
     ValueNotifier<GraphQLClient> client = ValueNotifier(
       GraphQLClient(
+        defaultPolicies: DefaultPolicies(
+          watchMutation: Policies(
+            fetch: FetchPolicy.cacheFirst,
+            error: ErrorPolicy.none,
+            cacheReread: CacheRereadPolicy.ignoreAll,
+          ),
+        ),
         link: getGraphQLAuthLink(),
         cache: GraphQLCache(store: HiveStore()),
       ),
