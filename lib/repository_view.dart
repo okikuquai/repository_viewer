@@ -104,25 +104,48 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
                   ),
                 )),
             const Divider(),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
+            // ExpansionTile(
+            //     title: Text(
+            //       "Readme",
+            //       style: textTheme.headline5,
+            //     ),
+            //     children: [
+            //       ListView.builder(
+            //           itemCount: widget.repository.collaborators!.edges!.length,
+            //           itemBuilder: (context, index) {
+            //             final collaborator = widget
+            //                 .repository.collaborators!.edges![index]!.node;
+            //             return SizedBox(
+            //               height: 20.0,
+            //               width: 20.0,
+            //               child: Container(
+            //                 decoration: BoxDecoration(
+            //                     shape: BoxShape.circle,
+            //                     image: DecorationImage(
+            //                         fit: BoxFit.fill,
+            //                         image:
+            //                             NetworkImage(collaborator.avatarUrl))),
+            //               ),
+            //             );
+            //           }),
+            //     ]),
+            // const Divider(),
+            ExpansionTile(
+              title: Text(
                 "Readme",
-                style: textTheme.headline4,
+                style: textTheme.headline5,
               ),
+              children: [
+                SingleChildScrollView(
+                    // スクロールできるようにしておくのと、パッディングをいれてみやすくしておく
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: MarkdownBody(
+                          data: widget.mdString,
+                        ))),
+              ],
             ),
-            Expanded(
-                child: Container(
-              color: Colors.white24,
-              child: SingleChildScrollView(
-                  // スクロールできるようにしておくのと、パッディングをいれてみやすくしておく
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: MarkdownBody(
-                        data: widget.mdString,
-                      ))),
-            ))
           ],
         ));
   }
