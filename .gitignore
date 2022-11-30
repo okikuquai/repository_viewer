@@ -351,7 +351,7 @@ assets/secret_token.json
 lib/graphql/schema.graphql
 lib/graphql/*.dart
 
-**/.DS_Store
+#**/.DS_Store
 
 lib/graphql/.graphqlconfig
 assets/secret_settings.json
