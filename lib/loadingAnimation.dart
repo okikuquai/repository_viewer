@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 Widget loadingAnimation() {
-  return Scaffold(
-      body: Center(
-          child: Column(
+  return Center(
+      child: Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       LoadingAnimationWidget.hexagonDots(
@@ -16,5 +15,5 @@ Widget loadingAnimation() {
         child: Text("Loading ..."),
       )
     ],
-  )));
+  ));
 }
