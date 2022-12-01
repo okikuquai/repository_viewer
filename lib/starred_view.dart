@@ -75,7 +75,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
       Options$Query$getRepositoryInfoFromMultipleIDs(
           variables: Variables$Query$getRepositoryInfoFromMultipleIDs(
-              ids: favoriteRepositoryIDs)),
+              ids: FavoriteRepositories.value)),
     );
 
     //ロード完了していない場合
@@ -100,7 +100,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
             return Card(
               child: ListTile(
                   trailing: SideFavoriteIconButton(
-                      id: favoriteRepositoryIDs
+                      id: FavoriteRepositories.value
                           .firstWhere((element) => element == repository.id)),
                   title: Text(
                     name,
@@ -192,7 +192,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<String> ids = List.from(githubStarredIds)
-      ..addAll(favoriteRepositoryIDs);
+      ..addAll(FavoriteRepositories.value);
 
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
       Options$Query$getRepositoryInfoFromMultipleIDs(
@@ -221,7 +221,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
             final description = repository.description;
             return Card(
               child: ListTile(
-                  trailing: favoriteRepositoryIDs
+                  trailing: FavoriteRepositories.value
                           .where((element) => element == repository.id)
                           .isEmpty
                       ? const SideStarIconButton()
@@ -264,7 +264,7 @@ class _SideFavoriteIconButton extends State<SideFavoriteIconButton> {
   Widget build(BuildContext context) {
     var dispIcon = Icons.favorite;
     Color? dispColor = Colors.red;
-    if (favoriteRepositoryIDs
+    if (FavoriteRepositories.value
         .where((element) => element == widget.id)
         .isEmpty) {
       dispIcon = Icons.favorite_border;
@@ -276,7 +276,7 @@ class _SideFavoriteIconButton extends State<SideFavoriteIconButton> {
         dispIcon = Icons.favorite_border;
         dispColor = Colors.white;
       });
-      favoriteRepositoryIDs.removeWhere((element) => element == widget.id);
+      FavoriteRepositories.value.removeWhere((element) => element == widget.id);
     }
 
     return GestureDetector(
