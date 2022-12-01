@@ -22,7 +22,11 @@ class RepositoryView extends HookConsumerWidget {
           variables: Variables$Query$getRepositoryDataFromID(id: repositoryID)),
     );
     if (repoData.result.isLoading) {
-      return loadingAnimation();
+      //loading時はappbarがないのでここでつける
+      return Scaffold(
+          appBar: RepositoryViewAppbar(
+              repositoryID: repositoryID, repositoryName: "Repository"),
+          body: loadingAnimation());
     } else if (repoData.result.hasException) {}
 
     if (repoData.result.parsedData != null) {
@@ -60,7 +64,7 @@ class RepositoryViewAppbar extends StatefulWidget with PreferredSizeWidget {
 class _RepositoryViewAppbar extends State<RepositoryViewAppbar> {
   @override
   Widget build(BuildContext context) {
-    bool isFavorite = favoriteRepositoryIDs
+    bool isFavorite = FavoriteRepositories.value
         .where((element) => element == widget.repositoryID)
         .isNotEmpty;
     void setFavorite() {
@@ -68,10 +72,10 @@ class _RepositoryViewAppbar extends State<RepositoryViewAppbar> {
         isFavorite != isFavorite;
       });
       if (isFavorite) {
-        favoriteRepositoryIDs
+        FavoriteRepositories.value
             .removeWhere((element) => element == widget.repositoryID);
       } else {
-        favoriteRepositoryIDs.add(widget.repositoryID);
+        FavoriteRepositories.addItem(widget.repositoryID);
       }
     }
 

@@ -87,7 +87,7 @@ class _FavoriteCardList extends State<FavoriteCardList> {
     final repositoriesCount = repositories.length;
     var isFavorite = List.generate(
         repositoriesCount,
-        (index) => favoriteRepositoryIDs
+        (index) => FavoriteRepositories.value
             .where((element) => element == repositories[index]!.node.id)
             .isNotEmpty);
 
@@ -113,10 +113,10 @@ class _FavoriteCardList extends State<FavoriteCardList> {
                   onTap: () {
                     setFavorite(index);
                     if (isFavorite[index]) {
-                      favoriteRepositoryIDs
+                      FavoriteRepositories.value
                           .removeWhere((element) => element == repository.id);
                     } else {
-                      favoriteRepositoryIDs.add(repository.id);
+                      FavoriteRepositories.addItem(repository.id);
                     }
                   },
                 ),
