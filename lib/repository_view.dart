@@ -105,21 +105,31 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      //shrinkWrap: true,
+    return ListView(
       children: [
         Container(
             padding: const EdgeInsets.all(10),
             child: Text(widget.repositoryName, style: textTheme.headline4)),
-        Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: CollaboratorsView(
-              repositoryID: widget.repositoryID,
-            )),
+        ExpansionTile(
+          initiallyExpanded: true,
+          title: Text("Collaborator", style: textTheme.headline5),
+          children: [
+            Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: CollaboratorsView(
+                  repositoryID: widget.repositoryID,
+                )),
+          ],
+        ),
         const Divider(),
-        // MarkDownView(
-        //   repositoryID: widget.repositoryID,
-        // ),
+        ExpansionTile(
+          title: Text("Readme", style: textTheme.headline5),
+          children: [
+            MarkDownView(
+              repositoryID: widget.repositoryID,
+            )
+          ],
+        )
       ],
     );
   }
@@ -141,12 +151,13 @@ class MarkDownView extends HookConsumerWidget {
       return loadingAnimation();
     } else if (mdData.result.hasException) {
       return const Text("exception");
-    } else {
+    } else if (mdData.result.parsedData?.node != null) {
       final parsedmdData = mdData.result.parsedData?.node! as Fragment$Readme;
       final mdString = parsedmdData.object as Fragment$ReadmeMDString;
       return MarkdownBody(
           fitContent: false, shrinkWrap: true, data: mdString.text.toString());
     }
+    return const Text("null");
   }
 }
 
@@ -168,9 +179,9 @@ class CollaboratorsView extends HookConsumerWidget {
       return loadingAnimation();
     } else if (qryResult.result.hasException) {
       return const Text("閲覧権限がありません！");
-    } else {
+    } else if (qryResult.result.parsedData?.node != null) {
       final repository =
-          qryResult.result.parsedData?.node! as Fragment$Collaborator;
+          qryResult.result.parsedData!.node! as Fragment$Collaborator;
       final collaborators = repository.collaborators!.edges!;
       return Wrap(
         spacing: 5,
@@ -192,5 +203,6 @@ class CollaboratorsView extends HookConsumerWidget {
             .toList(),
       );
     }
+    return const Text("null");
   }
 }
