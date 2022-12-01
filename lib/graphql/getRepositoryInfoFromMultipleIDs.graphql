@@ -1,0 +1,13 @@
+
+fragment RepositoryData on Repository {
+  id,
+  name,
+  url,
+  description
+}
+
+query getRepositoryInfoFromMultipleIDs($ids: [ID!]!) {
+  nodes(ids: $ids){
+    ...RepositoryData
+  }
+}

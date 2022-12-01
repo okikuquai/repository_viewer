@@ -12,6 +12,7 @@ query searchRepositoriesInTeam($orgName: String!, $TeamName: String!, $first: In
         }
         edges{
           node{
+            id,
             name,
             description,
             url

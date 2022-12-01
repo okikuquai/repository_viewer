@@ -1,0 +1,17 @@
+fragment Collaborator on Repository {
+  collaborators{
+    edges {
+      node {
+        id,
+        avatarUrl,
+        url
+      }
+    }
+  }
+}
+
+query getRepositoryCollaboratorFromID($id: ID!) {
+  node(id: $id){
+    ...Collaborator
+  }
+}

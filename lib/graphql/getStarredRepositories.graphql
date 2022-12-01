@@ -4,9 +4,7 @@ query getStarredRepositories{
     starredRepositories {
       edges {
         node {
-          name,
-          description,
-          url
+          id
         }
       }
     }
