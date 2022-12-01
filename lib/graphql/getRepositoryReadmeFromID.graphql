@@ -1,0 +1,14 @@
+fragment Readme on Repository {
+  object(expression: "main:README.md"){
+    ...ReadmeMDString
+  }
+}
+fragment ReadmeMDString on Blob{
+  text
+}
+
+query getRepositoryReadmeFromID($id: ID!) {
+  node(id: $id){
+    ...Readme
+  }
+}

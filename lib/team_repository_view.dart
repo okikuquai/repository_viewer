@@ -87,8 +87,8 @@ class _FavoriteCardList extends State<FavoriteCardList> {
     final repositoriesCount = repositories.length;
     var isFavorite = List.generate(
         repositoriesCount,
-        (index) => starredRepository
-            .where((element) => element.name == repositories[index]!.node.name)
+        (index) => favoriteRepositoryIDs
+            .where((element) => element == repositories[index]!.node.id)
             .isNotEmpty);
 
     void setFavorite(int index) {
@@ -106,15 +106,17 @@ class _FavoriteCardList extends State<FavoriteCardList> {
             child: ListTile(
                 trailing: GestureDetector(
                   child: Icon(
-                      isFavorite[index] ? Icons.star : Icons.star_border,
-                      color: isFavorite[index] ? Colors.yellow : null),
+                      isFavorite[index]
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: isFavorite[index] ? Colors.red : null),
                   onTap: () {
                     setFavorite(index);
                     if (isFavorite[index]) {
-                      starredRepository.removeWhere(
-                          (element) => element.name == repository.name);
+                      favoriteRepositoryIDs
+                          .removeWhere((element) => element == repository.id);
                     } else {
-                      starredRepository.add(repository);
+                      favoriteRepositoryIDs.add(repository.id);
                     }
                   },
                 ),
@@ -132,8 +134,8 @@ class _FavoriteCardList extends State<FavoriteCardList> {
                 onTap: () async {
                   await Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => RepositoryView(
-                          repository: repository, orgName: widget.orgName),
+                      builder: (context) =>
+                          RepositoryView(repositoryID: repository.id),
                     ),
                   );
                   setState(() {});

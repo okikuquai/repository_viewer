@@ -1,114 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/repository_view.dart';
 import 'package:repositoryviewer/starred_repositories.dart';
 
+import './graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
 import './graphql/getStarredRepositories.graphql.dart';
 import 'loadingAnimation.dart';
-import 'repository_view.dart';
 
 class StarredRepositories extends HookConsumerWidget {
-  const StarredRepositories({Key? key, required this.orgName})
-      : super(key: key);
-  final String orgName;
+  const StarredRepositories({Key? key}) : super(key: key);
   final _tab = const <Tab>[
     Tab(text: 'Local'),
     Tab(text: 'Github'),
     Tab(text: 'Local&Github'),
   ];
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Starred Repositories'),
-          bottom: TabBar(tabs: _tab),
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            Center(
-                child: Scaffold(body: InAppstarredCardList(orgName: orgName))),
-            Center(
-                child: Scaffold(
-                    body: StarList(
-                        orgName: orgName, isMixLocalStarredList: false))),
-            Center(
-                child: Scaffold(
-                    body: StarList(
-              orgName: orgName,
-              isMixLocalStarredList: true,
-            ))),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class InAppstarredCardList extends StatefulWidget {
-  const InAppstarredCardList({Key? key, required this.orgName})
-      : super(key: key);
-  final String orgName;
-
-  @override
-  createState() => _InAppstarredCardList();
-}
-
-class _InAppstarredCardList extends State<InAppstarredCardList> {
-  @override
-  Widget build(BuildContext context) {
-    var isstarred = List.generate(starredRepository.length, (index) => true);
-    void setstarred(int index) {
-      setState(() {
-        isstarred[index] != isstarred[index];
-      });
-    }
-
-    return ListView.builder(
-        itemCount: starredRepository.length,
-        itemBuilder: (context, index) {
-          final TextTheme textTheme = Theme.of(context).textTheme;
-          final starredrepository = starredRepository[index];
-          return Card(
-            child: ListTile(
-              trailing: GestureDetector(
-                child: Icon(isstarred[index] ? Icons.star : Icons.star_border,
-                    color: isstarred[index] ? Colors.yellow : null),
-                onTap: () {
-                  setstarred(index);
-                  if (isstarred[index]) {
-                    starredRepository.removeWhere(
-                        (element) => element.name == starredrepository.name);
-                  } else {
-                    starredRepository.add(starredrepository);
-                  }
-                },
-              ),
-              title: Text(
-                starredrepository.name,
-                style: textTheme.headline5,
-              ),
-              subtitle: Text(starredrepository.description ?? "no description"),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => RepositoryView(
-                      repository: starredrepository, orgName: widget.orgName),
-                ),
-              ),
-            ),
-          );
-        });
-  }
-}
-
-class StarList extends HookConsumerWidget {
-  const StarList(
-      {Key? key, required this.orgName, required this.isMixLocalStarredList})
-      : super(key: key);
-  final String orgName;
-  final bool isMixLocalStarredList;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getStarredRepositories(
@@ -127,78 +35,264 @@ class StarList extends HookConsumerWidget {
     if (qryResult.result.parsedData?.viewer.starredRepositories.edges != null) {
       final githubStarredRepositories =
           qryResult.result.parsedData!.viewer.starredRepositories.edges!;
-
-      //localのstarredリストとgithubのstarをまとめて表示するため、localのstarredリストを追加
-      //typenameとはなんぞや
-      if (isMixLocalStarredList) {
-        for (var tmp in starredRepository) {
-          githubStarredRepositories.add(
-              Query$getStarredRepositories$viewer$starredRepositories$edges(
-                  node:
-                      Query$getStarredRepositories$viewer$starredRepositories$edges$node(
-                          name: tmp.name,
-                          description: tmp.description,
-                          url: tmp.url,
-                          $__typename: ''),
-                  $__typename: ''));
-        }
+      final starredIDs = <String>[];
+      for (final edge in githubStarredRepositories) {
+        if (edge == null) continue;
+        starredIDs.add(edge.node.id);
       }
-      return StarredListBody(
-          orgName: orgName, dispRepositories: githubStarredRepositories);
+
+      return DefaultTabController(
+        length: _tab.length,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Starred Repositories'),
+            bottom: TabBar(tabs: _tab),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              const Center(child: Scaffold(body: LocalFavoriteCardList())),
+              Center(
+                  child: Scaffold(
+                      body:
+                          GithubStarredCardList(githubStarredIds: starredIDs))),
+              Center(
+                  child: Scaffold(
+                      body: GithubAndLocalFavoriteCardList(
+                          githubStarredIds: starredIDs))),
+            ],
+          ),
+        ),
+      );
     }
-    return const Text("No starred repository in your account");
+    return const Text("no Repositories");
   }
 }
 
-class StarredListBody extends StatefulWidget {
-  const StarredListBody(
-      {Key? key, required this.orgName, required this.dispRepositories})
-      : super(key: key);
-  final String orgName;
-  final List<Query$getStarredRepositories$viewer$starredRepositories$edges?>
-      dispRepositories;
+class LocalFavoriteCardList extends HookConsumerWidget {
+  const LocalFavoriteCardList({Key? key}) : super(key: key);
   @override
-  createState() => _StarredListBody();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
+      Options$Query$getRepositoryInfoFromMultipleIDs(
+          variables: Variables$Query$getRepositoryInfoFromMultipleIDs(
+              ids: favoriteRepositoryIDs)),
+    );
 
-class _StarredListBody extends State<StarredListBody> {
-  @override
-  Widget build(BuildContext context) {
-    var isstarred =
-        List.generate(widget.dispRepositories.length, (index) => true);
-    void setstarred(int index) {
-      setState(() {
-        isstarred[index] != isstarred[index];
-      });
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      return loadingAnimation();
+    }
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      return Text(qryResult.result.exception.toString());
     }
 
-    return ListView.builder(
-        itemCount: widget.dispRepositories.length,
-        itemBuilder: (context, index) {
-          final TextTheme textTheme = Theme.of(context).textTheme;
-          final dispRepository = widget.dispRepositories[index]!.node;
-          return Card(
-            child: ListTile(
-                trailing: GestureDetector(
-                  child: Icon(isstarred[index] ? Icons.star : Icons.star_border,
-                      color: isstarred[index] ? Colors.yellow : null),
-                  onTap: () {
-                    setstarred(index);
-                    //starを外した時の動作はカードが消えるだけなのでfalseの処理はない
-                    if (isstarred[index]) {
-                      starredRepository.removeWhere(
-                          (element) => element.name == dispRepository.name);
-                      widget.dispRepositories.removeWhere((element) =>
-                          element!.node.name == dispRepository.name);
-                    }
-                  },
-                ),
-                title: Text(
-                  dispRepository.name,
-                  style: textTheme.headline5,
-                ),
-                subtitle: Text(dispRepository.description ?? "no description")),
-          );
+    if (qryResult.result.parsedData?.nodes != null) {
+      final repositories = qryResult.result.parsedData!.nodes;
+
+      return ListView.builder(
+          itemCount: repositories.length,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final repository = repositories[index] as Fragment$RepositoryData;
+            final name = repository.name;
+            final description = repository.description;
+            return Card(
+              child: ListTile(
+                  trailing: SideFavoriteIconButton(
+                      id: favoriteRepositoryIDs
+                          .firstWhere((element) => element == repository.id)),
+                  title: Text(
+                    name,
+                    style: textTheme.headline5,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(description ?? "no description",
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RepositoryView(repositoryID: repository.id),
+                      ),
+                    );
+                    useState(() {});
+                  }),
+            );
+          });
+    }
+    return const Text("no Repositories");
+  }
+}
+
+class GithubStarredCardList extends HookConsumerWidget {
+  const GithubStarredCardList({Key? key, required this.githubStarredIds})
+      : super(key: key);
+  final List<String> githubStarredIds;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
+      Options$Query$getRepositoryInfoFromMultipleIDs(
+          variables: Variables$Query$getRepositoryInfoFromMultipleIDs(
+              ids: githubStarredIds)),
+    );
+
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      return loadingAnimation();
+    }
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      return Text(qryResult.result.exception.toString());
+    }
+
+    if (qryResult.result.parsedData?.nodes != null) {
+      final repositories = qryResult.result.parsedData!.nodes;
+
+      return ListView.builder(
+          itemCount: repositories.length,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final repository = repositories[index] as Fragment$RepositoryData;
+            final name = repository.name;
+            final description = repository.description;
+            return Card(
+              child: ListTile(
+                  trailing: const SideStarIconButton(),
+                  title: Text(
+                    name,
+                    style: textTheme.headline5,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(description ?? "no description",
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RepositoryView(repositoryID: repository.id),
+                      ),
+                    );
+                    useState(() {});
+                  }),
+            );
+          });
+    }
+    return const Text("no Repositories");
+  }
+}
+
+class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
+  const GithubAndLocalFavoriteCardList(
+      {Key? key, required this.githubStarredIds})
+      : super(key: key);
+  final List<String> githubStarredIds;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<String> ids = List.from(githubStarredIds)
+      ..addAll(favoriteRepositoryIDs);
+
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
+      Options$Query$getRepositoryInfoFromMultipleIDs(
+          variables:
+              Variables$Query$getRepositoryInfoFromMultipleIDs(ids: ids)),
+    );
+
+    //ロード完了していない場合
+    if (qryResult.result.isLoading) {
+      return loadingAnimation();
+    }
+    //例外スローした場合
+    else if (qryResult.result.hasException) {
+      return Text(qryResult.result.exception.toString());
+    }
+
+    if (qryResult.result.parsedData?.nodes != null) {
+      final repositories = qryResult.result.parsedData!.nodes;
+
+      return ListView.builder(
+          itemCount: ids.length,
+          itemBuilder: (context, index) {
+            final TextTheme textTheme = Theme.of(context).textTheme;
+            final repository = repositories[index] as Fragment$RepositoryData;
+            final name = repository.name;
+            final description = repository.description;
+            return Card(
+              child: ListTile(
+                  trailing: favoriteRepositoryIDs
+                          .where((element) => element == repository.id)
+                          .isEmpty
+                      ? const SideStarIconButton()
+                      : SideFavoriteIconButton(
+                          id: ids.firstWhere(
+                              (element) => element == repository.id)),
+                  title: Text(
+                    name,
+                    style: textTheme.headline5,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(description ?? "no description",
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RepositoryView(repositoryID: repository.id),
+                      ),
+                    );
+                    useState(() {});
+                  }),
+            );
+          });
+    }
+    return const Text("no Repositories");
+  }
+}
+
+class SideFavoriteIconButton extends StatefulWidget {
+  const SideFavoriteIconButton({Key? key, required this.id}) : super(key: key);
+  final String id;
+  @override
+  createState() => _SideFavoriteIconButton();
+}
+
+class _SideFavoriteIconButton extends State<SideFavoriteIconButton> {
+  @override
+  Widget build(BuildContext context) {
+    var dispIcon = Icons.favorite;
+    Color? dispColor = Colors.red;
+    if (favoriteRepositoryIDs
+        .where((element) => element == widget.id)
+        .isEmpty) {
+      dispIcon = Icons.favorite_border;
+      dispColor = null;
+    }
+
+    void setUnFavorite() {
+      setState(() {
+        dispIcon = Icons.favorite_border;
+        dispColor = Colors.white;
+      });
+      favoriteRepositoryIDs.removeWhere((element) => element == widget.id);
+    }
+
+    return GestureDetector(
+        child: Icon(dispIcon, color: dispColor),
+        onTap: () {
+          //starを外した時の動作はカードが消えるだけなのでfalseの処理はない
+          setUnFavorite();
         });
+  }
+}
+
+class SideStarIconButton extends StatelessWidget {
+  const SideStarIconButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(Icons.star, color: Colors.yellow);
   }
 }

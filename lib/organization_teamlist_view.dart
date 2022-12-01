@@ -4,12 +4,12 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/organization_members_view.dart';
 import 'package:repositoryviewer/settings_view.dart';
+import 'package:repositoryviewer/starred_view.dart';
+import 'package:repositoryviewer/team_repository_view.dart';
 
 import './graphql/searchTeamsInOrganization.graphql.dart';
-import './team_repository_view.dart';
 import 'loadingAnimation.dart';
 import 'readSettings.dart';
-import 'starred_view.dart';
 
 class OrgTeamList extends HookConsumerWidget {
   const OrgTeamList({Key? key, required this.orgName}) : super(key: key);
@@ -23,7 +23,7 @@ class OrgTeamList extends HookConsumerWidget {
       _OrgTeamListScreen(
         orgName: orgName,
       ),
-      StarredRepositories(orgName: orgName),
+      const StarredRepositories(),
       const SettingsScreen()
     ];
     //接続用のclientクラスを作成
@@ -31,7 +31,7 @@ class OrgTeamList extends HookConsumerWidget {
       GraphQLClient(
         defaultPolicies: DefaultPolicies(
           watchMutation: Policies(
-            fetch: FetchPolicy.cacheFirst,
+            fetch: FetchPolicy.cacheOnly,
             error: ErrorPolicy.none,
             cacheReread: CacheRereadPolicy.ignoreAll,
           ),
