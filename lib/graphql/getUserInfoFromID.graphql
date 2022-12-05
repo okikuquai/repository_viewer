@@ -1,0 +1,21 @@
+fragment UserInfo on User {
+  id,
+  login,
+  name,
+  url,
+  avatarUrl,
+  isViewer,
+  starredRepositories{
+    edges {
+      node {
+        id
+      }
+    }
+  }
+}
+
+query getUserInfoFromID($id: ID!) {
+  node(id: $id){
+    ...UserInfo
+  }
+}

@@ -289,11 +289,44 @@ class _SideFavoriteIconButton extends State<SideFavoriteIconButton> {
   }
 }
 
-class SideStarIconButton extends StatelessWidget {
-  const SideStarIconButton({super.key});
+class SideStarIconButton extends StatefulWidget {
+  const SideStarIconButton({Key? key}) : super(key: key);
+  @override
+  createState() => _SideStarIconButton();
+}
+
+class _SideStarIconButton extends State<SideStarIconButton> {
+  var dispIcon = Icons.star;
+  Color? dispColor = Colors.yellow;
 
   @override
   Widget build(BuildContext context) {
-    return const Icon(Icons.star, color: Colors.yellow);
+    void toggleIconColor() {
+      setState(() {
+        if (dispIcon == Icons.star) {
+          dispIcon = Icons.star_border;
+          dispColor = null;
+        } else {
+          dispIcon = Icons.star;
+          dispColor = Colors.yellow;
+        }
+      });
+    }
+
+    return GestureDetector(
+        child: Icon(dispIcon, color: dispColor),
+        onTap: () {
+          //starを外した時の動作はカードが消えるだけなのでfalseの処理はない
+          toggleIconColor();
+        });
   }
 }
+
+// class SideStarIconButton extends StatelessWidget {
+//   const SideStarIconButton({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Icon(Icons.star, color: Colors.yellow);
+//   }
+// }

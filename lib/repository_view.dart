@@ -3,7 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/starred_repositories.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/getRepositoryCollaboratorFromID.graphql.dart';
 import './graphql/getRepositoryInfoFromID.graphql.dart';
@@ -157,11 +157,16 @@ class MarkDownView extends HookConsumerWidget {
       return const Text("exception");
     } else if (mdData.result.parsedData?.node != null) {
       final parsedmdData = mdData.result.parsedData?.node! as Fragment$Readme;
-      final mdString = parsedmdData.object as Fragment$ReadmeMDString;
-      return MarkdownBody(
-          fitContent: false, shrinkWrap: true, data: mdString.text.toString());
+      if (parsedmdData.object != null) {
+        final mdString = parsedmdData.object as Fragment$ReadmeMDString;
+        return MarkdownBody(
+            fitContent: false,
+            shrinkWrap: true,
+            data: mdString.text ?? "表示できません");
+      }
+      return const Text("表示できません");
     }
-    return const Text("null");
+    return const Text("表示できません");
   }
 }
 
@@ -191,7 +196,11 @@ class CollaboratorsView extends HookConsumerWidget {
         spacing: 5,
         children: collaborators
             .map((e) => GestureDetector(
-                  onTap: () => launchUrl(Uri.parse(e.node.url)),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserView(userID: e.node.id),
+                    ),
+                  ),
                   child: SizedBox(
                     width: 40.0,
                     height: 40.0,
