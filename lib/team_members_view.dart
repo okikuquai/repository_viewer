@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/searchMemberInTeam.graphql.dart';
 import 'loadingAnimation.dart';
@@ -51,7 +51,11 @@ class TeamMemberList extends HookConsumerWidget {
             final TextTheme textTheme = Theme.of(context).textTheme;
             final member = members[index]!.node;
             return GestureDetector(
-              onTap: () => launchUrl(Uri.parse(member.url)),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserView(userID: member.id),
+                ),
+              ),
               child: Card(
                 child: Row(
                   children: [
