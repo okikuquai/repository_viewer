@@ -11,6 +11,8 @@ class FavoriteRepositories {
 
   /// save list from prefs
   static Future<void> save() async {
+    //重複を削除
+    value = value.toSet().toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList(_saveKey, value);
   }

@@ -191,9 +191,10 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   final List<String> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<String> ids = List.from(githubStarredIds)
+    List<String> ids = List.from(githubStarredIds)
       ..addAll(FavoriteRepositories.value);
-
+    //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
+    ids = ids.toSet().toList();
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
       Options$Query$getRepositoryInfoFromMultipleIDs(
           variables:
