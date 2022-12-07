@@ -25,7 +25,11 @@ class UserView extends HookConsumerWidget {
           appBar: AppBar(title: const Text("Loading...")),
           body: loadingAnimation());
     } else if (qryResult.result.hasException) {
-      return Text(qryResult.result.exception.toString());
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text("Exception"),
+          ),
+          body: Text(qryResult.result.exception.toString()));
     } else if (qryResult.result.parsedData?.node != null) {
       final user = qryResult.result.parsedData!.node! as Fragment$UserInfo;
       final starredRepositories = user.starredRepositories.edges;

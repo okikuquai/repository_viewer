@@ -1,0 +1,12 @@
+query getOrganizationList($first: Int!) {
+  viewer {
+    organizations (first: $first){
+      edges {
+        node {
+          id,
+          name
+        }
+      }
+    }
+  }
+}
