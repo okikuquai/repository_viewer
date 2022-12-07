@@ -3,7 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/starred_repositories.dart';
 
-import './organization_teamlist_view.dart';
+import 'organization_teamlist_view.dart';
 
 void main() async {
   //終了を待たないとHive.Openbox()を呼ぶ前にMyAppの方でクエリを呼び出してしまうのでawaitをつける
@@ -22,6 +22,18 @@ class AppEntry extends StatefulWidget {
 
 class _AppEntry extends State<AppEntry> {
   @override
-  Widget build(BuildContext context) =>
-      const ProviderScope(child: OrgTeamList(orgName: "nml-nakameguro"));
+  Widget build(BuildContext context) {
+    //   return FutureBuilder(
+    //       future: githubSetting.organization,
+    //       builder: (context, snapshot) {
+    //         if (snapshot.hasData) {
+    //           return ProviderScope(child: OrgTeamList(orgName: snapshot.data!));
+    //         } else {
+    //           return loadingAnimation();
+    //         }
+    //       });
+    // }
+
+    return const ProviderScope(child: OrgTeamList());
+  }
 }

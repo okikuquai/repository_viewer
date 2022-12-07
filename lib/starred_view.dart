@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:graphql/client.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/repository_view.dart';
@@ -20,7 +21,7 @@ class StarredRepositories extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getStarredRepositories(
-      Options$Query$getStarredRepositories(),
+      Options$Query$getStarredRepositories(fetchPolicy: FetchPolicy.noCache),
     );
 
     //ロード完了していない場合

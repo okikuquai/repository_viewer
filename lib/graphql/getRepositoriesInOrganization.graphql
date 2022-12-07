@@ -1,0 +1,22 @@
+query getRepositoriesInOrganization($orgName: String!, $first: Int!, $after: String) {
+  organization(login: $orgName){
+    repositories(
+      first: $first,
+      after: $after){
+      pageInfo{
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      edges{
+        node{
+          id,
+          name,
+          description,
+          url
+        }
+      }
+    }
+  }
+}
