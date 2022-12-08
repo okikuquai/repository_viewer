@@ -7,8 +7,8 @@ import 'package:repositoryviewer/orgnization_repository_view.dart';
 import 'package:repositoryviewer/settings_view.dart';
 import 'package:repositoryviewer/starred_view.dart';
 
-class OrgTeamList extends HookConsumerWidget {
-  const OrgTeamList({Key? key}) : super(key: key);
+class TopPage extends HookConsumerWidget {
+  const TopPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

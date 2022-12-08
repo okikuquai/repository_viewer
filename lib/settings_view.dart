@@ -82,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const GetViewerID(),
+                      builder: (context) => const Navigate2UserView(),
                     ),
                   );
                 }),
@@ -180,8 +180,8 @@ class SelectOrganizationView extends HookConsumerWidget {
   }
 }
 
-class GetViewerID extends HookConsumerWidget {
-  const GetViewerID({super.key});
+class Navigate2UserView extends HookConsumerWidget {
+  const Navigate2UserView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
