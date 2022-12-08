@@ -322,12 +322,3 @@ class _SideStarIconButton extends State<SideStarIconButton> {
         });
   }
 }
-
-// class SideStarIconButton extends StatelessWidget {
-//   const SideStarIconButton({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Icon(Icons.star, color: Colors.yellow);
-//   }
-// }

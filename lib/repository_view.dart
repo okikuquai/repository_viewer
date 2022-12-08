@@ -23,10 +23,7 @@ class RepositoryView extends HookConsumerWidget {
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
-      return Scaffold(
-          appBar: RepositoryViewAppbar(
-              repositoryID: repositoryID, repositoryName: "Repository"),
-          body: loadingAnimation());
+      return loadingAnimationWithAppbar();
     } else if (repoData.result.hasException) {}
 
     if (repoData.result.parsedData != null) {
