@@ -90,7 +90,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 
     if (qryResult.result.parsedData?.nodes != null) {
       final repositories = qryResult.result.parsedData!.nodes;
-
+      final favState = useState(FavoriteRepositories.value);
       return ListView.builder(
           itemCount: repositories.length,
           itemBuilder: (context, index) {
@@ -101,7 +101,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
             return Card(
               child: ListTile(
                   trailing: SideFavoriteIconButton(
-                      id: FavoriteRepositories.value
+                      id: favState.value
                           .firstWhere((element) => element == repository.id)),
                   title: Text(
                     name,
@@ -118,7 +118,8 @@ class LocalFavoriteCardList extends HookConsumerWidget {
                             RepositoryView(repositoryID: repository.id),
                       ),
                     );
-                    useState(() {});
+                    //再レンダリングのためstateをクリアする（超パワープレー）
+                    favState.value = <String>[];
                   }),
             );
           });
@@ -176,7 +177,6 @@ class GithubStarredCardList extends HookConsumerWidget {
                             RepositoryView(repositoryID: repository.id),
                       ),
                     );
-                    useState(() {});
                   }),
             );
           });
@@ -213,7 +213,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
 
     if (qryResult.result.parsedData?.nodes != null) {
       final repositories = qryResult.result.parsedData!.nodes;
-
+      final favState = useState(FavoriteRepositories.value);
       return ListView.builder(
           itemCount: ids.length,
           itemBuilder: (context, index) {
@@ -223,13 +223,13 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
             final description = repository.description;
             return Card(
               child: ListTile(
-                  trailing: FavoriteRepositories.value
+                  trailing: favState.value
                           .where((element) => element == repository.id)
-                          .isEmpty
-                      ? const SideStarIconButton()
-                      : SideFavoriteIconButton(
+                          .isNotEmpty
+                      ? SideFavoriteIconButton(
                           id: ids.firstWhere(
-                              (element) => element == repository.id)),
+                              (element) => element == repository.id))
+                      : const SideStarIconButton(),
                   title: Text(
                     name,
                     style: textTheme.headline5,
@@ -245,7 +245,8 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
                             RepositoryView(repositoryID: repository.id),
                       ),
                     );
-                    useState(() {});
+                    //再レンダリングのためstateをクリアする（超パワープレー）
+                    favState.value = <String>[];
                   }),
             );
           });
@@ -290,35 +291,11 @@ class _SideFavoriteIconButton extends State<SideFavoriteIconButton> {
   }
 }
 
-class SideStarIconButton extends StatefulWidget {
+class SideStarIconButton extends StatelessWidget {
   const SideStarIconButton({Key? key}) : super(key: key);
-  @override
-  createState() => _SideStarIconButton();
-}
-
-class _SideStarIconButton extends State<SideStarIconButton> {
-  var dispIcon = Icons.star;
-  Color? dispColor = Colors.yellow;
 
   @override
   Widget build(BuildContext context) {
-    void toggleIconColor() {
-      setState(() {
-        if (dispIcon == Icons.star) {
-          dispIcon = Icons.star_border;
-          dispColor = null;
-        } else {
-          dispIcon = Icons.star;
-          dispColor = Colors.yellow;
-        }
-      });
-    }
-
-    return GestureDetector(
-        child: Icon(dispIcon, color: dispColor),
-        onTap: () {
-          //starを外した時の動作はカードが消えるだけなのでfalseの処理はない
-          toggleIconColor();
-        });
+    return const Icon(Icons.star, color: Colors.yellow);
   }
 }

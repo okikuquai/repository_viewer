@@ -123,17 +123,13 @@ class TokenInputDialog extends StatelessWidget {
         },
       ),
       actions: <Widget>[
-        MaterialButton(
-          color: Colors.white,
-          textColor: Colors.blue,
+        TextButton(
           child: const Text('キャンセル'),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        MaterialButton(
-            color: Colors.white,
-            textColor: Colors.blue,
+        TextButton(
             child: const Text('OK'),
             onPressed: () {
               GithubSetting.setToken(valueText);

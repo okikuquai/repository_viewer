@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/restapi/contributer.dart';
 import 'package:repositoryviewer/starred_repositories.dart';
 import 'package:repositoryviewer/user_view.dart';
 
-import './graphql/getRepositoryCollaboratorFromID.graphql.dart';
 import './graphql/getRepositoryInfoFromID.graphql.dart';
 import './graphql/getRepositoryReadmeFromID.graphql.dart';
 import 'loadingAnimation.dart';
@@ -113,12 +113,12 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
             child: Text(widget.repositoryName, style: textTheme.headline4)),
         ExpansionTile(
           initiallyExpanded: true,
-          title: Text("Collaborator", style: textTheme.headline5),
+          title: Text("Contributors", style: textTheme.headline5),
           children: [
             Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: CollaboratorsView(
-                  repositoryID: widget.repositoryID,
+                child: ContributorsView(
+                  repositoryName: widget.repositoryName,
                 )),
           ],
         ),
@@ -167,52 +167,42 @@ class MarkDownView extends HookConsumerWidget {
   }
 }
 
-class CollaboratorsView extends HookConsumerWidget {
-  const CollaboratorsView({Key? key, required this.repositoryID})
+class ContributorsView extends StatelessWidget {
+  const ContributorsView({Key? key, required this.repositoryName})
       : super(key: key);
-  final String repositoryID;
-
+  final String repositoryName;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getRepositoryCollaboratorFromID(
-      Options$Query$getRepositoryCollaboratorFromID(
-          fetchPolicy: FetchPolicy.noCache,
-          variables: Variables$Query$getRepositoryCollaboratorFromID(
-              id: repositoryID)),
-    );
-
-    if (qryResult.result.isLoading) {
-      return loadingAnimation();
-    } else if (qryResult.result.hasException) {
-      return const Text("閲覧権限がありません！");
-    } else if (qryResult.result.parsedData?.node != null) {
-      final repository =
-          qryResult.result.parsedData!.node! as Fragment$Collaborator;
-      final collaborators = repository.collaborators!.edges!;
-      return Wrap(
-        spacing: 5,
-        children: collaborators
-            .map((e) => GestureDetector(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserView(userID: e.node.id),
-                    ),
-                  ),
-                  child: SizedBox(
-                    width: 40.0,
-                    height: 40.0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: NetworkImage(e!.node.avatarUrl))),
-                    ),
-                  ),
-                ))
-            .toList(),
-      );
-    }
-    return const Text("null");
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: getContributor(repositoryName),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return Wrap(
+              spacing: 5,
+              children: snapshot.data!
+                  .map((e) => GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UserView(userID: e['node_id']),
+                          ),
+                        ),
+                        child: SizedBox(
+                          width: 40.0,
+                          height: 40.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: NetworkImage(e['avatar_url']))),
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            );
+          }
+          return loadingAnimation();
+        });
   }
 }
