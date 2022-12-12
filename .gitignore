@@ -345,7 +345,6 @@ fabric.properties
 macos
 windows
 linux
-ios
 web
 assets/secret_token.json
 lib/graphql/schema.graphql
