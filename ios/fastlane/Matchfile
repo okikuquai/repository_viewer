@@ -1,0 +1,5 @@
+git_url("git@github.com:okikuquai/fastlane-certificates-ios.git")
+type("enterprise")
+app_identifier("com.example.repositoryviewer")
+username("yuki-kikuchi@mail.nissan.co.jp")
+team_id("UB98SLR8TL")
