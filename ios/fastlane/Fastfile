@@ -17,15 +17,31 @@ default_platform(:ios)
 
 platform :ios do
   lane :deploy do
-
+    # keycgainの作成
+    create_temporary_keychain
+    # 証明書周りの処理
     match(
       type: "enterprise",
       app_identifier: "com.example.repositoryviewer",
       readonly: true
     )
-
+    # ipaファイルを生成
     gym(
       scheme: "Runner"
     )
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID"],
+      groups: ENV["FIREBASE_DISTRIBUTION_DESTINATION"],
+      release_notes: "auto released at fastlane"
+    )
+  end
+  private_lane :create_temporary_keychain do
+    if ENV["MATCH_KEYCHAIN_NAME"] && ENV["MATCH_KEYCHAIN_PASSWORD"]
+      create_keychain(
+        name: ENV["MATCH_KEYCHAIN_NAME"],
+        password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+        timeout: 3600
+      )
+    end
   end
 end

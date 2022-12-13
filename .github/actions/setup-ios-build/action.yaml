@@ -1,0 +1,18 @@
+name: 'Setup iOS build environment'
+description: 'Setup Xcode and install CocoaPods dependencies'
+runs:
+  using: 'composite'
+  steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '14.1'
+
+    - name: Populate Flutter tool's cache
+      shell: bash
+      # `flutter precache` is required to run `pod install` manually at the next step
+      run: fvm flutter precache --ios
+
+    - name: Install CocoaPods dependencies
+      shell: bash
+      working-directory: ./ios
+      run: pod install

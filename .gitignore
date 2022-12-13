@@ -348,7 +348,7 @@ linux
 web
 assets/secret_token.json
 lib/graphql/schema.graphql
-lib/graphql/*.dart
+lib/graphql/schema.graphql.dart
 
 **/.DS_Store
 #lib/.DS_Store
