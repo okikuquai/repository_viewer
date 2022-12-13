@@ -1,0 +1,27 @@
+name: 'Setup Flutter'
+description: 'Setup Flutter SDK and install pub dependencies'
+runs:
+  using: 'composite'
+  steps:
+    - uses: dart-lang/setup-dart@v1
+
+    - name: Cache Flutter
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/fvm/versions
+        key: ${{ runner.os }}-fvm-${{ hashFiles('.fvm/fvm_config.json') }}
+
+    - name: Install fvm
+      shell: bash
+      run: dart pub global activate fvm
+
+    - name: Install Flutter
+      shell: bash
+      run: fvm install
+
+    - name: Get pub dependencies
+      shell: bash
+      run: |
+        fvm flutter pub get
+        export PATH="$PATH":"$HOME/.pub-cache/bin"

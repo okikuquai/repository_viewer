@@ -5,17 +5,27 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000382">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000172">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: match" time="3.120625">
+      <testcase classname="fastlane.lanes" name="1: Switch to ios create_temporary_keychain lane" time="0.000108">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: gym" time="171.53543">
+      <testcase classname="fastlane.lanes" name="2: match" time="4.603653">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: gym" time="73.160626">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: firebase_app_distribution" time="7.091449">
         
       </testcase>
     

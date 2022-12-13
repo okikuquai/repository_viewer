@@ -5,19 +5,76 @@ on:
       - main
 
 jobs:
-  build:
+  android-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v2
+
+      - uses: ./.github/actions/setup-flutter
+      - uses: ./.github/actions/setup-android-build
+      - name: Build Android app
+        run: |
+          fvm flutter build apk --release \
+            --target lib/main.dart \
+            --dart-define=Github_DefaultToken=${{ secrets.GH_TOKEN_DEFAULT }} \
+            --dart-define=Github_DefaultOrganization=${{ secrets.GH_ORGANIZATION_DEFAULT }}
+      - name: Upload Android App to Firebase Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.4.0
         with:
-          flutter-version: '3.3.8'
-      - run: flutter pub get
-      - run: flutter build apk --info
-      - name: Deploy Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{secrets.FIREBASE_DEV_APP_ID}}
+          appId: ${{secrets.FIREBASE_APP_ID_ANDROID}}
           token: ${{secrets.FIREBASE_TOKEN}}
           groups: developer
-          file: app/build/outputs/apk/debug/app.apk
+          file: build/app/outputs/flutter-apk/app-release.apk
+
+  ios-build:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install SSH key for fastlane match
+        # Copied from https://github.com/maddox/actions/blob/master/ssh/entrypoint.sh
+        run: |
+          SSH_PATH="$HOME/.ssh"
+
+          mkdir -p "$SSH_PATH"
+          touch "$SSH_PATH/known_hosts"
+          touch "$SSH_PATH/id_rsa"
+
+          echo "$PRIVATE_KEY" > "$SSH_PATH/id_rsa"
+
+          chmod 700 "$SSH_PATH"
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 600 "$SSH_PATH/known_hosts"
+          chmod 600 "$SSH_PATH/id_rsa"
+
+          eval $(ssh-agent)
+          ssh-add "$SSH_PATH/id_rsa"
+        env:
+          # 3: 秘匿情報の受け渡し
+          PRIVATE_KEY: ${{ secrets.SSH_SECRET }}
+      - uses: ./.github/actions/setup-flutter
+
+      - uses: ./.github/actions/setup-ios-build
+
+      - name: Set up Ruby and bundle install
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          working-directory: ./ios
+
+      - name: Build and deploy iOS app
+        env:
+          #
+          MATCH_KEYCHAIN_NAME: temp_name
+          MATCH_KEYCHAIN_PASSWORD: temp_password
+          # fastlane initで設定したmatchで自動生成されたリポジトリのパスワード
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_IOS }}
+          FIREBASE_DISTRIBUTION_DESTINATION: tester
+        run: |
+          fvm flutter build ios --release \
+            --config-only \
+            --target lib/main.dart \
+            --dart-define=Github_DefaultToken=${{ secrets.GH_TOKEN_DEFAULT }} \
+            --dart-define=Github_DefaultOrganization=${{ secrets.GH_ORGANIZATION_DEFAULT }}
+          cd ios && bundle exec fastlane deploy
