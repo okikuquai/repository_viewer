@@ -5,13 +5,6 @@ runs:
   steps:
     - uses: dart-lang/setup-dart@v1
 
-    - name: Cache Flutter
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/fvm/versions
-        key: ${{ runner.os }}-fvm-${{ hashFiles('.fvm/fvm_config.json') }}
-
     - name: Install fvm
       shell: bash
       run: dart pub global activate fvm
