@@ -3,11 +3,11 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/restapi/contributer.dart';
-import 'package:repositoryviewer/starred_repositories.dart';
 import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/getRepositoryInfoFromID.graphql.dart';
 import './graphql/getRepositoryReadmeFromID.graphql.dart';
+import 'favorite_heart_button.dart';
 import 'loadingAnimation.dart';
 
 class RepositoryView extends HookConsumerWidget {
@@ -44,50 +44,24 @@ class RepositoryView extends HookConsumerWidget {
   }
 }
 
-class RepositoryViewAppbar extends StatefulWidget with PreferredSizeWidget {
+class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
   const RepositoryViewAppbar(
       {Key? key, required this.repositoryID, required this.repositoryName})
       : super(key: key);
   final String repositoryID;
   final String repositoryName;
-
-  @override
-  createState() => _RepositoryViewAppbar();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-
-class _RepositoryViewAppbar extends State<RepositoryViewAppbar> {
   @override
   Widget build(BuildContext context) {
-    bool isFavorite = FavoriteRepositories.value
-        .where((element) => element == widget.repositoryID)
-        .isNotEmpty;
-    void setFavorite() {
-      setState(() {
-        isFavorite != isFavorite;
-      });
-      if (isFavorite) {
-        FavoriteRepositories.value
-            .removeWhere((element) => element == widget.repositoryID);
-      } else {
-        FavoriteRepositories.addItem(widget.repositoryID);
-      }
-    }
-
     return AppBar(
-      title: Text(widget.repositoryName),
+      title: Text(repositoryName),
       actions: [
-        IconButton(
-            onPressed: () {
-              setFavorite();
-            },
-            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-            color: isFavorite ? Colors.red : Colors.white)
+        StarredButton(id: repositoryID),
       ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class RepositoryViewBody extends StatefulWidget {

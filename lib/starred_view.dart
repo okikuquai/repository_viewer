@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 // Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/repository_view.dart';
 import 'package:repositoryviewer/starred_repositories.dart';
 
 import './graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
 import './graphql/getStarredRepositories.graphql.dart';
 import 'loadingAnimation.dart';
+import 'repository_card.dart';
 
 class StarredRepositories extends HookConsumerWidget {
   const StarredRepositories({Key? key}) : super(key: key);
@@ -90,38 +89,16 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 
     if (qryResult.result.parsedData?.nodes != null) {
       final repositories = qryResult.result.parsedData!.nodes;
-      final favState = useState(FavoriteRepositories.value);
       return ListView.builder(
           itemCount: repositories.length,
           itemBuilder: (context, index) {
-            final TextTheme textTheme = Theme.of(context).textTheme;
             final repository = repositories[index] as Fragment$RepositoryData;
+            final id = repository.id;
             final name = repository.name;
-            final description = repository.description;
-            return Card(
-              child: ListTile(
-                  trailing: SideFavoriteIconButton(
-                      id: favState.value
-                          .firstWhere((element) => element == repository.id)),
-                  title: Text(
-                    name,
-                    style: textTheme.headline5,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(description ?? "no description",
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            RepositoryView(repositoryID: repository.id),
-                      ),
-                    );
-                    //再レンダリングのためstateをクリアする（超パワープレー）
-                    favState.value = <String>[];
-                  }),
-            );
+            final description = repository.description ?? "No Description";
+
+            return RepositoryCard(
+                id: id, title: name, description: description);
           });
     }
     return const Text("no Repositories");
@@ -155,30 +132,14 @@ class GithubStarredCardList extends HookConsumerWidget {
       return ListView.builder(
           itemCount: repositories.length,
           itemBuilder: (context, index) {
-            final TextTheme textTheme = Theme.of(context).textTheme;
             final repository = repositories[index] as Fragment$RepositoryData;
             final name = repository.name;
-            final description = repository.description;
-            return Card(
-              child: ListTile(
-                  trailing: const SideStarIconButton(),
-                  title: Text(
-                    name,
-                    style: textTheme.headline5,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(description ?? "no description",
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            RepositoryView(repositoryID: repository.id),
-                      ),
-                    );
-                  }),
-            );
+            final description = repository.description ?? "No Description";
+            return RepositoryCard(
+                id: repository.id,
+                title: name,
+                description: description,
+                isStarredinGithub: true);
           });
     }
     return const Text("no Repositories");
@@ -213,81 +174,24 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
 
     if (qryResult.result.parsedData?.nodes != null) {
       final repositories = qryResult.result.parsedData!.nodes;
-      final favState = useState(FavoriteRepositories.value);
+      //再構築は不要だけどあたいが欲しいのでref.watchで宣言
+      final favStates = FavoriteRepositories.value;
       return ListView.builder(
           itemCount: ids.length,
           itemBuilder: (context, index) {
-            final TextTheme textTheme = Theme.of(context).textTheme;
             final repository = repositories[index] as Fragment$RepositoryData;
             final name = repository.name;
-            final description = repository.description;
-            return Card(
-              child: ListTile(
-                  trailing: favState.value
-                          .where((element) => element == repository.id)
-                          .isNotEmpty
-                      ? SideFavoriteIconButton(
-                          id: ids.firstWhere(
-                              (element) => element == repository.id))
-                      : const SideStarIconButton(),
-                  title: Text(
-                    name,
-                    style: textTheme.headline5,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  subtitle: Text(description ?? "no description",
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            RepositoryView(repositoryID: repository.id),
-                      ),
-                    );
-                    //再レンダリングのためstateをクリアする（超パワープレー）
-                    favState.value = <String>[];
-                  }),
-            );
+            final description = repository.description ?? "No Description";
+            final favState =
+                favStates.where((element) => element == repository.id).isEmpty;
+            return RepositoryCard(
+                id: repository.id,
+                title: name,
+                description: description,
+                isStarredinGithub: favState);
           });
     }
     return const Text("no Repositories");
-  }
-}
-
-class SideFavoriteIconButton extends StatefulWidget {
-  const SideFavoriteIconButton({Key? key, required this.id}) : super(key: key);
-  final String id;
-  @override
-  createState() => _SideFavoriteIconButton();
-}
-
-class _SideFavoriteIconButton extends State<SideFavoriteIconButton> {
-  @override
-  Widget build(BuildContext context) {
-    var dispIcon = Icons.favorite;
-    Color? dispColor = Colors.red;
-    if (FavoriteRepositories.value
-        .where((element) => element == widget.id)
-        .isEmpty) {
-      dispIcon = Icons.favorite_border;
-      dispColor = null;
-    }
-
-    void setUnFavorite() {
-      setState(() {
-        dispIcon = Icons.favorite_border;
-        dispColor = Colors.white;
-      });
-      FavoriteRepositories.value.removeWhere((element) => element == widget.id);
-    }
-
-    return GestureDetector(
-        child: Icon(dispIcon, color: dispColor),
-        onTap: () {
-          //starを外した時の動作はカードが消えるだけなのでfalseの処理はない
-          setUnFavorite();
-        });
   }
 }
 
@@ -296,6 +200,10 @@ class SideStarIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Icon(Icons.star, color: Colors.yellow);
+    return const SizedBox(
+      width: 48,
+      height: 48,
+      child: Icon(Icons.star, color: Colors.yellow),
+    );
   }
 }
