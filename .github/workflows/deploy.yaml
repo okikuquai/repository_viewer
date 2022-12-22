@@ -30,6 +30,7 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
+      # github(Matchfileで指定した秘密鍵があるリポジトリにgithub actionのvmがpushできるようにするためのSSH設定)
       - name: Install SSH key for fastlane match
         # Copied from https://github.com/maddox/actions/blob/master/ssh/entrypoint.sh
         run: |
@@ -49,7 +50,7 @@ jobs:
           eval $(ssh-agent)
           ssh-add "$SSH_PATH/id_rsa"
         env:
-          # 3: 秘匿情報の受け渡し
+          # 秘匿情報の受け渡し
           PRIVATE_KEY: ${{ secrets.SSH_SECRET }}
       - uses: ./.github/actions/setup-flutter
 
@@ -63,14 +64,15 @@ jobs:
 
       - name: Build and deploy iOS app
         env:
-          #
+          # matchで生成するkeychainのnameとpw(任意でOK)
           MATCH_KEYCHAIN_NAME: temp_name
           MATCH_KEYCHAIN_PASSWORD: temp_password
           # fastlane initで設定したmatchで自動生成されたリポジトリのパスワード
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          # firebaseの認証関係（App IDとToken）
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_IOS }}
-          FIREBASE_DISTRIBUTION_DESTINATION: tester
+          FIREBASE_DISTRIBUTION_DESTINATION: developer
         run: |
           fvm flutter build ios --release \
             --config-only \
