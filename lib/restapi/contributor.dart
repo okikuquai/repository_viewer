@@ -2,12 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:repositoryviewer/client.dart';
 
 Future<List<dynamic>> getContributor(String repo) async {
+  final githubClientInfo = GithubSetting();
   try {
     var res = await Dio().get(
-        "https://api.github.com/repos/${await GithubSetting.organization}/$repo/contributors",
+        "https://api.github.com/repos/${await githubClientInfo.loadOrganization()}/$repo/contributors",
         options: Options(headers: {
           "Accept": "application/vnd.github+json",
-          "Authorization": "Bearer ${await GithubSetting.token}",
+          "Authorization": "Bearer ${await githubClientInfo.loadToken()}",
           "X-GitHub-Api-Version": "2022-11-28"
         }));
     if (res.statusCode == 200) {
