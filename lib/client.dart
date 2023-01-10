@@ -17,8 +17,6 @@ class GithubSetting {
     return val;
   }
 
-  static void SetToken() {}
-
   static setToken(String tokenval) {
     _save(_saveKey_token, tokenval);
     updateToken();
