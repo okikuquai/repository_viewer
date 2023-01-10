@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/client.dart';
@@ -8,37 +9,38 @@ import './graphql/getRepositoriesInOrganization.graphql.dart';
 import 'loadingAnimation.dart';
 import 'repository_card.dart';
 
-class OrganizationRepositoryListHome extends StatelessWidget {
+class OrganizationRepositoryListHome extends HookConsumerWidget {
   const OrganizationRepositoryListHome({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: GithubSetting.organization,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            final orgName = snapshot.data ?? "nml-nakameguro";
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text(orgName),
-                  actions: [
-                    IconButton(
-                        onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => OrgMemberList(
-                                  orgName: orgName,
-                                ),
-                              ),
-                            ),
-                        icon: const Icon(Icons.groups))
-                  ],
-                ),
-                body: OrganizationRepositoryBody(
-                  orgName: orgName,
-                ));
-          }
-          return loadingAnimation();
-        });
+  Widget build(BuildContext context, WidgetRef ref) {
+    final githubClientInfo = GithubSetting();
+
+    final githubOrganizationLoadingState =
+        useFuture(useMemoized(() => githubClientInfo.loadOrganization()));
+    if (!githubOrganizationLoadingState.hasData) {
+      return LoadingAnimation();
+    }
+
+    final organization = githubOrganizationLoadingState.data!;
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(organization),
+          actions: [
+            IconButton(
+                onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => OrgMemberList(
+                          orgName: organization,
+                        ),
+                      ),
+                    ),
+                icon: const Icon(Icons.groups))
+          ],
+        ),
+        body: OrganizationRepositoryBody(
+          orgName: organization,
+        ));
   }
 }
 

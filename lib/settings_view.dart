@@ -9,12 +9,13 @@ import './graphql/getOrganizationList.graphql.dart';
 import './graphql/getViewerID.graphql.dart';
 import 'loadingAnimation.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends HookConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
+    final favoriteRepositoriesState = ref.read(FavoriteRepositoryProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -35,7 +36,7 @@ class SettingsScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {
-                  FavoriteRepositories.value.clear();
+                  favoriteRepositoriesState.clear();
                 }),
             ListTile(
                 title: Text(
@@ -113,6 +114,7 @@ class TokenInputDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final githubClientInfo = GithubSetting();
     String valueText = "";
     return AlertDialog(
       title: const Text("Tokenを入力して下さい"),
@@ -132,7 +134,7 @@ class TokenInputDialog extends StatelessWidget {
         TextButton(
             child: const Text('OK'),
             onPressed: () {
-              GithubSetting.setToken(valueText);
+              githubClientInfo.setToken(valueText);
               Navigator.pop(context);
             }),
       ],
@@ -145,6 +147,8 @@ class SelectOrganizationView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final githubClientInfo = GithubSetting();
+
     final qryResult = useQuery$getOrganizationList(
         Options$Query$getOrganizationList(
             fetchPolicy: FetchPolicy.noCache,
@@ -164,7 +168,7 @@ class SelectOrganizationView extends HookConsumerWidget {
           children: organizationNames!
               .map((e) => SimpleDialogOption(
                     onPressed: () {
-                      GithubSetting.setOrganization(e.node!.name ?? "");
+                      githubClientInfo.setOrganization(e.node!.name ?? "");
                       Navigator.pop(context, 1);
                     },
                     child: Text(e!.node!.name ?? "no Name"),
@@ -184,7 +188,7 @@ class Navigate2UserView extends HookConsumerWidget {
     final qryResult = useQuery$getViewerID();
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimationWithAppbar();
+      return LoadingAnimationWithAppbar();
     } else if (qryResult.result.hasException) {
       //例外スローした場合
       return AlertDialog(

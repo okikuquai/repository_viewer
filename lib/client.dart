@@ -1,51 +1,77 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GithubSetting {
-  static const String _saveKey_token = "githubtoken";
-  static const String _saveKey_organization = "githuborganization";
-
-  static Future<String> get token async {
-    var val = await _load(_saveKey_token);
-    if (val == null) {
-      return getTokenFromJson();
+  GithubSetting({this.initialToken, this.initialOrganization}) {
+    loadToken();
+    if (initialToken != null) {
+      _token = initialToken!;
     }
-    return val;
+  }
+  static const String saveKeyToken = "githubtoken";
+  static const String saveKeyOrganization = "githuborganization";
+
+  final String? initialToken;
+  final String? initialOrganization;
+  String _token = "";
+
+  Future<String> loadToken() async {
+    var env = const String.fromEnvironment('Github_DefaultToken');
+    if (env != "") {
+      _token = env;
+      return _token;
+    }
+    var local = await _load(saveKeyToken);
+    if (local != null) {
+      _token = local;
+      return _token;
+    }
+    return "";
   }
 
-  static setToken(String tokenval) {
-    _save(_saveKey_token, tokenval);
-    updateToken();
+  setToken(String tokenval) {
+    _save(saveKeyToken, tokenval);
+    updateToken(tokenval);
   }
 
-  static Future<String> get organization async {
-    var val = await _load(_saveKey_organization);
+  Future<String> loadOrganization() async {
+    var val = await _load(saveKeyOrganization);
     if (val == null) {
       return "nml-nakameguro";
     }
     return val;
   }
 
-  static setOrganization(String orgval) {
-    _save(_saveKey_organization, orgval);
+  setOrganization(String orgval) {
+    _save(saveKeyOrganization, orgval);
   }
 
   /// save list from prefs
-  static Future<void> _save(String key, String saveString) async {
+  Future<void> _save(String key, String saveString) async {
     //重複を削除
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, saveString);
   }
 
   /// load list from prefs
-  static Future<String?> _load(String key) async {
+  Future<String?> _load(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
   }
+}
+
+Link getGraphQLAuthLink(String token) {
+  //エンドポイント
+  final HttpLink httpLink = HttpLink(
+    'https://api.github.com/graphql',
+  );
+
+  //token (githubから取得)
+  final AuthLink authLink = AuthLink(
+    getToken: () async => 'Bearer ${token}',
+  );
+  return authLink.concat(httpLink);
 }
 
 ValueNotifier<GraphQLClient> client = ValueNotifier(
@@ -57,38 +83,13 @@ ValueNotifier<GraphQLClient> client = ValueNotifier(
         cacheReread: CacheRereadPolicy.ignoreAll,
       ),
     ),
-    link: getGraphQLAuthLink(),
+    link:
+        getGraphQLAuthLink(const String.fromEnvironment('Github_DefaultToken')),
     cache: GraphQLCache(store: HiveStore()),
   ),
 );
 
-//JsonファイルからTokenを取得
-Future<String> getTokenFromJson() async {
-  String loadData = await rootBundle.loadString('assets/secret_settings.json');
-  final jsonResponse = json.decode(loadData);
-  return jsonResponse["Token"] ?? "";
-}
-
-Future<String> getOrganizationNameFromJson() async {
-  String loadData = await rootBundle.loadString('assets/secret_settings.json');
-  final jsonResponse = json.decode(loadData);
-  return jsonResponse["OrganizationName"] ?? "";
-}
-
-Link getGraphQLAuthLink() {
-  //エンドポイント
-  final HttpLink httpLink = HttpLink(
-    'https://api.github.com/graphql',
-  );
-
-  //token (githubから取得)
-  final AuthLink authLink = AuthLink(
-    getToken: () async => 'Bearer ${await GithubSetting.token}',
-  );
-  return authLink.concat(httpLink);
-}
-
-Future<void> updateToken() async {
+Future<void> updateToken(String token) async {
   client.value = GraphQLClient(
     defaultPolicies: DefaultPolicies(
       watchMutation: Policies(
@@ -97,7 +98,7 @@ Future<void> updateToken() async {
         cacheReread: CacheRereadPolicy.ignoreAll,
       ),
     ),
-    link: getGraphQLAuthLink(),
+    link: getGraphQLAuthLink(token),
     cache: GraphQLCache(store: HiveStore()),
   );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/repository_view.dart';
@@ -14,6 +15,16 @@ class UserView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorTheme = Theme.of(context).primaryColor;
+    final favoriteRepositoriesState =
+        ref.read(FavoriteRepositoryProvider.notifier);
+
+    final favoriteRepositoriesvalueinfo =
+        useMemoized(() => favoriteRepositoriesState.value);
+    final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
+    if (!favoriteRepositoriesvalue.hasData) {
+      return LoadingAnimation();
+    }
+
     final qryResult = useQuery$getUserInfoFromID(
       Options$Query$getUserInfoFromID(
           fetchPolicy: FetchPolicy.noCache,
@@ -23,7 +34,7 @@ class UserView extends HookConsumerWidget {
     if (qryResult.result.isLoading) {
       return Scaffold(
           appBar: AppBar(title: const Text("Loading...")),
-          body: loadingAnimation());
+          body: LoadingAnimation());
     } else if (qryResult.result.hasException) {
       return Scaffold(
           appBar: AppBar(
@@ -39,7 +50,7 @@ class UserView extends HookConsumerWidget {
       });
 
       if (user.isViewer) {
-        ids.addAll(FavoriteRepositories.value);
+        ids.addAll(favoriteRepositoriesvalue.data!);
         //重複消去
         ids = ids.toSet().toList();
       }
@@ -95,7 +106,7 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return SliverList(delegate: SliverChildBuilderDelegate((context, index) {
-        return loadingAnimation();
+        return LoadingAnimation();
       }));
     }
     //例外スローした場合

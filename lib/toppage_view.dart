@@ -7,15 +7,39 @@ import 'package:repositoryviewer/orgnization_repository_view.dart';
 import 'package:repositoryviewer/settings_view.dart';
 import 'package:repositoryviewer/starred_view.dart';
 
+import 'loadingAnimation.dart';
+
 class TopPage extends HookConsumerWidget {
   const TopPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pageState = useState(0);
+    final githubClientInfo = GithubSetting(
+        initialToken: const String.fromEnvironment('Github_DefaultToken'),
+        initialOrganization:
+            const String.fromEnvironment('Github_DefaultOrganization'));
 
-    //接続用のclientクラスを作成
-
+    final githubTokenLoadingState =
+        useFuture(useMemoized(() => githubClientInfo.loadToken()));
+    if (!githubTokenLoadingState.hasData) {
+      return LoadingAnimationWithAppbar();
+    }
+    //接続用のclientクラスのtokenを更新
+    client = ValueNotifier(
+      GraphQLClient(
+        defaultPolicies: DefaultPolicies(
+          watchMutation: Policies(
+            fetch: FetchPolicy.cacheOnly,
+            error: ErrorPolicy.none,
+            cacheReread: CacheRereadPolicy.ignoreAll,
+          ),
+        ),
+        link: getGraphQLAuthLink(githubTokenLoadingState.data!),
+        cache: GraphQLCache(store: HiveStore()),
+      ),
+    );
+    //updateToken(githubTokenLoadingState.data!);
     //GraphQLProviderでラップすることで使える
     final screens = [
       const OrganizationRepositoryListHome(),

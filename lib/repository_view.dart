@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/restapi/contributer.dart';
+import 'package:repositoryviewer/restapi/contributor.dart';
 import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/getRepositoryInfoFromID.graphql.dart';
@@ -23,7 +23,7 @@ class RepositoryView extends HookConsumerWidget {
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
-      return loadingAnimationWithAppbar();
+      return LoadingAnimationWithAppbar();
     } else if (repoData.result.hasException) {}
 
     if (repoData.result.parsedData != null) {
@@ -123,7 +123,7 @@ class MarkDownView extends HookConsumerWidget {
     );
 
     if (mdData.result.isLoading) {
-      return loadingAnimation();
+      return LoadingAnimation();
     } else if (mdData.result.hasException) {
       return const Text("exception");
     } else if (mdData.result.parsedData?.node != null) {
@@ -176,7 +176,7 @@ class ContributorsView extends StatelessWidget {
                   .toList(),
             );
           }
-          return loadingAnimation();
+          return LoadingAnimation();
         });
   }
 }
