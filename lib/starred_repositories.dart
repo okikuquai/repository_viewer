@@ -18,11 +18,9 @@ class FavoriteRepositoriesNotifier extends StateNotifier<List<String>> {
   void removeId(String id) async {
     final list = await _load();
     if (state.contains(id)) {
-      final value = [
-        for (final val in list)
-          if (val != id) val,
-      ];
-      _changeState(value);
+      list.remove(id);
+      final removedvalue = List.of(list);
+      _changeState(removedvalue);
     }
   }
 

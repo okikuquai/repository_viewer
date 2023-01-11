@@ -7,6 +7,7 @@ import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/getRepositoryInfoFromID.graphql.dart';
 import './graphql/getRepositoryReadmeFromID.graphql.dart';
+import 'client.dart';
 import 'favorite_heart_button.dart';
 import 'loadingAnimation.dart';
 
@@ -141,14 +142,18 @@ class MarkDownView extends HookConsumerWidget {
   }
 }
 
-class ContributorsView extends StatelessWidget {
+class ContributorsView extends HookConsumerWidget {
   const ContributorsView({Key? key, required this.repositoryName})
       : super(key: key);
   final String repositoryName;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ghTokenProvider = ref.read(githubTokenProvider);
+    final ghOrganizationProvider = ref.read(githubOrganizationProvider);
+
     return FutureBuilder(
-        future: getContributor(repositoryName),
+        future: getContributor(
+            repositoryName, ghTokenProvider, ghOrganizationProvider),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
             return Wrap(

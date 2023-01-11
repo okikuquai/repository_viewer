@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/client.dart';
 import 'package:repositoryviewer/organization_members_view.dart';
 
 import './graphql/getRepositoriesInOrganization.graphql.dart';
-import 'loadingAnimation.dart';
 import 'repository_card.dart';
 
 class OrganizationRepositoryListHome extends HookConsumerWidget {
@@ -14,24 +12,17 @@ class OrganizationRepositoryListHome extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final githubClientInfo = GithubSetting();
+    final ghOrganizationProvider = ref.watch(githubOrganizationProvider);
 
-    final githubOrganizationLoadingState =
-        useFuture(useMemoized(() => githubClientInfo.loadOrganization()));
-    if (!githubOrganizationLoadingState.hasData) {
-      return LoadingAnimation();
-    }
-
-    final organization = githubOrganizationLoadingState.data!;
     return Scaffold(
         appBar: AppBar(
-          title: Text(organization),
+          title: Text(ghOrganizationProvider),
           actions: [
             IconButton(
                 onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => OrgMemberList(
-                          orgName: organization,
+                          orgName: ghOrganizationProvider,
                         ),
                       ),
                     ),
@@ -39,7 +30,7 @@ class OrganizationRepositoryListHome extends HookConsumerWidget {
           ],
         ),
         body: OrganizationRepositoryBody(
-          orgName: organization,
+          orgName: ghOrganizationProvider,
         ));
   }
 }

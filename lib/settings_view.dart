@@ -109,12 +109,12 @@ class SettingsScreen extends HookConsumerWidget {
   }
 }
 
-class TokenInputDialog extends StatelessWidget {
+class TokenInputDialog extends HookConsumerWidget {
   const TokenInputDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final githubClientInfo = GithubSetting();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ghTokenNotifer = ref.read(githubTokenProvider.notifier);
     String valueText = "";
     return AlertDialog(
       title: const Text("Tokenを入力して下さい"),
@@ -134,7 +134,7 @@ class TokenInputDialog extends StatelessWidget {
         TextButton(
             child: const Text('OK'),
             onPressed: () {
-              githubClientInfo.setToken(valueText);
+              ghTokenNotifer.setValue(valueText);
               Navigator.pop(context);
             }),
       ],
@@ -147,7 +147,7 @@ class SelectOrganizationView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final githubClientInfo = GithubSetting();
+    final ghOrganizationNotifer = ref.read(githubOrganizationProvider.notifier);
 
     final qryResult = useQuery$getOrganizationList(
         Options$Query$getOrganizationList(
@@ -168,7 +168,7 @@ class SelectOrganizationView extends HookConsumerWidget {
           children: organizationNames!
               .map((e) => SimpleDialogOption(
                     onPressed: () {
-                      githubClientInfo.setOrganization(e.node!.name ?? "");
+                      ghOrganizationNotifer.setValue(e.node!.name ?? "");
                       Navigator.pop(context, 1);
                     },
                     child: Text(e!.node!.name ?? "no Name"),

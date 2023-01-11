@@ -7,26 +7,15 @@ import 'package:repositoryviewer/orgnization_repository_view.dart';
 import 'package:repositoryviewer/settings_view.dart';
 import 'package:repositoryviewer/starred_view.dart';
 
-import 'loadingAnimation.dart';
-
 class TopPage extends HookConsumerWidget {
   const TopPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pageState = useState(0);
-    final githubClientInfo = GithubSetting(
-        initialToken: const String.fromEnvironment('Github_DefaultToken'),
-        initialOrganization:
-            const String.fromEnvironment('Github_DefaultOrganization'));
-
-    final githubTokenLoadingState =
-        useFuture(useMemoized(() => githubClientInfo.loadToken()));
-    if (!githubTokenLoadingState.hasData) {
-      return LoadingAnimationWithAppbar();
-    }
+    final ghTokenProvider = ref.watch(githubTokenProvider);
     //接続用のclientクラスのtokenを更新
-    client = ValueNotifier(
+    final client = ValueNotifier(
       GraphQLClient(
         defaultPolicies: DefaultPolicies(
           watchMutation: Policies(
@@ -35,7 +24,7 @@ class TopPage extends HookConsumerWidget {
             cacheReread: CacheRereadPolicy.ignoreAll,
           ),
         ),
-        link: getGraphQLAuthLink(githubTokenLoadingState.data!),
+        link: getGraphQLAuthLink(ghTokenProvider),
         cache: GraphQLCache(store: HiveStore()),
       ),
     );
@@ -68,5 +57,18 @@ class TopPage extends HookConsumerWidget {
                 },
               )),
         ));
+  }
+
+  Link getGraphQLAuthLink(String token) {
+    //エンドポイント
+    final HttpLink httpLink = HttpLink(
+      'https://api.github.com/graphql',
+    );
+
+    //token (githubから取得)
+    final AuthLink authLink = AuthLink(
+      getToken: () async => 'Bearer ${token}',
+    );
+    return authLink.concat(httpLink);
   }
 }
