@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/restapi/contributer.dart';
+import 'package:repositoryviewer/restapi/contributor.dart';
 import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/getRepositoryInfoFromID.graphql.dart';
 import './graphql/getRepositoryReadmeFromID.graphql.dart';
+import 'client.dart';
 import 'favorite_heart_button.dart';
 import 'loadingAnimation.dart';
 
@@ -23,7 +24,7 @@ class RepositoryView extends HookConsumerWidget {
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
-      return loadingAnimationWithAppbar();
+      return LoadingAnimationWithAppbar();
     } else if (repoData.result.hasException) {}
 
     if (repoData.result.parsedData != null) {
@@ -123,7 +124,7 @@ class MarkDownView extends HookConsumerWidget {
     );
 
     if (mdData.result.isLoading) {
-      return loadingAnimation();
+      return LoadingAnimation();
     } else if (mdData.result.hasException) {
       return const Text("exception");
     } else if (mdData.result.parsedData?.node != null) {
@@ -141,14 +142,18 @@ class MarkDownView extends HookConsumerWidget {
   }
 }
 
-class ContributorsView extends StatelessWidget {
+class ContributorsView extends HookConsumerWidget {
   const ContributorsView({Key? key, required this.repositoryName})
       : super(key: key);
   final String repositoryName;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ghTokenProvider = ref.read(githubTokenProvider);
+    final ghOrganizationProvider = ref.read(githubOrganizationProvider);
+
     return FutureBuilder(
-        future: getContributor(repositoryName),
+        future: getContributor(
+            repositoryName, ghTokenProvider, ghOrganizationProvider),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
             return Wrap(
@@ -157,8 +162,7 @@ class ContributorsView extends StatelessWidget {
                   .map((e) => GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                UserView(userID: e['node_id']),
+                            builder: (context) => UserView(userID: e.nodeID!),
                           ),
                         ),
                         child: SizedBox(
@@ -169,14 +173,15 @@ class ContributorsView extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(e['avatar_url']))),
+                                    image:
+                                        NetworkImage(e.avatarURL!.toString()))),
                           ),
                         ),
                       ))
                   .toList(),
             );
           }
-          return loadingAnimation();
+          return LoadingAnimation();
         });
   }
 }

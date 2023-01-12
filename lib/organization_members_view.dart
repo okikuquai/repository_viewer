@@ -27,7 +27,7 @@ class OrgMemberList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimation();
+      return LoadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {

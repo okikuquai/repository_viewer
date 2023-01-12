@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-Widget loadingAnimation() {
+Widget LoadingAnimation() {
   return Center(
       child: Column(
     mainAxisSize: MainAxisSize.min,
@@ -18,7 +18,7 @@ Widget loadingAnimation() {
   ));
 }
 
-Widget loadingAnimationWithAppbar() {
+Widget LoadingAnimationWithAppbar() {
   return Scaffold(
       appBar: AppBar(
         title: const Text("loading"),

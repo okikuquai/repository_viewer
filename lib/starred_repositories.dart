@@ -7,58 +7,51 @@ final FavoriteRepositoryProvider =
 );
 
 class FavoriteRepositoriesNotifier extends StateNotifier<List<String>> {
-  FavoriteRepositoriesNotifier() : super(FavoriteRepositories.value);
+  FavoriteRepositoriesNotifier() : super(<String>[]);
+  Future<List<String>> get value => _load();
 
   void addId(String id) {
-    final source = [...state, id];
-    _changeState(source);
+    final value = [...state, id];
+    _changeState(value);
   }
 
-  void removeId(String id) {
+  void removeId(String id) async {
+    final list = await _load();
     if (state.contains(id)) {
-      final source = [
-        for (final val in FavoriteRepositories.value)
-          if (val != id) val,
-      ];
-      _changeState(source);
+      list.remove(id);
+      final removedvalue = List.of(list);
+      _changeState(removedvalue);
     }
   }
 
-  void toggle(String id) {
-    if (FavoriteRepositories.value
-        .where((element) => element == id)
-        .isNotEmpty) {
+  void clear() {
+    _changeState(<String>[]);
+  }
+
+  void toggle(String id) async {
+    final list = await _load();
+    if (list.where((element) => element == id).isNotEmpty) {
       removeId(id);
     } else {
       addId(id);
     }
   }
 
-  void _changeState(List<String> source) {
-    state = FavoriteRepositories.value = source;
-  }
-}
-
-class FavoriteRepositories {
-  static const String _saveKey = "favoriteRepositories";
-
-  static List<String> value = <String>[];
-  static void addItem(String item) {
-    value.add(item);
-    save();
+  void _changeState(List<String> value) {
+    state = value;
+    _save(value);
   }
 
-  /// save list from prefs
-  static Future<void> save() async {
+  final String _saveKey = "favoriteRepositories";
+  Future<void> _save(List<String> value) async {
     //重複を削除
     value = value.toSet().toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList(_saveKey, value);
   }
 
-  /// load list from prefs
-  static Future<void> load() async {
+  Future<List<String>> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    value = prefs.getStringList(_saveKey) ?? [];
+    return prefs.getStringList(_saveKey) ?? [];
   }
 }

@@ -13,9 +13,22 @@ class TopPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pageState = useState(0);
-
-    //接続用のclientクラスを作成
-
+    final ghTokenProvider = ref.watch(githubTokenProvider);
+    //接続用のclientクラスのtokenを更新
+    final client = ValueNotifier(
+      GraphQLClient(
+        defaultPolicies: DefaultPolicies(
+          watchMutation: Policies(
+            fetch: FetchPolicy.cacheOnly,
+            error: ErrorPolicy.none,
+            cacheReread: CacheRereadPolicy.ignoreAll,
+          ),
+        ),
+        link: getGraphQLAuthLink(ghTokenProvider),
+        cache: GraphQLCache(store: HiveStore()),
+      ),
+    );
+    //updateToken(githubTokenLoadingState.data!);
     //GraphQLProviderでラップすることで使える
     final screens = [
       const OrganizationRepositoryListHome(),
@@ -44,5 +57,18 @@ class TopPage extends HookConsumerWidget {
                 },
               )),
         ));
+  }
+
+  Link getGraphQLAuthLink(String token) {
+    //エンドポイント
+    final HttpLink httpLink = HttpLink(
+      'https://api.github.com/graphql',
+    );
+
+    //token (githubから取得)
+    final AuthLink authLink = AuthLink(
+      getToken: () async => 'Bearer ${token}',
+    );
+    return authLink.concat(httpLink);
   }
 }

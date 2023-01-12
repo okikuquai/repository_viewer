@@ -1,103 +1,56 @@
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class GithubSetting {
-  static const String _saveKey_token = "githubtoken";
-  static const String _saveKey_organization = "githuborganization";
+//String.fromEnviromentはconstにしないと正しく読み取らない
+final githubTokenProvider = StateNotifierProvider<GithubSetting, String>(
+  (ref) => GithubSetting(
+      defaultValue: const String.fromEnvironment("Github_DefaultToken"),
+      key: "Github_DefaultToken"),
+);
 
-  static Future<String> get token async {
-    var val = await _load(_saveKey_token);
-    if (val == null) {
-      return getTokenFromJson();
+final githubOrganizationProvider = StateNotifierProvider<GithubSetting, String>(
+  (ref) => GithubSetting(
+      defaultValue: const String.fromEnvironment("Github_DefaultOrganization"),
+      key: "Github_DefaultOrganization"),
+);
+
+class GithubSetting extends StateNotifier<String> {
+  GithubSetting({required this.defaultValue, required this.key})
+      : super(defaultValue) {
+    sharedPreferencesUtil = SharedPreferencesUtil(key: key);
+  }
+  final String key;
+  final String defaultValue;
+  late final sharedPreferencesUtil;
+
+  Future<void> setFromPreference() async {
+    final local = await sharedPreferencesUtil.load();
+    if (local != null) {
+      state = local;
     }
-    return val;
   }
 
-  static setToken(String tokenval) {
-    _save(_saveKey_token, tokenval);
-    updateToken();
+  void setValue(String orgname) {
+    assert(orgname.isNotEmpty);
+    sharedPreferencesUtil.save(orgname);
+    state = orgname;
   }
+}
 
-  static Future<String> get organization async {
-    var val = await _load(_saveKey_organization);
-    if (val == null) {
-      return "nml-nakameguro";
-    }
-    return val;
-  }
-
-  static setOrganization(String orgval) {
-    _save(_saveKey_organization, orgval);
-  }
+class SharedPreferencesUtil {
+  SharedPreferencesUtil({required this.key});
+  final String key;
 
   /// save list from prefs
-  static Future<void> _save(String key, String saveString) async {
+  Future<void> save(String saveString) async {
     //重複を削除
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, saveString);
   }
 
   /// load list from prefs
-  static Future<String?> _load(String key) async {
+  Future<String?> load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
   }
-}
-
-ValueNotifier<GraphQLClient> client = ValueNotifier(
-  GraphQLClient(
-    defaultPolicies: DefaultPolicies(
-      watchMutation: Policies(
-        fetch: FetchPolicy.cacheOnly,
-        error: ErrorPolicy.none,
-        cacheReread: CacheRereadPolicy.ignoreAll,
-      ),
-    ),
-    link: getGraphQLAuthLink(),
-    cache: GraphQLCache(store: HiveStore()),
-  ),
-);
-
-//JsonファイルからTokenを取得
-Future<String> getTokenFromJson() async {
-  String loadData = await rootBundle.loadString('assets/secret_settings.json');
-  final jsonResponse = json.decode(loadData);
-  return jsonResponse["Token"] ?? "";
-}
-
-Future<String> getOrganizationNameFromJson() async {
-  String loadData = await rootBundle.loadString('assets/secret_settings.json');
-  final jsonResponse = json.decode(loadData);
-  return jsonResponse["OrganizationName"] ?? "";
-}
-
-Link getGraphQLAuthLink() {
-  //エンドポイント
-  final HttpLink httpLink = HttpLink(
-    'https://api.github.com/graphql',
-  );
-
-  //token (githubから取得)
-  final AuthLink authLink = AuthLink(
-    getToken: () async => 'Bearer ${await GithubSetting.token}',
-  );
-  return authLink.concat(httpLink);
-}
-
-Future<void> updateToken() async {
-  client.value = GraphQLClient(
-    defaultPolicies: DefaultPolicies(
-      watchMutation: Policies(
-        fetch: FetchPolicy.cacheOnly,
-        error: ErrorPolicy.none,
-        cacheReread: CacheRereadPolicy.ignoreAll,
-      ),
-    ),
-    link: getGraphQLAuthLink(),
-    cache: GraphQLCache(store: HiveStore()),
-  );
 }
