@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-Future<List<dynamic>> getContributor(
+Future<List<Contributor>?> getContributor(
     String repo, String token, String organization) async {
   try {
     var res = await Dio()
@@ -10,10 +10,14 @@ Future<List<dynamic>> getContributor(
               "Authorization": "Bearer $token",
               "X-GitHub-Api-Version": "2022-11-28"
             }));
-    if (res.statusCode == 200) {
+    if (res.statusCode == 200 && res.data != null) {
       try {
-        final data = res.data as List<dynamic>?;
-        return data ?? <dynamic>[];
+        final data = res.data! as List<dynamic>;
+
+        return data
+            .map((e) =>
+                Contributor(avatarURL: e['avatar_url'], nodeID: e['node_id']))
+            .toList();
       } catch (e) {
         print(e);
       }
@@ -21,5 +25,12 @@ Future<List<dynamic>> getContributor(
   } catch (e) {
     print(e);
   }
-  return <dynamic>[];
+  return <Contributor>[];
+}
+
+class Contributor {
+  String? nodeID;
+  String? avatarURL;
+
+  Contributor({required this.avatarURL, required this.nodeID});
 }

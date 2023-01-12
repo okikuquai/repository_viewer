@@ -162,8 +162,7 @@ class ContributorsView extends HookConsumerWidget {
                   .map((e) => GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                UserView(userID: e['node_id']),
+                            builder: (context) => UserView(userID: e.nodeID!),
                           ),
                         ),
                         child: SizedBox(
@@ -174,7 +173,8 @@ class ContributorsView extends HookConsumerWidget {
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(e['avatar_url']))),
+                                    image:
+                                        NetworkImage(e.avatarURL!.toString()))),
                           ),
                         ),
                       ))
