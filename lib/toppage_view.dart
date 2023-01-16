@@ -67,7 +67,7 @@ class TopPage extends HookConsumerWidget {
 
     //token (githubから取得)
     final AuthLink authLink = AuthLink(
-      getToken: () async => 'Bearer ${token}',
+      getToken: () async => 'Bearer $token',
     );
     return authLink.concat(httpLink);
   }

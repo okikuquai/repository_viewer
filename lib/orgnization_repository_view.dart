@@ -61,7 +61,7 @@ class OrganizationRepositoryBody extends HookConsumerWidget {
       return OrganizationRepositoryCardList(
           qryResult: qryResult, orgName: orgName);
     }
-    return const Text("no Teams in this Organization");
+    return const Text('no Teams in this Organization');
   }
 }
 
@@ -98,15 +98,15 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
                           after: pageinfo.endCursor),
                       updateQuery: (previousResultData, fetchMoreResultData) {
                         final List<dynamic> items = <dynamic>[
-                          ...previousResultData?["organization"]["repositories"]
-                                  ["edges"] as List<dynamic>? ??
+                          ...previousResultData?['organization']['repositories']
+                                  ['edges'] as List<dynamic>? ??
                               <dynamic>[],
-                          ...fetchMoreResultData?["organization"]
-                                  ["repositories"]["edges"] as List<dynamic>? ??
+                          ...fetchMoreResultData?['organization']
+                                  ['repositories']['edges'] as List<dynamic>? ??
                               <dynamic>[],
                         ];
-                        fetchMoreResultData?["organization"]["repositories"]
-                            ["edges"] = items;
+                        fetchMoreResultData?['organization']['repositories']
+                            ['edges'] = items;
                         return fetchMoreResultData;
                       }));
             }
@@ -121,7 +121,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
               return RepositoryCard(
                   id: repository.id,
                   title: repository.name,
-                  description: repository.description ?? "No Description");
+                  description: repository.description ?? 'No Description');
             }));
   }
 }

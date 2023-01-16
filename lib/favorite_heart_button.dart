@@ -12,10 +12,10 @@ class StarredButton extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favState = ref
-        .watch(FavoriteRepositoryProvider)
+        .watch(favoriteRepositoryProvider)
         .where((element) => element == id)
         .isNotEmpty;
-    final favStateNotifier = ref.watch(FavoriteRepositoryProvider.notifier);
+    final favStateNotifier = ref.watch(favoriteRepositoryProvider.notifier);
     final iconEnable = isStarredinGithub ? Icons.star : Icons.favorite;
     final iconDisable = isStarredinGithub ? Icons.star : Icons.favorite_border;
     final color = isStarredinGithub ? Colors.yellow : Colors.red;

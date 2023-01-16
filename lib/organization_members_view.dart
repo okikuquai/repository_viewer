@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/searchMemberInOrganization.graphql.dart';
-import 'loadingAnimation.dart';
+import 'loading_animation.dart';
 
 class OrgMemberList extends HookConsumerWidget {
   const OrgMemberList({Key? key, required this.orgName}) : super(key: key);
@@ -27,7 +27,7 @@ class OrgMemberList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -73,7 +73,7 @@ class OrgMemberList extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              member.name ?? "",
+                              member.name ?? '',
                               style: textTheme.headline6,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -87,7 +87,7 @@ class OrgMemberList extends HookConsumerWidget {
                             ),
                             const SizedBox(height: 10.0),
                             Text(
-                              member.bio ?? "",
+                              member.bio ?? '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -101,6 +101,6 @@ class OrgMemberList extends HookConsumerWidget {
             );
           });
     }
-    return const Text("This Organization has no members");
+    return const Text('This Organization has no members');
   }
 }

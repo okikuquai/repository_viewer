@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-Widget LoadingAnimation() {
+Widget loadingAnimation() {
   return Center(
       child: Column(
     mainAxisSize: MainAxisSize.min,
@@ -12,16 +12,16 @@ Widget LoadingAnimation() {
       ),
       const Padding(
         padding: EdgeInsets.all(15),
-        child: Text("Loading ..."),
+        child: Text('Loading ...'),
       )
     ],
   ));
 }
 
-Widget LoadingAnimationWithAppbar() {
+Widget loadingAnimationWithAppbar() {
   return Scaffold(
       appBar: AppBar(
-        title: const Text("loading"),
+        title: const Text('loading'),
       ),
       body: Center(
           child: Column(
@@ -33,7 +33,7 @@ Widget LoadingAnimationWithAppbar() {
           ),
           const Padding(
             padding: EdgeInsets.all(15),
-            child: Text("Loading ..."),
+            child: Text('Loading ...'),
           )
         ],
       )));

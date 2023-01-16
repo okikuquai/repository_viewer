@@ -9,7 +9,7 @@ import './graphql/getRepositoryInfoFromID.graphql.dart';
 import './graphql/getRepositoryReadmeFromID.graphql.dart';
 import 'client.dart';
 import 'favorite_heart_button.dart';
-import 'loadingAnimation.dart';
+import 'loading_animation.dart';
 
 class RepositoryView extends HookConsumerWidget {
   const RepositoryView({Key? key, required this.repositoryID})
@@ -24,7 +24,7 @@ class RepositoryView extends HookConsumerWidget {
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
-      return LoadingAnimationWithAppbar();
+      return loadingAnimationWithAppbar();
     } else if (repoData.result.hasException) {}
 
     if (repoData.result.parsedData != null) {
@@ -37,7 +37,7 @@ class RepositoryView extends HookConsumerWidget {
               repositoryID: repositoryID, repositoryName: parsedData.name));
     } else {
       return const Scaffold(
-        body: Text("error"),
+        body: Text('error'),
       );
       //リポジトリのデータを取得できなかった場合
       //うっすら出るダイアログと一緒にpopする
@@ -88,7 +88,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
             child: Text(widget.repositoryName, style: textTheme.headline4)),
         ExpansionTile(
           initiallyExpanded: true,
-          title: Text("Contributors", style: textTheme.headline5),
+          title: Text('Contributors', style: textTheme.headline5),
           children: [
             Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -99,7 +99,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
         ),
         const Divider(),
         ExpansionTile(
-          title: Text("Readme", style: textTheme.headline5),
+          title: Text('Readme', style: textTheme.headline5),
           children: [
             MarkDownView(
               repositoryID: widget.repositoryID,
@@ -124,9 +124,9 @@ class MarkDownView extends HookConsumerWidget {
     );
 
     if (mdData.result.isLoading) {
-      return LoadingAnimation();
+      return loadingAnimation();
     } else if (mdData.result.hasException) {
-      return const Text("exception");
+      return const Text('exception');
     } else if (mdData.result.parsedData?.node != null) {
       final parsedmdData = mdData.result.parsedData?.node! as Fragment$Readme;
       if (parsedmdData.object != null) {
@@ -134,11 +134,11 @@ class MarkDownView extends HookConsumerWidget {
         return MarkdownBody(
             fitContent: false,
             shrinkWrap: true,
-            data: mdString.text ?? "表示できません");
+            data: mdString.text ?? '表示できません');
       }
-      return const Text("表示できません");
+      return const Text('表示できません');
     }
-    return const Text("表示できません");
+    return const Text('表示できません');
   }
 }
 
@@ -181,7 +181,7 @@ class ContributorsView extends HookConsumerWidget {
                   .toList(),
             );
           }
-          return LoadingAnimation();
+          return loadingAnimation();
         });
   }
 }

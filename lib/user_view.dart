@@ -7,7 +7,7 @@ import 'package:repositoryviewer/starred_repositories.dart';
 
 import './graphql/getUserInfoFromID.graphql.dart';
 import 'graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
-import 'loadingAnimation.dart';
+import 'loading_animation.dart';
 
 class UserView extends HookConsumerWidget {
   const UserView({super.key, required this.userID});
@@ -16,13 +16,13 @@ class UserView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorTheme = Theme.of(context).primaryColor;
     final favoriteRepositoriesState =
-        ref.read(FavoriteRepositoryProvider.notifier);
+        ref.read(favoriteRepositoryProvider.notifier);
 
     final favoriteRepositoriesvalueinfo =
         useMemoized(() => favoriteRepositoriesState.value);
     final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
     if (!favoriteRepositoriesvalue.hasData) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
 
     final qryResult = useQuery$getUserInfoFromID(
@@ -33,12 +33,12 @@ class UserView extends HookConsumerWidget {
 
     if (qryResult.result.isLoading) {
       return Scaffold(
-          appBar: AppBar(title: const Text("Loading...")),
-          body: LoadingAnimation());
+          appBar: AppBar(title: const Text('Loading...')),
+          body: loadingAnimation());
     } else if (qryResult.result.hasException) {
       return Scaffold(
           appBar: AppBar(
-            title: const Text("Exception"),
+            title: const Text('Exception'),
           ),
           body: Text(qryResult.result.exception.toString()));
     } else if (qryResult.result.parsedData?.node != null) {
@@ -88,7 +88,7 @@ class UserView extends HookConsumerWidget {
         ],
       ));
     }
-    return const Text("null");
+    return const Text('null');
   }
 }
 
@@ -106,7 +106,7 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return SliverList(delegate: SliverChildBuilderDelegate((context, index) {
-        return LoadingAnimation();
+        return loadingAnimation();
       }));
     }
     //例外スローした場合
@@ -133,7 +133,7 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text(description ?? "no description",
+          subtitle: Text(description ?? 'no description',
               maxLines: 1, overflow: TextOverflow.ellipsis),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
@@ -143,6 +143,6 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
         ));
       }, childCount: repositories.length));
     }
-    return const Text("null");
+    return const Text('null');
   }
 }

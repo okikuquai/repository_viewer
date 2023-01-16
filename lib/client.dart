@@ -4,14 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 //String.fromEnviromentはconstにしないと正しく読み取らない
 final githubTokenProvider = StateNotifierProvider<GithubSetting, String>(
   (ref) => GithubSetting(
-      defaultValue: const String.fromEnvironment("Github_DefaultToken"),
-      key: "Github_DefaultToken"),
+      defaultValue: const String.fromEnvironment('Github_DefaultToken'),
+      key: 'Github_DefaultToken'),
 );
 
 final githubOrganizationProvider = StateNotifierProvider<GithubSetting, String>(
   (ref) => GithubSetting(
-      defaultValue: const String.fromEnvironment("Github_DefaultOrganization"),
-      key: "Github_DefaultOrganization"),
+      defaultValue: const String.fromEnvironment('Github_DefaultOrganization'),
+      key: 'Github_DefaultOrganization'),
 );
 
 class GithubSetting extends StateNotifier<String> {
@@ -21,7 +21,7 @@ class GithubSetting extends StateNotifier<String> {
   }
   final String key;
   final String defaultValue;
-  late final sharedPreferencesUtil;
+  late final SharedPreferencesUtil sharedPreferencesUtil;
 
   Future<void> setFromPreference() async {
     final local = await sharedPreferencesUtil.load();

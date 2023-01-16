@@ -7,7 +7,7 @@ import 'package:repositoryviewer/starred_repositories.dart';
 
 import './graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
 import './graphql/getStarredRepositories.graphql.dart';
-import 'loadingAnimation.dart';
+import 'loading_animation.dart';
 import 'repository_card.dart';
 
 class StarredRepositories extends HookConsumerWidget {
@@ -26,7 +26,7 @@ class StarredRepositories extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -65,7 +65,7 @@ class StarredRepositories extends HookConsumerWidget {
         ),
       );
     }
-    return const Text("no Repositories");
+    return const Text('no Repositories');
   }
 }
 
@@ -74,13 +74,13 @@ class LocalFavoriteCardList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favoriteRepositoriesState =
-        ref.read(FavoriteRepositoryProvider.notifier);
+        ref.read(favoriteRepositoryProvider.notifier);
 
     final favoriteRepositoriesvalueinfo =
         useMemoized(() => favoriteRepositoriesState.value);
     final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
     if (!favoriteRepositoriesvalue.hasData) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
 
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
@@ -91,7 +91,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -106,13 +106,13 @@ class LocalFavoriteCardList extends HookConsumerWidget {
             final repository = repositories[index] as Fragment$RepositoryData;
             final id = repository.id;
             final name = repository.name;
-            final description = repository.description ?? "No Description";
+            final description = repository.description ?? 'No Description';
 
             return RepositoryCard(
                 id: id, title: name, description: description);
           });
     }
-    return const Text("no Repositories");
+    return const Text('no Repositories');
   }
 }
 
@@ -130,7 +130,7 @@ class GithubStarredCardList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -145,7 +145,7 @@ class GithubStarredCardList extends HookConsumerWidget {
           itemBuilder: (context, index) {
             final repository = repositories[index] as Fragment$RepositoryData;
             final name = repository.name;
-            final description = repository.description ?? "No Description";
+            final description = repository.description ?? 'No Description';
             return RepositoryCard(
                 id: repository.id,
                 title: name,
@@ -153,7 +153,7 @@ class GithubStarredCardList extends HookConsumerWidget {
                 isStarredinGithub: true);
           });
     }
-    return const Text("no Repositories");
+    return const Text('no Repositories');
   }
 }
 
@@ -165,13 +165,13 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favoriteRepositoriesState =
-        ref.read(FavoriteRepositoryProvider.notifier);
+        ref.read(favoriteRepositoryProvider.notifier);
 
     final favoriteRepositoriesvalueinfo =
         useMemoized(() => favoriteRepositoriesState.value);
     final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
     if (!favoriteRepositoriesvalue.hasData) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
 
     List<String> ids = List.from(githubStarredIds)
@@ -186,7 +186,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return LoadingAnimation();
+      return loadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -202,7 +202,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
           itemBuilder: (context, index) {
             final repository = repositories[index] as Fragment$RepositoryData;
             final name = repository.name;
-            final description = repository.description ?? "No Description";
+            final description = repository.description ?? 'No Description';
             final favState =
                 favStates.where((element) => element == repository.id).isEmpty;
             return RepositoryCard(
@@ -212,7 +212,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
                 isStarredinGithub: favState);
           });
     }
-    return const Text("no Repositories");
+    return const Text('no Repositories');
   }
 }
 

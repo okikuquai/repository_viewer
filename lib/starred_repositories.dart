@@ -1,7 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final FavoriteRepositoryProvider =
+final favoriteRepositoryProvider =
     StateNotifierProvider<FavoriteRepositoriesNotifier, List<String>>(
   (ref) => FavoriteRepositoriesNotifier(),
 );
@@ -42,7 +42,7 @@ class FavoriteRepositoriesNotifier extends StateNotifier<List<String>> {
     _save(value);
   }
 
-  final String _saveKey = "favoriteRepositories";
+  final String _saveKey = 'favoriteRepositories';
   Future<void> _save(List<String> value) async {
     //重複を削除
     value = value.toSet().toList();

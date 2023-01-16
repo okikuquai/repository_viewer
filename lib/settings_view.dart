@@ -7,7 +7,7 @@ import 'package:repositoryviewer/user_view.dart';
 
 import './graphql/getOrganizationList.graphql.dart';
 import './graphql/getViewerID.graphql.dart';
-import 'loadingAnimation.dart';
+import 'loading_animation.dart';
 
 class SettingsScreen extends HookConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,7 +15,7 @@ class SettingsScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final favoriteRepositoriesState = ref.read(FavoriteRepositoryProvider);
+    final favoriteRepositoriesState = ref.read(favoriteRepositoryProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -25,13 +25,13 @@ class SettingsScreen extends HookConsumerWidget {
           children: [
             ListTile(
                 title: Text(
-                  "Favoriteリストのクリア",
+                  'Favoriteリストのクリア',
                   style: textTheme.headline5,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: const Text(
-                  "Favoriteしたリストの全削除",
+                  'Favoriteしたリストの全削除',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -40,26 +40,26 @@ class SettingsScreen extends HookConsumerWidget {
                 }),
             ListTile(
                 title: Text(
-                  "OSS License",
+                  'OSS License',
                   style: textTheme.headline5,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: const Text(
-                  "ライセンス情報",
+                  'ライセンス情報',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {}),
             ListTile(
                 title: Text(
-                  "github token",
+                  'github token',
                   style: textTheme.headline5,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: const Text(
-                  "閲覧するユーザーのトークンを入力",
+                  '閲覧するユーザーのトークンを入力',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -70,13 +70,13 @@ class SettingsScreen extends HookConsumerWidget {
                 }),
             ListTile(
                 title: Text(
-                  "Viewer Infomation",
+                  'Viewer Infomation',
                   style: textTheme.headline5,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: const Text(
-                  "設定しているトークンのユーザー情報",
+                  '設定しているトークンのユーザー情報',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -89,13 +89,13 @@ class SettingsScreen extends HookConsumerWidget {
                 }),
             ListTile(
                 title: Text(
-                  "Select Organization",
+                  'Select Organization',
                   style: textTheme.headline5,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: const Text(
-                  "表示するOrganizationを選択します",
+                  '表示するOrganizationを選択します',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -115,11 +115,11 @@ class TokenInputDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ghTokenNotifer = ref.read(githubTokenProvider.notifier);
-    String valueText = "";
+    String valueText = '';
     return AlertDialog(
-      title: const Text("Tokenを入力して下さい"),
+      title: const Text('Tokenを入力して下さい'),
       content: TextField(
-        decoration: const InputDecoration(hintText: "ここに入力"),
+        decoration: const InputDecoration(hintText: 'ここに入力'),
         onChanged: (value) {
           valueText = value;
         },
@@ -154,10 +154,10 @@ class SelectOrganizationView extends HookConsumerWidget {
             fetchPolicy: FetchPolicy.noCache,
             variables: Variables$Query$getOrganizationList(first: 100)));
     if (qryResult.result.isLoading) {
-      return const AlertDialog(title: Text("ロード中"));
+      return const AlertDialog(title: Text('ロード中'));
     } else if (qryResult.result.hasException) {
       return AlertDialog(
-          title: const Text("エラー"),
+          title: const Text('エラー'),
           content: Text(qryResult.result.exception.toString()));
     } else if (qryResult.result.parsedData?.viewer.organizations.edges !=
         null) {
@@ -168,15 +168,15 @@ class SelectOrganizationView extends HookConsumerWidget {
           children: organizationNames!
               .map((e) => SimpleDialogOption(
                     onPressed: () {
-                      ghOrganizationNotifer.setValue(e.node!.name ?? "");
+                      ghOrganizationNotifer.setValue(e.node!.name ?? '');
                       Navigator.pop(context, 1);
                     },
-                    child: Text(e!.node!.name ?? "no Name"),
+                    child: Text(e!.node!.name ?? 'no Name'),
                   ))
               .toList());
     }
     return const AlertDialog(
-        title: Text("エラー"), content: Text("所属しているOrganizationがありません"));
+        title: Text('エラー'), content: Text('所属しているOrganizationがありません'));
   }
 }
 
@@ -188,11 +188,11 @@ class Navigate2UserView extends HookConsumerWidget {
     final qryResult = useQuery$getViewerID();
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return LoadingAnimationWithAppbar();
+      return loadingAnimationWithAppbar();
     } else if (qryResult.result.hasException) {
       //例外スローした場合
       return AlertDialog(
-        title: const Text("エラー"),
+        title: const Text('エラー'),
         content: Text(qryResult.result.exception.toString()),
         actions: <Widget>[
           MaterialButton(
@@ -209,8 +209,8 @@ class Navigate2UserView extends HookConsumerWidget {
       return UserView(userID: viewerID);
     }
     return AlertDialog(
-      title: const Text("エラー"),
-      content: const Text("ユーザー情報を取得できませんでした"),
+      title: const Text('エラー'),
+      content: const Text('ユーザー情報を取得できませんでした'),
       actions: <Widget>[
         MaterialButton(
             color: Colors.white,
