@@ -3,7 +3,7 @@ import 'package:string_validator/string_validator.dart';
 class GithubAPIID {
   final String idString;
   GithubAPIID(this.idString){
-    assert(isBase64(idString));
+    assert(isBase64(idString) || RegExp('^._[!-~]{10}\$').hasMatch(idString));
   }
 }
 
