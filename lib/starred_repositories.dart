@@ -46,16 +46,15 @@ class FavoriteRepositoriesNotifier extends StateNotifier<List<GithubAPIID>> {
   final String _saveKey = 'favoriteRepositories';
   Future<void> _save(List<GithubAPIID> value) async {
     //重複を削除
-    final saveValue = <String>[];
-    value.map((e) => saveValue.add(e.idString));
+    final saveValue = value.map((e) => e.idString).toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList(_saveKey, saveValue);
   }
 
   Future<List<GithubAPIID>> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final loadedGithubAPIIDList = <GithubAPIID>[];
-    prefs.getStringList(_saveKey)?.map((e) => loadedGithubAPIIDList.add(GithubAPIID(e))) ?? [];
+    final loadedGithubAPIIDList = prefs.getStringList(_saveKey)?.map((e) => GithubAPIID(e)).toList() ?? [];
+
     return loadedGithubAPIIDList;
   }
 }
