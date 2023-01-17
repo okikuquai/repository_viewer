@@ -7,6 +7,7 @@ import 'package:repositoryviewer/starred_repositories.dart';
 
 import './graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
 import './graphql/getStarredRepositories.graphql.dart';
+import 'graphql/type/custom_id.dart';
 import 'loading_animation.dart';
 import 'repository_card.dart';
 
@@ -36,7 +37,7 @@ class StarredRepositories extends HookConsumerWidget {
     if (qryResult.result.parsedData?.viewer.starredRepositories.edges != null) {
       final githubStarredRepositories =
           qryResult.result.parsedData!.viewer.starredRepositories.edges!;
-      final starredIDs = <String>[];
+      final starredIDs = <GithubAPIID>[];
       for (final edge in githubStarredRepositories) {
         if (edge == null) continue;
         starredIDs.add(edge.node.id);
@@ -119,7 +120,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 class GithubStarredCardList extends HookConsumerWidget {
   const GithubStarredCardList({Key? key, required this.githubStarredIds})
       : super(key: key);
-  final List<String> githubStarredIds;
+  final List<GithubAPIID> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
@@ -161,7 +162,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   const GithubAndLocalFavoriteCardList(
       {Key? key, required this.githubStarredIds})
       : super(key: key);
-  final List<String> githubStarredIds;
+  final List<GithubAPIID> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favoriteRepositoriesState =
@@ -174,7 +175,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
       return loadingAnimation();
     }
 
-    List<String> ids = List.from(githubStarredIds)
+    List<GithubAPIID> ids = List.from(githubStarredIds)
       ..addAll(favoriteRepositoriesvalue.data!);
     //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
     ids = ids.toSet().toList();

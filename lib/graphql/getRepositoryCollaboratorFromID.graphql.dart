@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
+import 'package:repositoryviewer/graphql/type/custom_url.dart';
 
 class Fragment$Collaborator {
   Fragment$Collaborator({
@@ -576,29 +578,29 @@ class Fragment$Collaborator$collaborators$edges$node {
     final l$url = json['url'];
     final l$$__typename = json['__typename'];
     return Fragment$Collaborator$collaborators$edges$node(
-      id: (l$id as String),
-      avatarUrl: (l$avatarUrl as String),
-      url: (l$url as String),
+      id: githubAPIIDFromJson(l$id),
+      avatarUrl: customUriFromJson(l$avatarUrl),
+      url: customUriFromJson(l$url),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
-  final String avatarUrl;
+  final CustomURI avatarUrl;
 
-  final String url;
+  final CustomURI url;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$avatarUrl = avatarUrl;
-    _resultData['avatarUrl'] = l$avatarUrl;
+    _resultData['avatarUrl'] = customUriToJson(l$avatarUrl);
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -672,9 +674,9 @@ abstract class CopyWith$Fragment$Collaborator$collaborators$edges$node<TRes> {
       _CopyWithStubImpl$Fragment$Collaborator$collaborators$edges$node;
 
   TRes call({
-    String? id,
-    String? avatarUrl,
-    String? url,
+    GithubAPIID? id,
+    CustomURI? avatarUrl,
+    CustomURI? url,
     String? $__typename,
   });
 }
@@ -699,11 +701,13 @@ class _CopyWithImpl$Fragment$Collaborator$collaborators$edges$node<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$Collaborator$collaborators$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         avatarUrl: avatarUrl == _undefined || avatarUrl == null
             ? _instance.avatarUrl
-            : (avatarUrl as String),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+            : (avatarUrl as CustomURI),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -717,9 +721,9 @@ class _CopyWithStubImpl$Fragment$Collaborator$collaborators$edges$node<TRes>
   TRes _res;
 
   call({
-    String? id,
-    String? avatarUrl,
-    String? url,
+    GithubAPIID? id,
+    CustomURI? avatarUrl,
+    CustomURI? url,
     String? $__typename,
   }) =>
       _res;
@@ -727,7 +731,7 @@ class _CopyWithStubImpl$Fragment$Collaborator$collaborators$edges$node<TRes>
 
 class Variables$Query$getRepositoryCollaboratorFromID {
   factory Variables$Query$getRepositoryCollaboratorFromID(
-          {required String id}) =>
+          {required GithubAPIID id}) =>
       Variables$Query$getRepositoryCollaboratorFromID._({
         r'id': id,
       });
@@ -738,17 +742,17 @@ class Variables$Query$getRepositoryCollaboratorFromID {
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     final l$id = data['id'];
-    result$data['id'] = (l$id as String);
+    result$data['id'] = githubAPIIDFromJson(l$id);
     return Variables$Query$getRepositoryCollaboratorFromID._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
-  String get id => (_$data['id'] as String);
+  GithubAPIID get id => (_$data['id'] as GithubAPIID);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$id = id;
-    result$data['id'] = l$id;
+    result$data['id'] = githubAPIIDToJson(l$id);
     return result$data;
   }
 
@@ -792,7 +796,7 @@ abstract class CopyWith$Variables$Query$getRepositoryCollaboratorFromID<TRes> {
           TRes res) =
       _CopyWithStubImpl$Variables$Query$getRepositoryCollaboratorFromID;
 
-  TRes call({String? id});
+  TRes call({GithubAPIID? id});
 }
 
 class _CopyWithImpl$Variables$Query$getRepositoryCollaboratorFromID<TRes>
@@ -811,7 +815,7 @@ class _CopyWithImpl$Variables$Query$getRepositoryCollaboratorFromID<TRes>
   TRes call({Object? id = _undefined}) =>
       _then(Variables$Query$getRepositoryCollaboratorFromID._({
         ..._instance._$data,
-        if (id != _undefined && id != null) 'id': (id as String),
+        if (id != _undefined && id != null) 'id': (id as GithubAPIID),
       }));
 }
 
@@ -821,7 +825,7 @@ class _CopyWithStubImpl$Variables$Query$getRepositoryCollaboratorFromID<TRes>
 
   TRes _res;
 
-  call({String? id}) => _res;
+  call({GithubAPIID? id}) => _res;
 }
 
 class Query$getRepositoryCollaboratorFromID {
@@ -1787,29 +1791,29 @@ class Query$getRepositoryCollaboratorFromID$node$$Repository$collaborators$edges
     final l$url = json['url'];
     final l$$__typename = json['__typename'];
     return Query$getRepositoryCollaboratorFromID$node$$Repository$collaborators$edges$node(
-      id: (l$id as String),
-      avatarUrl: (l$avatarUrl as String),
-      url: (l$url as String),
+      id: githubAPIIDFromJson(l$id),
+      avatarUrl: customUriFromJson(l$avatarUrl),
+      url: customUriFromJson(l$url),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
-  final String avatarUrl;
+  final CustomURI avatarUrl;
 
-  final String url;
+  final CustomURI url;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$avatarUrl = avatarUrl;
-    _resultData['avatarUrl'] = l$avatarUrl;
+    _resultData['avatarUrl'] = customUriToJson(l$avatarUrl);
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1889,9 +1893,9 @@ abstract class CopyWith$Query$getRepositoryCollaboratorFromID$node$$Repository$c
       _CopyWithStubImpl$Query$getRepositoryCollaboratorFromID$node$$Repository$collaborators$edges$node;
 
   TRes call({
-    String? id,
-    String? avatarUrl,
-    String? url,
+    GithubAPIID? id,
+    CustomURI? avatarUrl,
+    CustomURI? url,
     String? $__typename,
   });
 }
@@ -1923,11 +1927,13 @@ class _CopyWithImpl$Query$getRepositoryCollaboratorFromID$node$$Repository$colla
   }) =>
       _then(
           Query$getRepositoryCollaboratorFromID$node$$Repository$collaborators$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         avatarUrl: avatarUrl == _undefined || avatarUrl == null
             ? _instance.avatarUrl
-            : (avatarUrl as String),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+            : (avatarUrl as CustomURI),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -1945,9 +1951,9 @@ class _CopyWithStubImpl$Query$getRepositoryCollaboratorFromID$node$$Repository$c
   TRes _res;
 
   call({
-    String? id,
-    String? avatarUrl,
-    String? url,
+    GithubAPIID? id,
+    CustomURI? avatarUrl,
+    CustomURI? url,
     String? $__typename,
   }) =>
       _res;

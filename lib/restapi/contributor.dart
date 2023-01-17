@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../graphql/type/custom_id.dart';
+
 Future<List<Contributor>?> getContributor(
     String repo, String token, String organization) async {
   try {
@@ -17,7 +19,7 @@ Future<List<Contributor>?> getContributor(
 
         return data
             .map((e) =>
-                Contributor(avatarURL: e['avatar_url'], nodeID: e['node_id']))
+                Contributor(avatarURL: e['avatar_url'], nodeID: GithubAPIID(e['node_id'])))
             .toList();
       } catch (e) {
         debugPrint(e.toString());
@@ -30,7 +32,7 @@ Future<List<Contributor>?> getContributor(
 }
 
 class Contributor {
-  String? nodeID;
+  GithubAPIID? nodeID;
   String? avatarURL;
 
   Contributor({required this.avatarURL, required this.nodeID});

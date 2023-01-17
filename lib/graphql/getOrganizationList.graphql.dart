@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
 
 class Variables$Query$getOrganizationList {
   factory Variables$Query$getOrganizationList({required int first}) =>
@@ -941,13 +942,13 @@ class Query$getOrganizationList$viewer$organizations$edges$node {
     final l$name = json['name'];
     final l$$__typename = json['__typename'];
     return Query$getOrganizationList$viewer$organizations$edges$node(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       name: (l$name as String?),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String? name;
 
@@ -956,7 +957,7 @@ class Query$getOrganizationList$viewer$organizations$edges$node {
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$name = name;
     _resultData['name'] = l$name;
     final l$$__typename = $__typename;
@@ -1028,7 +1029,7 @@ abstract class CopyWith$Query$getOrganizationList$viewer$organizations$edges$nod
       _CopyWithStubImpl$Query$getOrganizationList$viewer$organizations$edges$node;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? name,
     String? $__typename,
   });
@@ -1057,7 +1058,7 @@ class _CopyWithImpl$Query$getOrganizationList$viewer$organizations$edges$node<
     Object? $__typename = _undefined,
   }) =>
       _then(Query$getOrganizationList$viewer$organizations$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         name: name == _undefined ? _instance.name : (name as String?),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
@@ -1076,7 +1077,7 @@ class _CopyWithStubImpl$Query$getOrganizationList$viewer$organizations$edges$nod
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? name,
     String? $__typename,
   }) =>

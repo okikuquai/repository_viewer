@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'graphql/type/custom_id.dart';
 import 'starred_repositories.dart';
 
 class StarredButton extends HookConsumerWidget {
   const StarredButton(
       {super.key, required this.id, this.isStarredinGithub = false});
 
-  final String id;
+  final GithubAPIID id;
   final bool isStarredinGithub;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_url.dart';
 
 class Variables$Query$getRepositoryInfo {
   factory Variables$Query$getRepositoryInfo({
@@ -654,7 +655,7 @@ class Query$getRepositoryInfo$organization$repository {
     return Query$getRepositoryInfo$organization$repository(
       name: (l$name as String),
       description: (l$description as String?),
-      url: (l$url as String),
+      url: customUriFromJson(l$url),
       $__typename: (l$$__typename as String),
     );
   }
@@ -663,7 +664,7 @@ class Query$getRepositoryInfo$organization$repository {
 
   final String? description;
 
-  final String url;
+  final CustomURI url;
 
   final String $__typename;
 
@@ -674,7 +675,7 @@ class Query$getRepositoryInfo$organization$repository {
     final l$description = description;
     _resultData['description'] = l$description;
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -750,7 +751,7 @@ abstract class CopyWith$Query$getRepositoryInfo$organization$repository<TRes> {
   TRes call({
     String? name,
     String? description,
-    String? url,
+    CustomURI? url,
     String? $__typename,
   });
 }
@@ -781,7 +782,9 @@ class _CopyWithImpl$Query$getRepositoryInfo$organization$repository<TRes>
         description: description == _undefined
             ? _instance.description
             : (description as String?),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -797,7 +800,7 @@ class _CopyWithStubImpl$Query$getRepositoryInfo$organization$repository<TRes>
   call({
     String? name,
     String? description,
-    String? url,
+    CustomURI? url,
     String? $__typename,
   }) =>
       _res;

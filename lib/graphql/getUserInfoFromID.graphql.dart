@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
+import 'package:repositoryviewer/graphql/type/custom_url.dart';
 
 class Fragment$UserInfo {
   Fragment$UserInfo({
@@ -25,11 +27,11 @@ class Fragment$UserInfo {
     final l$starredRepositories = json['starredRepositories'];
     final l$$__typename = json['__typename'];
     return Fragment$UserInfo(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       login: (l$login as String),
       name: (l$name as String?),
-      url: (l$url as String),
-      avatarUrl: (l$avatarUrl as String),
+      url: customUriFromJson(l$url),
+      avatarUrl: customUriFromJson(l$avatarUrl),
       isViewer: (l$isViewer as bool),
       starredRepositories: Fragment$UserInfo$starredRepositories.fromJson(
           (l$starredRepositories as Map<String, dynamic>)),
@@ -37,15 +39,15 @@ class Fragment$UserInfo {
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String login;
 
   final String? name;
 
-  final String url;
+  final CustomURI url;
 
-  final String avatarUrl;
+  final CustomURI avatarUrl;
 
   final bool isViewer;
 
@@ -56,15 +58,15 @@ class Fragment$UserInfo {
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$login = login;
     _resultData['login'] = l$login;
     final l$name = name;
     _resultData['name'] = l$name;
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$avatarUrl = avatarUrl;
-    _resultData['avatarUrl'] = l$avatarUrl;
+    _resultData['avatarUrl'] = customUriToJson(l$avatarUrl);
     final l$isViewer = isViewer;
     _resultData['isViewer'] = l$isViewer;
     final l$starredRepositories = starredRepositories;
@@ -166,11 +168,11 @@ abstract class CopyWith$Fragment$UserInfo<TRes> {
       _CopyWithStubImpl$Fragment$UserInfo;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? login,
     String? name,
-    String? url,
-    String? avatarUrl,
+    CustomURI? url,
+    CustomURI? avatarUrl,
     bool? isViewer,
     Fragment$UserInfo$starredRepositories? starredRepositories,
     String? $__typename,
@@ -202,15 +204,17 @@ class _CopyWithImpl$Fragment$UserInfo<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$UserInfo(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         login: login == _undefined || login == null
             ? _instance.login
             : (login as String),
         name: name == _undefined ? _instance.name : (name as String?),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         avatarUrl: avatarUrl == _undefined || avatarUrl == null
             ? _instance.avatarUrl
-            : (avatarUrl as String),
+            : (avatarUrl as CustomURI),
         isViewer: isViewer == _undefined || isViewer == null
             ? _instance.isViewer
             : (isViewer as bool),
@@ -236,11 +240,11 @@ class _CopyWithStubImpl$Fragment$UserInfo<TRes>
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? login,
     String? name,
-    String? url,
-    String? avatarUrl,
+    CustomURI? url,
+    CustomURI? avatarUrl,
     bool? isViewer,
     Fragment$UserInfo$starredRepositories? starredRepositories,
     String? $__typename,
@@ -712,19 +716,19 @@ class Fragment$UserInfo$starredRepositories$edges$node {
     final l$id = json['id'];
     final l$$__typename = json['__typename'];
     return Fragment$UserInfo$starredRepositories$edges$node(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -784,7 +788,7 @@ abstract class CopyWith$Fragment$UserInfo$starredRepositories$edges$node<TRes> {
       _CopyWithStubImpl$Fragment$UserInfo$starredRepositories$edges$node;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   });
 }
@@ -807,7 +811,7 @@ class _CopyWithImpl$Fragment$UserInfo$starredRepositories$edges$node<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$UserInfo$starredRepositories$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -821,14 +825,14 @@ class _CopyWithStubImpl$Fragment$UserInfo$starredRepositories$edges$node<TRes>
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   }) =>
       _res;
 }
 
 class Variables$Query$getUserInfoFromID {
-  factory Variables$Query$getUserInfoFromID({required String id}) =>
+  factory Variables$Query$getUserInfoFromID({required GithubAPIID id}) =>
       Variables$Query$getUserInfoFromID._({
         r'id': id,
       });
@@ -839,17 +843,17 @@ class Variables$Query$getUserInfoFromID {
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     final l$id = data['id'];
-    result$data['id'] = (l$id as String);
+    result$data['id'] = githubAPIIDFromJson(l$id);
     return Variables$Query$getUserInfoFromID._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
-  String get id => (_$data['id'] as String);
+  GithubAPIID get id => (_$data['id'] as GithubAPIID);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$id = id;
-    result$data['id'] = l$id;
+    result$data['id'] = githubAPIIDToJson(l$id);
     return result$data;
   }
 
@@ -891,7 +895,7 @@ abstract class CopyWith$Variables$Query$getUserInfoFromID<TRes> {
   factory CopyWith$Variables$Query$getUserInfoFromID.stub(TRes res) =
       _CopyWithStubImpl$Variables$Query$getUserInfoFromID;
 
-  TRes call({String? id});
+  TRes call({GithubAPIID? id});
 }
 
 class _CopyWithImpl$Variables$Query$getUserInfoFromID<TRes>
@@ -910,7 +914,7 @@ class _CopyWithImpl$Variables$Query$getUserInfoFromID<TRes>
   TRes call({Object? id = _undefined}) =>
       _then(Variables$Query$getUserInfoFromID._({
         ..._instance._$data,
-        if (id != _undefined && id != null) 'id': (id as String),
+        if (id != _undefined && id != null) 'id': (id as GithubAPIID),
       }));
 }
 
@@ -920,7 +924,7 @@ class _CopyWithStubImpl$Variables$Query$getUserInfoFromID<TRes>
 
   TRes _res;
 
-  call({String? id}) => _res;
+  call({GithubAPIID? id}) => _res;
 }
 
 class Query$getUserInfoFromID {
@@ -1365,11 +1369,11 @@ class Query$getUserInfoFromID$node$$User
     final l$starredRepositories = json['starredRepositories'];
     return Query$getUserInfoFromID$node$$User(
       $__typename: (l$$__typename as String),
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       login: (l$login as String),
       name: (l$name as String?),
-      url: (l$url as String),
-      avatarUrl: (l$avatarUrl as String),
+      url: customUriFromJson(l$url),
+      avatarUrl: customUriFromJson(l$avatarUrl),
       isViewer: (l$isViewer as bool),
       starredRepositories:
           Query$getUserInfoFromID$node$$User$starredRepositories.fromJson(
@@ -1379,15 +1383,15 @@ class Query$getUserInfoFromID$node$$User
 
   final String $__typename;
 
-  final String id;
+  final GithubAPIID id;
 
   final String login;
 
   final String? name;
 
-  final String url;
+  final CustomURI url;
 
-  final String avatarUrl;
+  final CustomURI avatarUrl;
 
   final bool isViewer;
 
@@ -1399,15 +1403,15 @@ class Query$getUserInfoFromID$node$$User
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$login = login;
     _resultData['login'] = l$login;
     final l$name = name;
     _resultData['name'] = l$name;
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$avatarUrl = avatarUrl;
-    _resultData['avatarUrl'] = l$avatarUrl;
+    _resultData['avatarUrl'] = customUriToJson(l$avatarUrl);
     final l$isViewer = isViewer;
     _resultData['isViewer'] = l$isViewer;
     final l$starredRepositories = starredRepositories;
@@ -1511,11 +1515,11 @@ abstract class CopyWith$Query$getUserInfoFromID$node$$User<TRes> {
 
   TRes call({
     String? $__typename,
-    String? id,
+    GithubAPIID? id,
     String? login,
     String? name,
-    String? url,
-    String? avatarUrl,
+    CustomURI? url,
+    CustomURI? avatarUrl,
     bool? isViewer,
     Query$getUserInfoFromID$node$$User$starredRepositories? starredRepositories,
   });
@@ -1550,15 +1554,17 @@ class _CopyWithImpl$Query$getUserInfoFromID$node$$User<TRes>
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         login: login == _undefined || login == null
             ? _instance.login
             : (login as String),
         name: name == _undefined ? _instance.name : (name as String?),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         avatarUrl: avatarUrl == _undefined || avatarUrl == null
             ? _instance.avatarUrl
-            : (avatarUrl as String),
+            : (avatarUrl as CustomURI),
         isViewer: isViewer == _undefined || isViewer == null
             ? _instance.isViewer
             : (isViewer as bool),
@@ -1584,11 +1590,11 @@ class _CopyWithStubImpl$Query$getUserInfoFromID$node$$User<TRes>
 
   call({
     String? $__typename,
-    String? id,
+    GithubAPIID? id,
     String? login,
     String? name,
-    String? url,
-    String? avatarUrl,
+    CustomURI? url,
+    CustomURI? avatarUrl,
     bool? isViewer,
     Query$getUserInfoFromID$node$$User$starredRepositories? starredRepositories,
   }) =>
@@ -1941,19 +1947,19 @@ class Query$getUserInfoFromID$node$$User$starredRepositories$edges$node
     final l$id = json['id'];
     final l$$__typename = json['__typename'];
     return Query$getUserInfoFromID$node$$User$starredRepositories$edges$node(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -2018,7 +2024,7 @@ abstract class CopyWith$Query$getUserInfoFromID$node$$User$starredRepositories$e
       _CopyWithStubImpl$Query$getUserInfoFromID$node$$User$starredRepositories$edges$node;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   });
 }
@@ -2046,7 +2052,7 @@ class _CopyWithImpl$Query$getUserInfoFromID$node$$User$starredRepositories$edges
     Object? $__typename = _undefined,
   }) =>
       _then(Query$getUserInfoFromID$node$$User$starredRepositories$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -2064,7 +2070,7 @@ class _CopyWithStubImpl$Query$getUserInfoFromID$node$$User$starredRepositories$e
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   }) =>
       _res;

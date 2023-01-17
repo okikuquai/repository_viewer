@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
+import 'package:repositoryviewer/graphql/type/custom_url.dart';
 
 class Fragment$RepositoryData {
   Fragment$RepositoryData({
@@ -20,19 +22,19 @@ class Fragment$RepositoryData {
     final l$description = json['description'];
     final l$$__typename = json['__typename'];
     return Fragment$RepositoryData(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       name: (l$name as String),
-      url: (l$url as String),
+      url: customUriFromJson(l$url),
       description: (l$description as String?),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String name;
 
-  final String url;
+  final CustomURI url;
 
   final String? description;
 
@@ -41,11 +43,11 @@ class Fragment$RepositoryData {
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$name = name;
     _resultData['name'] = l$name;
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$description = description;
     _resultData['description'] = l$description;
     final l$$__typename = $__typename;
@@ -125,9 +127,9 @@ abstract class CopyWith$Fragment$RepositoryData<TRes> {
       _CopyWithStubImpl$Fragment$RepositoryData;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? name,
-    String? url,
+    CustomURI? url,
     String? description,
     String? $__typename,
   });
@@ -154,11 +156,13 @@ class _CopyWithImpl$Fragment$RepositoryData<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Fragment$RepositoryData(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         description: description == _undefined
             ? _instance.description
             : (description as String?),
@@ -175,9 +179,9 @@ class _CopyWithStubImpl$Fragment$RepositoryData<TRes>
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? name,
-    String? url,
+    CustomURI? url,
     String? description,
     String? $__typename,
   }) =>
@@ -270,7 +274,7 @@ extension ClientExtension$Fragment$RepositoryData on graphql.GraphQLClient {
 }
 
 class Variables$Query$getRepositoryDataFromID {
-  factory Variables$Query$getRepositoryDataFromID({required String id}) =>
+  factory Variables$Query$getRepositoryDataFromID({required GithubAPIID id}) =>
       Variables$Query$getRepositoryDataFromID._({
         r'id': id,
       });
@@ -281,17 +285,17 @@ class Variables$Query$getRepositoryDataFromID {
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     final l$id = data['id'];
-    result$data['id'] = (l$id as String);
+    result$data['id'] = githubAPIIDFromJson(l$id);
     return Variables$Query$getRepositoryDataFromID._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
-  String get id => (_$data['id'] as String);
+  GithubAPIID get id => (_$data['id'] as GithubAPIID);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$id = id;
-    result$data['id'] = l$id;
+    result$data['id'] = githubAPIIDToJson(l$id);
     return result$data;
   }
 
@@ -334,7 +338,7 @@ abstract class CopyWith$Variables$Query$getRepositoryDataFromID<TRes> {
   factory CopyWith$Variables$Query$getRepositoryDataFromID.stub(TRes res) =
       _CopyWithStubImpl$Variables$Query$getRepositoryDataFromID;
 
-  TRes call({String? id});
+  TRes call({GithubAPIID? id});
 }
 
 class _CopyWithImpl$Variables$Query$getRepositoryDataFromID<TRes>
@@ -353,7 +357,7 @@ class _CopyWithImpl$Variables$Query$getRepositoryDataFromID<TRes>
   TRes call({Object? id = _undefined}) =>
       _then(Variables$Query$getRepositoryDataFromID._({
         ..._instance._$data,
-        if (id != _undefined && id != null) 'id': (id as String),
+        if (id != _undefined && id != null) 'id': (id as GithubAPIID),
       }));
 }
 
@@ -363,7 +367,7 @@ class _CopyWithStubImpl$Variables$Query$getRepositoryDataFromID<TRes>
 
   TRes _res;
 
-  call({String? id}) => _res;
+  call({GithubAPIID? id}) => _res;
 }
 
 class Query$getRepositoryDataFromID {
@@ -812,20 +816,20 @@ class Query$getRepositoryDataFromID$node$$Repository
     final l$description = json['description'];
     return Query$getRepositoryDataFromID$node$$Repository(
       $__typename: (l$$__typename as String),
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       name: (l$name as String),
-      url: (l$url as String),
+      url: customUriFromJson(l$url),
       description: (l$description as String?),
     );
   }
 
   final String $__typename;
 
-  final String id;
+  final GithubAPIID id;
 
   final String name;
 
-  final String url;
+  final CustomURI url;
 
   final String? description;
 
@@ -834,11 +838,11 @@ class Query$getRepositoryDataFromID$node$$Repository
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$name = name;
     _resultData['name'] = l$name;
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$description = description;
     _resultData['description'] = l$description;
     return _resultData;
@@ -920,9 +924,9 @@ abstract class CopyWith$Query$getRepositoryDataFromID$node$$Repository<TRes> {
 
   TRes call({
     String? $__typename,
-    String? id,
+    GithubAPIID? id,
     String? name,
-    String? url,
+    CustomURI? url,
     String? description,
   });
 }
@@ -951,11 +955,13 @@ class _CopyWithImpl$Query$getRepositoryDataFromID$node$$Repository<TRes>
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         description: description == _undefined
             ? _instance.description
             : (description as String?),
@@ -970,9 +976,9 @@ class _CopyWithStubImpl$Query$getRepositoryDataFromID$node$$Repository<TRes>
 
   call({
     String? $__typename,
-    String? id,
+    GithubAPIID? id,
     String? name,
-    String? url,
+    CustomURI? url,
     String? description,
   }) =>
       _res;

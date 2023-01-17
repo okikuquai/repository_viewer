@@ -7,11 +7,12 @@ import 'package:repositoryviewer/starred_repositories.dart';
 
 import './graphql/getUserInfoFromID.graphql.dart';
 import 'graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
+import 'graphql/type/custom_id.dart';
 import 'loading_animation.dart';
 
 class UserView extends HookConsumerWidget {
   const UserView({super.key, required this.userID});
-  final String userID;
+  final GithubAPIID userID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorTheme = Theme.of(context).primaryColor;
@@ -44,9 +45,9 @@ class UserView extends HookConsumerWidget {
     } else if (qryResult.result.parsedData?.node != null) {
       final user = qryResult.result.parsedData!.node! as Fragment$UserInfo;
       final starredRepositories = user.starredRepositories.edges;
-      List<String> ids = [];
+      List<GithubAPIID> ids = [];
       starredRepositories?.forEach((element) {
-        ids.add(element!.node.id.toString());
+        ids.add(element!.node.id);
       });
 
       if (user.isViewer) {
@@ -80,7 +81,7 @@ class UserView extends HookConsumerWidget {
                         ),
                       ),
                       child: Image.network(
-                        user.avatarUrl,
+                        user.avatarUrl.uriString,
                         width: double.infinity,
                         fit: BoxFit.cover,
                       )))),
@@ -94,7 +95,7 @@ class UserView extends HookConsumerWidget {
 
 class UserStarredRepositoriesList extends HookConsumerWidget {
   const UserStarredRepositoriesList({super.key, required this.ids});
-  final List<String> ids;
+  final List<GithubAPIID> ids;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(

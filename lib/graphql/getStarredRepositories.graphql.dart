@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
 
 class Query$getStarredRepositories {
   Query$getStarredRepositories({
@@ -859,19 +860,19 @@ class Query$getStarredRepositories$viewer$starredRepositories$edges$node {
     final l$id = json['id'];
     final l$$__typename = json['__typename'];
     return Query$getStarredRepositories$viewer$starredRepositories$edges$node(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -936,7 +937,7 @@ abstract class CopyWith$Query$getStarredRepositories$viewer$starredRepositories$
       _CopyWithStubImpl$Query$getStarredRepositories$viewer$starredRepositories$edges$node;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   });
 }
@@ -964,7 +965,7 @@ class _CopyWithImpl$Query$getStarredRepositories$viewer$starredRepositories$edge
     Object? $__typename = _undefined,
   }) =>
       _then(Query$getStarredRepositories$viewer$starredRepositories$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -982,7 +983,7 @@ class _CopyWithStubImpl$Query$getStarredRepositories$viewer$starredRepositories$
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   }) =>
       _res;
