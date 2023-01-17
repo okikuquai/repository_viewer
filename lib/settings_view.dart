@@ -205,8 +205,7 @@ class Navigate2UserView extends HookConsumerWidget {
         ],
       );
     } else if (qryResult.result.parsedData?.viewer.id != null) {
-      final String viewerID = qryResult.result.parsedData!.viewer.id.toString();
-      return UserView(userID: viewerID);
+      return UserView(userID: qryResult.result.parsedData!.viewer.id);
     }
     return AlertDialog(
       title: const Text('エラー'),

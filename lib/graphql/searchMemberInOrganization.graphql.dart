@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
+import 'package:repositoryviewer/graphql/type/custom_url.dart';
 
 class Variables$Query$searchMemberInOrganization {
   factory Variables$Query$searchMemberInOrganization({
@@ -1426,17 +1428,17 @@ class Query$searchMemberInOrganization$organization$membersWithRole$edges$node {
     final l$url = json['url'];
     final l$$__typename = json['__typename'];
     return Query$searchMemberInOrganization$organization$membersWithRole$edges$node(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       login: (l$login as String),
       name: (l$name as String?),
       bio: (l$bio as String?),
-      avatarUrl: (l$avatarUrl as String),
-      url: (l$url as String),
+      avatarUrl: customUriFromJson(l$avatarUrl),
+      url: customUriFromJson(l$url),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String login;
 
@@ -1444,16 +1446,16 @@ class Query$searchMemberInOrganization$organization$membersWithRole$edges$node {
 
   final String? bio;
 
-  final String avatarUrl;
+  final CustomURI avatarUrl;
 
-  final String url;
+  final CustomURI url;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$login = login;
     _resultData['login'] = l$login;
     final l$name = name;
@@ -1461,9 +1463,9 @@ class Query$searchMemberInOrganization$organization$membersWithRole$edges$node {
     final l$bio = bio;
     _resultData['bio'] = l$bio;
     final l$avatarUrl = avatarUrl;
-    _resultData['avatarUrl'] = l$avatarUrl;
+    _resultData['avatarUrl'] = customUriToJson(l$avatarUrl);
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1564,12 +1566,12 @@ abstract class CopyWith$Query$searchMemberInOrganization$organization$membersWit
       _CopyWithStubImpl$Query$searchMemberInOrganization$organization$membersWithRole$edges$node;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? login,
     String? name,
     String? bio,
-    String? avatarUrl,
-    String? url,
+    CustomURI? avatarUrl,
+    CustomURI? url,
     String? $__typename,
   });
 }
@@ -1604,7 +1606,7 @@ class _CopyWithImpl$Query$searchMemberInOrganization$organization$membersWithRol
   }) =>
       _then(
           Query$searchMemberInOrganization$organization$membersWithRole$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         login: login == _undefined || login == null
             ? _instance.login
             : (login as String),
@@ -1612,8 +1614,10 @@ class _CopyWithImpl$Query$searchMemberInOrganization$organization$membersWithRol
         bio: bio == _undefined ? _instance.bio : (bio as String?),
         avatarUrl: avatarUrl == _undefined || avatarUrl == null
             ? _instance.avatarUrl
-            : (avatarUrl as String),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+            : (avatarUrl as CustomURI),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -1631,12 +1635,12 @@ class _CopyWithStubImpl$Query$searchMemberInOrganization$organization$membersWit
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? login,
     String? name,
     String? bio,
-    String? avatarUrl,
-    String? url,
+    CustomURI? avatarUrl,
+    CustomURI? url,
     String? $__typename,
   }) =>
       _res;

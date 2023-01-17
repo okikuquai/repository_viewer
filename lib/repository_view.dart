@@ -9,12 +9,13 @@ import './graphql/getRepositoryInfoFromID.graphql.dart';
 import './graphql/getRepositoryReadmeFromID.graphql.dart';
 import 'client.dart';
 import 'favorite_heart_button.dart';
+import 'graphql/type/custom_id.dart';
 import 'loading_animation.dart';
 
 class RepositoryView extends HookConsumerWidget {
   const RepositoryView({Key? key, required this.repositoryID})
       : super(key: key);
-  final String repositoryID;
+  final GithubAPIID repositoryID;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +50,7 @@ class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
   const RepositoryViewAppbar(
       {Key? key, required this.repositoryID, required this.repositoryName})
       : super(key: key);
-  final String repositoryID;
+  final GithubAPIID repositoryID;
   final String repositoryName;
   @override
   Widget build(BuildContext context) {
@@ -69,7 +70,7 @@ class RepositoryViewBody extends StatefulWidget {
   const RepositoryViewBody(
       {Key? key, required this.repositoryID, required this.repositoryName})
       : super(key: key);
-  final String repositoryID;
+  final GithubAPIID repositoryID;
   final String repositoryName;
 
   @override
@@ -113,7 +114,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
 
 class MarkDownView extends HookConsumerWidget {
   const MarkDownView({Key? key, required this.repositoryID}) : super(key: key);
-  final String repositoryID;
+  final GithubAPIID repositoryID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mdData = useQuery$getRepositoryReadmeFromID(

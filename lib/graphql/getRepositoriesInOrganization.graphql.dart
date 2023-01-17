@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
+import 'package:repositoryviewer/graphql/type/custom_url.dart';
 
 class Variables$Query$getRepositoriesInOrganization {
   factory Variables$Query$getRepositoriesInOrganization({
@@ -1384,34 +1386,34 @@ class Query$getRepositoriesInOrganization$organization$repositories$edges$node {
     final l$url = json['url'];
     final l$$__typename = json['__typename'];
     return Query$getRepositoriesInOrganization$organization$repositories$edges$node(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       name: (l$name as String),
       description: (l$description as String?),
-      url: (l$url as String),
+      url: customUriFromJson(l$url),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String name;
 
   final String? description;
 
-  final String url;
+  final CustomURI url;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$name = name;
     _resultData['name'] = l$name;
     final l$description = description;
     _resultData['description'] = l$description;
     final l$url = url;
-    _resultData['url'] = l$url;
+    _resultData['url'] = customUriToJson(l$url);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -1498,10 +1500,10 @@ abstract class CopyWith$Query$getRepositoriesInOrganization$organization$reposit
       _CopyWithStubImpl$Query$getRepositoriesInOrganization$organization$repositories$edges$node;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? name,
     String? description,
-    String? url,
+    CustomURI? url,
     String? $__typename,
   });
 }
@@ -1534,14 +1536,16 @@ class _CopyWithImpl$Query$getRepositoriesInOrganization$organization$repositorie
   }) =>
       _then(
           Query$getRepositoriesInOrganization$organization$repositories$edges$node(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         name: name == _undefined || name == null
             ? _instance.name
             : (name as String),
         description: description == _undefined
             ? _instance.description
             : (description as String?),
-        url: url == _undefined || url == null ? _instance.url : (url as String),
+        url: url == _undefined || url == null
+            ? _instance.url
+            : (url as CustomURI),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -1559,10 +1563,10 @@ class _CopyWithStubImpl$Query$getRepositoriesInOrganization$organization$reposit
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? name,
     String? description,
-    String? url,
+    CustomURI? url,
     String? $__typename,
   }) =>
       _res;

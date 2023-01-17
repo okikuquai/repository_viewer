@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
 
 class Query$getViewerID {
   Query$getViewerID({
@@ -295,19 +296,19 @@ class Query$getViewerID$viewer {
     final l$id = json['id'];
     final l$$__typename = json['__typename'];
     return Query$getViewerID$viewer(
-      id: (l$id as String),
+      id: githubAPIIDFromJson(l$id),
       $__typename: (l$$__typename as String),
     );
   }
 
-  final String id;
+  final GithubAPIID id;
 
   final String $__typename;
 
   Map<String, dynamic> toJson() {
     final _resultData = <String, dynamic>{};
     final l$id = id;
-    _resultData['id'] = l$id;
+    _resultData['id'] = githubAPIIDToJson(l$id);
     final l$$__typename = $__typename;
     _resultData['__typename'] = l$$__typename;
     return _resultData;
@@ -365,7 +366,7 @@ abstract class CopyWith$Query$getViewerID$viewer<TRes> {
       _CopyWithStubImpl$Query$getViewerID$viewer;
 
   TRes call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   });
 }
@@ -388,7 +389,7 @@ class _CopyWithImpl$Query$getViewerID$viewer<TRes>
     Object? $__typename = _undefined,
   }) =>
       _then(Query$getViewerID$viewer(
-        id: id == _undefined || id == null ? _instance.id : (id as String),
+        id: id == _undefined || id == null ? _instance.id : (id as GithubAPIID),
         $__typename: $__typename == _undefined || $__typename == null
             ? _instance.$__typename
             : ($__typename as String),
@@ -402,7 +403,7 @@ class _CopyWithStubImpl$Query$getViewerID$viewer<TRes>
   TRes _res;
 
   call({
-    String? id,
+    GithubAPIID? id,
     String? $__typename,
   }) =>
       _res;

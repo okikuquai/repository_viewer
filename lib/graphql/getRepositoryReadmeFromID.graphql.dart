@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:gql/ast.dart';
 import 'package:graphql/client.dart' as graphql;
 import 'package:graphql_flutter/graphql_flutter.dart' as graphql_flutter;
+import 'package:repositoryviewer/graphql/type/custom_id.dart';
 
 class Fragment$Readme {
   Fragment$Readme({
@@ -628,7 +629,8 @@ extension ClientExtension$Fragment$ReadmeMDString on graphql.GraphQLClient {
 }
 
 class Variables$Query$getRepositoryReadmeFromID {
-  factory Variables$Query$getRepositoryReadmeFromID({required String id}) =>
+  factory Variables$Query$getRepositoryReadmeFromID(
+          {required GithubAPIID id}) =>
       Variables$Query$getRepositoryReadmeFromID._({
         r'id': id,
       });
@@ -639,17 +641,17 @@ class Variables$Query$getRepositoryReadmeFromID {
       Map<String, dynamic> data) {
     final result$data = <String, dynamic>{};
     final l$id = data['id'];
-    result$data['id'] = (l$id as String);
+    result$data['id'] = githubAPIIDFromJson(l$id);
     return Variables$Query$getRepositoryReadmeFromID._(result$data);
   }
 
   Map<String, dynamic> _$data;
 
-  String get id => (_$data['id'] as String);
+  GithubAPIID get id => (_$data['id'] as GithubAPIID);
   Map<String, dynamic> toJson() {
     final result$data = <String, dynamic>{};
     final l$id = id;
-    result$data['id'] = l$id;
+    result$data['id'] = githubAPIIDToJson(l$id);
     return result$data;
   }
 
@@ -692,7 +694,7 @@ abstract class CopyWith$Variables$Query$getRepositoryReadmeFromID<TRes> {
   factory CopyWith$Variables$Query$getRepositoryReadmeFromID.stub(TRes res) =
       _CopyWithStubImpl$Variables$Query$getRepositoryReadmeFromID;
 
-  TRes call({String? id});
+  TRes call({GithubAPIID? id});
 }
 
 class _CopyWithImpl$Variables$Query$getRepositoryReadmeFromID<TRes>
@@ -711,7 +713,7 @@ class _CopyWithImpl$Variables$Query$getRepositoryReadmeFromID<TRes>
   TRes call({Object? id = _undefined}) =>
       _then(Variables$Query$getRepositoryReadmeFromID._({
         ..._instance._$data,
-        if (id != _undefined && id != null) 'id': (id as String),
+        if (id != _undefined && id != null) 'id': (id as GithubAPIID),
       }));
 }
 
@@ -721,7 +723,7 @@ class _CopyWithStubImpl$Variables$Query$getRepositoryReadmeFromID<TRes>
 
   TRes _res;
 
-  call({String? id}) => _res;
+  call({GithubAPIID? id}) => _res;
 }
 
 class Query$getRepositoryReadmeFromID {

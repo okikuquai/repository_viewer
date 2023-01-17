@@ -63,7 +63,7 @@ class OrgMemberList extends HookConsumerWidget {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                                 fit: BoxFit.fill,
-                                image: NetworkImage(member.avatarUrl))),
+                                image: NetworkImage(member.avatarUrl.uriString))),
                       ),
                     ),
                     Expanded(

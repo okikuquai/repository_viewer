@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:repositoryviewer/favorite_heart_button.dart';
 
+import 'graphql/type/custom_id.dart';
 import 'repository_view.dart';
 
 class RepositoryCard extends StatelessWidget {
@@ -11,7 +12,7 @@ class RepositoryCard extends StatelessWidget {
       required this.description,
       this.isStarredinGithub = false});
 
-  final String id;
+  final GithubAPIID id;
   final String title;
   final String description;
   final bool isStarredinGithub;

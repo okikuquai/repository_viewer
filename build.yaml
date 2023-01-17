@@ -8,3 +8,14 @@ targets:
           clients:
             - graphql
             - graphql_flutter
+          scalars:
+            ID:
+              type: GithubAPIID
+              fromJsonFunctionName: githubAPIIDFromJson
+              toJsonFunctionName: githubAPIIDToJson
+              import: package:repositoryviewer/graphql/type/custom_id.dart
+            URI:
+              type: CustomURI
+              fromJsonFunctionName: customUriFromJson
+              toJsonFunctionName: customUriToJson
+              import: package:repositoryviewer/graphql/type/custom_url.dart
