@@ -20,6 +20,8 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
   @override
   Future<List<GithubNodeID>> get value => _load();
 
+  final String _saveKey = 'bookmarkedGitRepository';
+
   @override
   void addId(GithubNodeID id) {
     final value = [...state, id];
@@ -52,15 +54,11 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
     }
   }
 
-  @override
   void _changeState(List<GithubNodeID> value) {
     state = value;
     _save(value);
   }
 
-  final String _saveKey = 'bookmarkedGitRepository';
-
-  @override
   Future<void> _save(List<GithubNodeID> value) async {
     //重複を削除
     final saveValue = value.map((e) => e.idString).toSet().toList();
@@ -68,7 +66,6 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
     prefs.setStringList(_saveKey, saveValue);
   }
 
-  @override
   Future<List<GithubNodeID>> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final loadedGithubNodeIDList =
@@ -82,7 +79,7 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
 abstract class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
   BookmarkedRepositoryNotifier(super.state);
 
-  Future<List<GithubNodeID>> get value => _load();
+  Future<List<GithubNodeID>> get value;
 
   void addId(GithubNodeID id);
 
@@ -92,9 +89,4 @@ abstract class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNod
 
   void toggle(GithubNodeID id);
 
-  void _changeState(List<GithubNodeID> value);
-
-  Future<void> _save(List<GithubNodeID> value);
-
-  Future<List<GithubNodeID>> _load();
 }
