@@ -5,8 +5,8 @@ import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 import 'package:repositoryviewer/user_info_view.dart';
 
-import './graphql/getOrganizationList.graphql.dart';
-import './graphql/getViewerID.graphql.dart';
+import './graphql/get_organization_list.graphql.dart';
+import './graphql/get_viewer_id.graphql.dart';
 import 'loading_animation.dart';
 
 class SettingsView extends HookConsumerWidget {

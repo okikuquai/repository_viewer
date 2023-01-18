@@ -5,8 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/repository_info_view.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
-import './graphql/getUserInfoFromID.graphql.dart';
-import 'graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
+import './graphql/get_user_info_from_id.graphql.dart';
+import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'graphql/type/github_node_id_type.dart';
 import 'loading_animation.dart';
 

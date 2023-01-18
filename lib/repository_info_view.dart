@@ -5,8 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/restapi/contributor.dart';
 import 'package:repositoryviewer/user_info_view.dart';
 
-import './graphql/getRepositoryInfoFromID.graphql.dart';
-import './graphql/getRepositoryReadmeFromID.graphql.dart';
+import './graphql/get_repository_info_from_id.graphql.dart';
+import './graphql/get_repository_readme_from_id.graphql.dart';
 import 'list_card_right_icon_button.dart';
 import 'provider/github_account_setting_provider.dart';
 import 'graphql/type/github_node_id_type.dart';
@@ -19,9 +19,9 @@ class RepositoryInfoView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repoData = useQuery$getRepositoryDataFromID(
-      Options$Query$getRepositoryDataFromID(
-          variables: Variables$Query$getRepositoryDataFromID(id: repositoryID)),
+    final repoData = useQuery$getRepositoryInfoFromID(
+      Options$Query$getRepositoryInfoFromID(
+          variables: Variables$Query$getRepositoryInfoFromID(id: repositoryID)),
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける

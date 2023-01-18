@@ -4,8 +4,8 @@ import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
-import 'graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
-import 'graphql/getStarredRepositories.graphql.dart';
+import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
+import 'graphql/get_starred_repository.graphql.dart';
 import 'graphql/type/github_node_id_type.dart';
 import 'loading_animation.dart';
 import 'git_repository_card_view.dart';
@@ -20,8 +20,8 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getStarredRepositories(
-      Options$Query$getStarredRepositories(fetchPolicy: FetchPolicy.noCache),
+    final qryResult = useQuery$getStarredRepository(
+      Options$Query$getStarredRepository(fetchPolicy: FetchPolicy.noCache),
     );
 
     //ロード完了していない場合

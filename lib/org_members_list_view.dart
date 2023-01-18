@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/user_info_view.dart';
 
-import './graphql/searchMemberInOrganization.graphql.dart';
+import './graphql/get_members_from_organization.graphql.dart';
 import 'loading_animation.dart';
 
 class OrgMemberListView extends HookConsumerWidget {
@@ -19,9 +19,9 @@ class OrgMemberListView extends HookConsumerWidget {
   }
 
   Widget _body() {
-    final qryResult = useQuery$searchMemberInOrganization(
-      Options$Query$searchMemberInOrganization(
-          variables: Variables$Query$searchMemberInOrganization(
+    final qryResult = useQuery$getMembersFromOrganization(
+      Options$Query$getMembersFromOrganization(
+          variables: Variables$Query$getMembersFromOrganization(
               orgName: orgName, first: 100)),
     );
 

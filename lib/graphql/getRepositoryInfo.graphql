@@ -1,9 +1,0 @@
-query getRepositoryInfo($orgName: String!, $repositoryName: String!) {
-  organization(login: $orgName){
-    repository(name: $repositoryName){
-      name,
-      description,
-      url
-    }
-  }
-}
