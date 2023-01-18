@@ -21,7 +21,8 @@ class UserView extends HookConsumerWidget {
 
     final bookmarkedGitRepositoryvalueinfo =
         useMemoized(() => bookmarkedGitRepositoryState.value);
-    final bookmarkedGitRepositoryvalue = useFuture(bookmarkedGitRepositoryvalueinfo);
+    final bookmarkedGitRepositoryvalue =
+        useFuture(bookmarkedGitRepositoryvalueinfo);
     if (!bookmarkedGitRepositoryvalue.hasData) {
       return const LoadingAnimation();
     }
@@ -138,7 +139,8 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
               maxLines: 1, overflow: TextOverflow.ellipsis),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => RepositoryInfoView(repositoryID: repository.id),
+              builder: (context) =>
+                  RepositoryInfoView(repositoryID: repository.id),
             ),
           ),
         ));

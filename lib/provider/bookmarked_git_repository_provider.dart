@@ -55,7 +55,9 @@ class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
 
   Future<List<GithubNodeID>> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final loadedGithubNodeIDList = prefs.getStringList(_saveKey)?.map((e) => GithubNodeID(e)).toList() ?? [];
+    final loadedGithubNodeIDList =
+        prefs.getStringList(_saveKey)?.map((e) => GithubNodeID(e)).toList() ??
+            [];
 
     return loadedGithubNodeIDList;
   }

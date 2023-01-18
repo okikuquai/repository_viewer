@@ -92,10 +92,11 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
               //さらにリポジトリを取得
               qryResult.fetchMore(
                   FetchMoreOptions$Query$getRepositoryListFromOrganization(
-                      variables: Variables$Query$getRepositoryListFromOrganization(
-                          orgName: orgName,
-                          first: 15,
-                          after: pageinfo.endCursor),
+                      variables:
+                          Variables$Query$getRepositoryListFromOrganization(
+                              orgName: orgName,
+                              first: 15,
+                              after: pageinfo.endCursor),
                       updateQuery: (previousResultData, fetchMoreResultData) {
                         final List<dynamic> items = <dynamic>[
                           ...previousResultData?['organization']['repositories']

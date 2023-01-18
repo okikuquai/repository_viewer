@@ -23,7 +23,8 @@ class RepositoryCard extends StatelessWidget {
 
     return Card(
       child: ListTile(
-          trailing: ListCardRightIconButton(id: id, isStarredInGithub: isStarredinGithub),
+          trailing: ListCardRightIconButton(
+              id: id, isStarredInGithub: isStarredinGithub),
           title: Text(
             title,
             style: textTheme.headline5,

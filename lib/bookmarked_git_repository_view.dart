@@ -78,7 +78,8 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 
     final bookmarkedGitRepositoryValueInfo =
         useMemoized(() => bookmarkedGitRepositoryState.value);
-    final bookmarkedGitRepositoryValue = useFuture(bookmarkedGitRepositoryValueInfo);
+    final bookmarkedGitRepositoryValue =
+        useFuture(bookmarkedGitRepositoryValueInfo);
     if (!bookmarkedGitRepositoryValue.hasData) {
       return const LoadingAnimation();
     }
@@ -169,7 +170,8 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
 
     final bookmarkedGitRepositoryValueInfo =
         useMemoized(() => bookmarkedGitRepositoryState.value);
-    final bookmarkedGitRepositoryValue = useFuture(bookmarkedGitRepositoryValueInfo);
+    final bookmarkedGitRepositoryValue =
+        useFuture(bookmarkedGitRepositoryValueInfo);
     if (!bookmarkedGitRepositoryValue.hasData) {
       return const LoadingAnimation();
     }

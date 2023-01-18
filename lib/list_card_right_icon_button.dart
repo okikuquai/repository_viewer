@@ -16,7 +16,8 @@ class ListCardRightIconButton extends HookConsumerWidget {
         .watch(bookmarkedGitRepositoryProvider)
         .where((element) => element == id)
         .isNotEmpty;
-    final favStateNotifier = ref.watch(bookmarkedGitRepositoryProvider.notifier);
+    final favStateNotifier =
+        ref.watch(bookmarkedGitRepositoryProvider.notifier);
     final iconEnable = isStarredInGithub ? Icons.star : Icons.favorite;
     final iconDisable = isStarredInGithub ? Icons.star : Icons.favorite_border;
     final color = isStarredInGithub ? Colors.yellow : Colors.red;

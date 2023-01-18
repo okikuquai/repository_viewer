@@ -8,18 +8,18 @@ class LoadingAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            LoadingAnimationWidget.hexagonDots(
-              color: Colors.black45,
-              size: 50,
-            ),
-            const Padding(
-              padding: EdgeInsets.all(15),
-              child: Text('Loading ...'),
-            )
-          ],
-        ));
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        LoadingAnimationWidget.hexagonDots(
+          color: Colors.black45,
+          size: 50,
+        ),
+        const Padding(
+          padding: EdgeInsets.all(15),
+          child: Text('Loading ...'),
+        )
+      ],
+    ));
   }
 }
 
@@ -34,17 +34,17 @@ class LoadingAnimationWithAppbar extends StatelessWidget {
         ),
         body: Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LoadingAnimationWidget.hexagonDots(
-                  color: Colors.black45,
-                  size: 50,
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Text('Loading ...'),
-                )
-              ],
-            )));
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LoadingAnimationWidget.hexagonDots(
+              color: Colors.black45,
+              size: 50,
+            ),
+            const Padding(
+              padding: EdgeInsets.all(15),
+              child: Text('Loading ...'),
+            )
+          ],
+        )));
   }
 }

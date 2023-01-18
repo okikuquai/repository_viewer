@@ -15,7 +15,8 @@ class SettingsView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final bookmarkedGitRepositoryState = ref.read(bookmarkedGitRepositoryProvider);
+    final bookmarkedGitRepositoryState =
+        ref.read(bookmarkedGitRepositoryProvider);
 
     return Scaffold(
         appBar: AppBar(
