@@ -24,5 +24,7 @@ targets:
               type: String
             Date:
               type: Datetime
+            GitRefname:
+              type: String
             JSON:
               type: Map<String, dynamic>
