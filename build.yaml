@@ -13,9 +13,9 @@ targets:
               type: GithubAPIID
               fromJsonFunctionName: githubAPIIDFromJson
               toJsonFunctionName: githubAPIIDToJson
-              import: package:repositoryviewer/graphql/type/custom_id.dart
+              import: package:repositoryviewer/graphql/type/github_node_id_type.dart
             URI:
-              type: CustomURI
-              fromJsonFunctionName: customUriFromJson
-              toJsonFunctionName: customUriToJson
-              import: package:repositoryviewer/graphql/type/custom_url.dart
+              type: Uri
+              fromJsonFunctionName: uriFromJson
+              toJsonFunctionName: uriToJson
+              import: package:repositoryviewer/graphql/type/github_uri_type.dart
