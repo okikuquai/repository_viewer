@@ -11,7 +11,11 @@ final bookmarkedGitRepositoryProvider =
 
 
 class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>> implements BookmarkedRepositoryNotifier  {
-  BookmarkedRepositoryNotifierImpl() : super(<GithubNodeID>[]);
+  BookmarkedRepositoryNotifierImpl() : super(<GithubNodeID>[]) {
+    () async {
+      _changeState(await value);
+    };
+  }
 
   @override
   Future<List<GithubNodeID>> get value => _load();
@@ -25,8 +29,9 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
   @override
   void removeId(GithubNodeID id) async {
     final list = await _load();
-    if (state.contains(id)) {
-      list.remove(id);
+    if (state.where((element) => element.idString == id.idString).isNotEmpty) {
+      //idをそのまま渡すと削除されないのでfirstWhereで同じisStringのlistを抽出している
+      list.remove(list.firstWhere((element) => element.idString == id.idString));
       final removedValue = List.of(list);
       _changeState(removedValue);
     }
@@ -40,7 +45,7 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
   @override
   void toggle(GithubNodeID id) async {
     final list = await _load();
-    if (list.where((element) => element == id).isNotEmpty) {
+    if (list.where((element) => element.idString == id.idString).isNotEmpty) {
       removeId(id);
     } else {
       addId(id);
@@ -58,7 +63,7 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>>
   @override
   Future<void> _save(List<GithubNodeID> value) async {
     //重複を削除
-    final saveValue = value.map((e) => e.idString).toList();
+    final saveValue = value.map((e) => e.idString).toSet().toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList(_saveKey, saveValue);
   }

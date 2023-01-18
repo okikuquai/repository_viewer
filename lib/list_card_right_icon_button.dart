@@ -14,7 +14,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favState = ref
         .watch(bookmarkedGitRepositoryProvider)
-        .where((element) => element == id)
+        .where((element) => element.idString == id.idString)
         .isNotEmpty;
     final favStateNotifier =
         ref.watch(bookmarkedGitRepositoryProvider.notifier);
