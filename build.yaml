@@ -16,6 +16,13 @@ targets:
               import: package:repositoryviewer/graphql/type/github_node_id_type.dart
             URI:
               type: Uri
-              fromJsonFunctionName: uriFromJson
-              toJsonFunctionName: uriToJson
-              import: package:repositoryviewer/graphql/type/github_uri_type.dart
+            GitObjectID:
+              type: String
+            DateTime:
+              type: DateTime
+            Base64String:
+              type: String
+            Date:
+              type: Datetime
+            JSON:
+              type: Map<String, dynamic>
