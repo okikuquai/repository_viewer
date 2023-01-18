@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/client.dart';
-import 'package:repositoryviewer/organization_members_view.dart';
+import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/org_members_list_view.dart';
 
 import './graphql/getRepositoriesInOrganization.graphql.dart';
-import 'repository_card.dart';
+import 'git_repository_card_view.dart';
 
-class OrganizationRepositoryListHome extends HookConsumerWidget {
-  const OrganizationRepositoryListHome({super.key});
+class OrganizationRepositoryListView extends HookConsumerWidget {
+  const OrganizationRepositoryListView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +21,7 @@ class OrganizationRepositoryListHome extends HookConsumerWidget {
             IconButton(
                 onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => OrgMemberList(
+                        builder: (context) => OrgMemberListView(
                           orgName: ghOrganizationProvider,
                         ),
                       ),

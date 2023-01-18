@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/client.dart';
-import 'package:repositoryviewer/starred_repositories.dart';
-import 'package:repositoryviewer/user_view.dart';
+import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
+import 'package:repositoryviewer/user_info_view.dart';
 
 import './graphql/getOrganizationList.graphql.dart';
 import './graphql/getViewerID.graphql.dart';
 import 'loading_animation.dart';
 
-class SettingsScreen extends HookConsumerWidget {
-  const SettingsScreen({super.key});
+class SettingsView extends HookConsumerWidget {
+  const SettingsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final favoriteRepositoriesState = ref.read(favoriteRepositoryProvider);
+    final bookmarkedGitRepositoryState = ref.read(bookmarkedGitRepositoryProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -36,7 +36,7 @@ class SettingsScreen extends HookConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {
-                  favoriteRepositoriesState.clear();
+                  bookmarkedGitRepositoryState.clear();
                 }),
             ListTile(
                 title: Text(
@@ -188,7 +188,7 @@ class Navigate2UserView extends HookConsumerWidget {
     final qryResult = useQuery$getViewerID();
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimationWithAppbar();
+      return const LoadingAnimationWithAppbar();
     } else if (qryResult.result.hasException) {
       //例外スローした場合
       return AlertDialog(

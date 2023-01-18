@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/user_view.dart';
+import 'package:repositoryviewer/user_info_view.dart';
 
 import './graphql/searchMemberInOrganization.graphql.dart';
 import 'loading_animation.dart';
 
-class OrgMemberList extends HookConsumerWidget {
-  const OrgMemberList({Key? key, required this.orgName}) : super(key: key);
+class OrgMemberListView extends HookConsumerWidget {
+  const OrgMemberListView({Key? key, required this.orgName}) : super(key: key);
   final String orgName;
 
   @override
@@ -27,7 +27,7 @@ class OrgMemberList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimation();
+      return const LoadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -63,7 +63,7 @@ class OrgMemberList extends HookConsumerWidget {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                                 fit: BoxFit.fill,
-                                image: NetworkImage(member.avatarUrl.uriString))),
+                                image: NetworkImage(member.avatarUrl.toString()))),
                       ),
                     ),
                     Expanded(

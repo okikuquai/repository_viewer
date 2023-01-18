@@ -10,9 +10,9 @@ targets:
             - graphql_flutter
           scalars:
             ID:
-              type: GithubAPIID
-              fromJsonFunctionName: githubAPIIDFromJson
-              toJsonFunctionName: githubAPIIDToJson
+              type: GithubNodeID
+              fromJsonFunctionName: githubNodeIDFromJson
+              toJsonFunctionName: githubNodeIDToJson
               import: package:repositoryviewer/graphql/type/github_node_id_type.dart
             URI:
               type: Uri

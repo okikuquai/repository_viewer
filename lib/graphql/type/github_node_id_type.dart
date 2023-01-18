@@ -8,4 +8,4 @@ class GithubNodeID {
 }
 
 GithubNodeID githubNodeIDFromJson(dynamic data) => GithubNodeID(data as String);
-dynamic githubAPIIDToJson(GithubNodeID id) => id.idString;
+dynamic githubNodeIDToJson(GithubNodeID id) => id.idString;

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
-// Package imports:
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/starred_repositories.dart';
+import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
-import './graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
-import './graphql/getStarredRepositories.graphql.dart';
-import 'graphql/type/custom_id.dart';
+import 'graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
+import 'graphql/getStarredRepositories.graphql.dart';
+import 'graphql/type/github_node_id_type.dart';
 import 'loading_animation.dart';
-import 'repository_card.dart';
+import 'git_repository_card_view.dart';
 
-class StarredRepositories extends HookConsumerWidget {
-  const StarredRepositories({Key? key}) : super(key: key);
+class BookmarkedGitRepositoryView extends HookConsumerWidget {
+  const BookmarkedGitRepositoryView({Key? key}) : super(key: key);
   final _tab = const <Tab>[
     Tab(text: 'Local'),
     Tab(text: 'Github'),
@@ -27,7 +26,7 @@ class StarredRepositories extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimation();
+      return const LoadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -37,7 +36,7 @@ class StarredRepositories extends HookConsumerWidget {
     if (qryResult.result.parsedData?.viewer.starredRepositories.edges != null) {
       final githubStarredRepositories =
           qryResult.result.parsedData!.viewer.starredRepositories.edges!;
-      final starredIDs = <GithubAPIID>[];
+      final starredIDs = <GithubNodeID>[];
       for (final edge in githubStarredRepositories) {
         if (edge == null) continue;
         starredIDs.add(edge.node.id);
@@ -47,7 +46,7 @@ class StarredRepositories extends HookConsumerWidget {
         length: _tab.length,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Starred Repositories'),
+            title: const Text('Bookmarks'),
             bottom: TabBar(tabs: _tab),
           ),
           body: TabBarView(
@@ -74,25 +73,25 @@ class LocalFavoriteCardList extends HookConsumerWidget {
   const LocalFavoriteCardList({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favoriteRepositoriesState =
-        ref.read(favoriteRepositoryProvider.notifier);
+    final bookmarkedGitRepositoryState =
+        ref.read(bookmarkedGitRepositoryProvider.notifier);
 
-    final favoriteRepositoriesvalueinfo =
-        useMemoized(() => favoriteRepositoriesState.value);
-    final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
-    if (!favoriteRepositoriesvalue.hasData) {
-      return loadingAnimation();
+    final bookmarkedGitRepositoryValueInfo =
+        useMemoized(() => bookmarkedGitRepositoryState.value);
+    final bookmarkedGitRepositoryValue = useFuture(bookmarkedGitRepositoryValueInfo);
+    if (!bookmarkedGitRepositoryValue.hasData) {
+      return const LoadingAnimation();
     }
 
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
       Options$Query$getRepositoryInfoFromMultipleIDs(
           variables: Variables$Query$getRepositoryInfoFromMultipleIDs(
-              ids: favoriteRepositoriesvalue.data!)),
+              ids: bookmarkedGitRepositoryValue.data!)),
     );
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimation();
+      return const LoadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -120,7 +119,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 class GithubStarredCardList extends HookConsumerWidget {
   const GithubStarredCardList({Key? key, required this.githubStarredIds})
       : super(key: key);
-  final List<GithubAPIID> githubStarredIds;
+  final List<GithubNodeID> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
@@ -131,7 +130,7 @@ class GithubStarredCardList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimation();
+      return const LoadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -162,21 +161,21 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   const GithubAndLocalFavoriteCardList(
       {Key? key, required this.githubStarredIds})
       : super(key: key);
-  final List<GithubAPIID> githubStarredIds;
+  final List<GithubNodeID> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favoriteRepositoriesState =
-        ref.read(favoriteRepositoryProvider.notifier);
+    final bookmarkedGitRepositoryState =
+        ref.read(bookmarkedGitRepositoryProvider.notifier);
 
-    final favoriteRepositoriesvalueinfo =
-        useMemoized(() => favoriteRepositoriesState.value);
-    final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
-    if (!favoriteRepositoriesvalue.hasData) {
-      return loadingAnimation();
+    final bookmarkedGitRepositoryValueInfo =
+        useMemoized(() => bookmarkedGitRepositoryState.value);
+    final bookmarkedGitRepositoryValue = useFuture(bookmarkedGitRepositoryValueInfo);
+    if (!bookmarkedGitRepositoryValue.hasData) {
+      return const LoadingAnimation();
     }
 
-    List<GithubAPIID> ids = List.from(githubStarredIds)
-      ..addAll(favoriteRepositoriesvalue.data!);
+    List<GithubNodeID> ids = List.from(githubStarredIds)
+      ..addAll(bookmarkedGitRepositoryValue.data!);
     //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
     ids = ids.toSet().toList();
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
@@ -187,7 +186,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      return loadingAnimation();
+      return const LoadingAnimation();
     }
     //例外スローした場合
     else if (qryResult.result.hasException) {
@@ -197,7 +196,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
     if (qryResult.result.parsedData?.nodes != null) {
       final repositories = qryResult.result.parsedData!.nodes;
       //再構築は不要だけどあたいが欲しいのでref.watchで宣言
-      final favStates = favoriteRepositoriesvalue.data!;
+      final favStates = bookmarkedGitRepositoryValue.data!;
       return ListView.builder(
           itemCount: ids.length,
           itemBuilder: (context, index) {

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/client.dart';
-import 'package:repositoryviewer/orgnization_repository_view.dart';
+import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/org_repository_list_view.dart';
 import 'package:repositoryviewer/settings_view.dart';
-import 'package:repositoryviewer/starred_view.dart';
+import 'package:repositoryviewer/bookmarked_git_repository_view.dart';
 
-class TopPage extends HookConsumerWidget {
-  const TopPage({Key? key}) : super(key: key);
+class TopPageView extends HookConsumerWidget {
+  const TopPageView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,9 +31,9 @@ class TopPage extends HookConsumerWidget {
     //updateToken(githubTokenLoadingState.data!);
     //GraphQLProviderでラップすることで使える
     final screens = [
-      const OrganizationRepositoryListHome(),
-      const StarredRepositories(),
-      const SettingsScreen()
+      const OrganizationRepositoryListView(),
+      const BookmarkedGitRepositoryView(),
+      const SettingsView()
     ];
     return GraphQLProvider(
         client: client,
@@ -45,7 +45,7 @@ class TopPage extends HookConsumerWidget {
                   BottomNavigationBarItem(
                       icon: Icon(Icons.home), label: 'Home'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.star), label: 'Star'),
+                      icon: Icon(Icons.bookmarks), label: 'Bookmarks'),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.settings), label: 'Settings')
                 ],
