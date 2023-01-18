@@ -29,7 +29,7 @@ This app was created for training Flutter and its code
    ```
    fvm install
    ```
-4. Run `graphql_codegen` plugin for generate code
+4. Run `graphql_codegen` plugin to generate code
    ```
    make build-runner
    ```
