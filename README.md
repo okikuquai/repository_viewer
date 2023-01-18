@@ -29,32 +29,36 @@ This app was created for training Flutter and its code
    ```
    fvm install
    ```
-4. Install Dart packages
+4. Run `graphql_codegen` plugin for generate code
+   ```
+   make build-runner
+   ```
+5. Install Dart packages
    ```
    fvm flutter pub get
    ```
-5. Install [rbenv](https://github.com/rbenv/rbenv)
+6. Install [rbenv](https://github.com/rbenv/rbenv)
     - Follow the instruction described at https://github.com/rbenv/rbenv#installation
     - If you're on macOS, you can install rbenv with [Homebrew](https://brew.sh/)
       ```
       brew install rbenv
       ```
-6. Install [Ruby](https://www.ruby-lang.org/)
+7. Install [Ruby](https://www.ruby-lang.org/)
    ```
    rbenv install
    ```
-7. Install [CocoaPods](https://cocoapods.org/)
+8. Install [CocoaPods](https://cocoapods.org/)
    ```
    rbenv exec gem install cocoapods
    ```
-8. Install CocoaPods dependencies
+9. Install CocoaPods dependencies
    ```
    make ios-pod
    ```
-9. Obtain certificates and provisioning profiles to sign iOS app for development
-   ```
-   make ios-cert
-   ```
+10. Obtain certificates and provisioning profiles to sign iOS app for development
+    ```
+    make ios-cert
+    ```
 </details>
 
 ## Github token Setting
