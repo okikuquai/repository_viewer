@@ -6,18 +6,23 @@ import '../graphql/type/github_node_id_type.dart';
 //旧favoriteRepositoryProvider (diffが汚れてしまったのでメモ)
 final bookmarkedGitRepositoryProvider =
     StateNotifierProvider<BookmarkedRepositoryNotifier, List<GithubNodeID>>(
-  (ref) => BookmarkedRepositoryNotifier(),
+  (ref) => BookmarkedRepositoryNotifierImpl(),
 );
 
-class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
-  BookmarkedRepositoryNotifier() : super(<GithubNodeID>[]);
+
+class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<GithubNodeID>> implements BookmarkedRepositoryNotifier  {
+  BookmarkedRepositoryNotifierImpl() : super(<GithubNodeID>[]);
+
+  @override
   Future<List<GithubNodeID>> get value => _load();
 
+  @override
   void addId(GithubNodeID id) {
     final value = [...state, id];
     _changeState(value);
   }
 
+  @override
   void removeId(GithubNodeID id) async {
     final list = await _load();
     if (state.contains(id)) {
@@ -27,10 +32,12 @@ class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
     }
   }
 
+  @override
   void clear() {
     _changeState(<GithubNodeID>[]);
   }
 
+  @override
   void toggle(GithubNodeID id) async {
     final list = await _load();
     if (list.where((element) => element == id).isNotEmpty) {
@@ -40,12 +47,15 @@ class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
     }
   }
 
+  @override
   void _changeState(List<GithubNodeID> value) {
     state = value;
     _save(value);
   }
 
   final String _saveKey = 'bookmarkedGitRepository';
+
+  @override
   Future<void> _save(List<GithubNodeID> value) async {
     //重複を削除
     final saveValue = value.map((e) => e.idString).toList();
@@ -53,6 +63,7 @@ class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
     prefs.setStringList(_saveKey, saveValue);
   }
 
+  @override
   Future<List<GithubNodeID>> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final loadedGithubNodeIDList =
@@ -61,4 +72,24 @@ class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
 
     return loadedGithubNodeIDList;
   }
+}
+
+abstract class BookmarkedRepositoryNotifier extends StateNotifier<List<GithubNodeID>> {
+  BookmarkedRepositoryNotifier(super.state);
+
+  Future<List<GithubNodeID>> get value => _load();
+
+  void addId(GithubNodeID id);
+
+  void removeId(GithubNodeID id);
+
+  void clear();
+
+  void toggle(GithubNodeID id);
+
+  void _changeState(List<GithubNodeID> value);
+
+  Future<void> _save(List<GithubNodeID> value);
+
+  Future<List<GithubNodeID>> _load();
 }
