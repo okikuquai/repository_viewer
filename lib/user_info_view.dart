@@ -2,28 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/repository_view.dart';
-import 'package:repositoryviewer/starred_repositories.dart';
+import 'package:repositoryviewer/repository_info_view.dart';
+import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
-import './graphql/getUserInfoFromID.graphql.dart';
-import 'graphql/getRepositoryInfoFromMultipleIDs.graphql.dart';
-import 'graphql/type/custom_id.dart';
+import './graphql/get_user_info_from_id.graphql.dart';
+import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
+import 'graphql/type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
 class UserView extends HookConsumerWidget {
   const UserView({super.key, required this.userID});
-  final GithubAPIID userID;
+  final GithubNodeID userID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorTheme = Theme.of(context).primaryColor;
-    final favoriteRepositoriesState =
-        ref.read(favoriteRepositoryProvider.notifier);
+    final bookmarkedGitRepositoryState =
+        ref.read(bookmarkedGitRepositoryProvider.notifier);
 
-    final favoriteRepositoriesvalueinfo =
-        useMemoized(() => favoriteRepositoriesState.value);
-    final favoriteRepositoriesvalue = useFuture(favoriteRepositoriesvalueinfo);
-    if (!favoriteRepositoriesvalue.hasData) {
-      return loadingAnimation();
+    final bookmarkedGitRepositoryvalueinfo =
+        useMemoized(() => bookmarkedGitRepositoryState.value);
+    final bookmarkedGitRepositoryvalue =
+        useFuture(bookmarkedGitRepositoryvalueinfo);
+    if (!bookmarkedGitRepositoryvalue.hasData) {
+      return const LoadingAnimation();
     }
 
     final qryResult = useQuery$getUserInfoFromID(
@@ -35,7 +36,7 @@ class UserView extends HookConsumerWidget {
     if (qryResult.result.isLoading) {
       return Scaffold(
           appBar: AppBar(title: const Text('Loading...')),
-          body: loadingAnimation());
+          body: const LoadingAnimation());
     } else if (qryResult.result.hasException) {
       return Scaffold(
           appBar: AppBar(
@@ -45,13 +46,13 @@ class UserView extends HookConsumerWidget {
     } else if (qryResult.result.parsedData?.node != null) {
       final user = qryResult.result.parsedData!.node! as Fragment$UserInfo;
       final starredRepositories = user.starredRepositories.edges;
-      List<GithubAPIID> ids = [];
+      List<GithubNodeID> ids = [];
       starredRepositories?.forEach((element) {
         ids.add(element!.node.id);
       });
 
       if (user.isViewer) {
-        ids.addAll(favoriteRepositoriesvalue.data!);
+        ids.addAll(bookmarkedGitRepositoryvalue.data!);
         //重複消去
         ids = ids.toSet().toList();
       }
@@ -81,7 +82,7 @@ class UserView extends HookConsumerWidget {
                         ),
                       ),
                       child: Image.network(
-                        user.avatarUrl.uriString,
+                        user.avatarUrl.toString(),
                         width: double.infinity,
                         fit: BoxFit.cover,
                       )))),
@@ -95,7 +96,7 @@ class UserView extends HookConsumerWidget {
 
 class UserStarredRepositoriesList extends HookConsumerWidget {
   const UserStarredRepositoriesList({super.key, required this.ids});
-  final List<GithubAPIID> ids;
+  final List<GithubNodeID> ids;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
@@ -107,7 +108,7 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return SliverList(delegate: SliverChildBuilderDelegate((context, index) {
-        return loadingAnimation();
+        return const LoadingAnimation();
       }));
     }
     //例外スローした場合
@@ -138,7 +139,8 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
               maxLines: 1, overflow: TextOverflow.ellipsis),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => RepositoryView(repositoryID: repository.id),
+              builder: (context) =>
+                  RepositoryInfoView(repositoryID: repository.id),
             ),
           ),
         ));

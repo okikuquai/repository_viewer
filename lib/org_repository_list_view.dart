@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/client.dart';
-import 'package:repositoryviewer/organization_members_view.dart';
+import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/org_members_list_view.dart';
 
-import './graphql/getRepositoriesInOrganization.graphql.dart';
-import 'repository_card.dart';
+import './graphql/get_repository_list_from_organization.graphql.dart';
+import 'git_repository_card_view.dart';
 
-class OrganizationRepositoryListHome extends HookConsumerWidget {
-  const OrganizationRepositoryListHome({super.key});
+class OrganizationRepositoryListView extends HookConsumerWidget {
+  const OrganizationRepositoryListView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +21,7 @@ class OrganizationRepositoryListHome extends HookConsumerWidget {
             IconButton(
                 onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => OrgMemberList(
+                        builder: (context) => OrgMemberListView(
                           orgName: ghOrganizationProvider,
                         ),
                       ),
@@ -42,9 +42,9 @@ class OrganizationRepositoryBody extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getRepositoriesInOrganization(
-        Options$Query$getRepositoriesInOrganization(
-            variables: Variables$Query$getRepositoriesInOrganization(
+    final qryResult = useQuery$getRepositoryListFromOrganization(
+        Options$Query$getRepositoryListFromOrganization(
+            variables: Variables$Query$getRepositoryListFromOrganization(
                 orgName: orgName, first: 15)));
 
     //ロード完了していない場合
@@ -69,7 +69,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
   const OrganizationRepositoryCardList(
       {Key? key, required this.qryResult, required this.orgName})
       : super(key: key);
-  final QueryHookResult<Query$getRepositoriesInOrganization> qryResult;
+  final QueryHookResult<Query$getRepositoryListFromOrganization> qryResult;
   final String orgName;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -91,11 +91,12 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
               if (!pageinfo.hasNextPage) return false;
               //さらにリポジトリを取得
               qryResult.fetchMore(
-                  FetchMoreOptions$Query$getRepositoriesInOrganization(
-                      variables: Variables$Query$getRepositoriesInOrganization(
-                          orgName: orgName,
-                          first: 15,
-                          after: pageinfo.endCursor),
+                  FetchMoreOptions$Query$getRepositoryListFromOrganization(
+                      variables:
+                          Variables$Query$getRepositoryListFromOrganization(
+                              orgName: orgName,
+                              first: 15,
+                              after: pageinfo.endCursor),
                       updateQuery: (previousResultData, fetchMoreResultData) {
                         final List<dynamic> items = <dynamic>[
                           ...previousResultData?['organization']['repositories']

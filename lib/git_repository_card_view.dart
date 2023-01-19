@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:repositoryviewer/favorite_heart_button.dart';
+import 'package:repositoryviewer/list_card_right_icon_button.dart';
 
-import 'graphql/type/custom_id.dart';
-import 'repository_view.dart';
+import 'graphql/type/github_node_id_type.dart';
+import 'repository_info_view.dart';
 
 class RepositoryCard extends StatelessWidget {
   const RepositoryCard(
@@ -12,7 +12,7 @@ class RepositoryCard extends StatelessWidget {
       required this.description,
       this.isStarredinGithub = false});
 
-  final GithubAPIID id;
+  final GithubNodeID id;
   final String title;
   final String description;
   final bool isStarredinGithub;
@@ -23,7 +23,8 @@ class RepositoryCard extends StatelessWidget {
 
     return Card(
       child: ListTile(
-          trailing: StarredButton(id: id, isStarredinGithub: isStarredinGithub),
+          trailing: ListCardRightIconButton(
+              id: id, isStarredInGithub: isStarredinGithub),
           title: Text(
             title,
             style: textTheme.headline5,
@@ -38,7 +39,7 @@ class RepositoryCard extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => RepositoryView(repositoryID: id),
+                builder: (context) => RepositoryInfoView(repositoryID: id),
               ),
             );
           }),

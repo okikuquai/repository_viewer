@@ -3,29 +3,29 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/restapi/contributor.dart';
-import 'package:repositoryviewer/user_view.dart';
+import 'package:repositoryviewer/user_info_view.dart';
 
-import './graphql/getRepositoryInfoFromID.graphql.dart';
-import './graphql/getRepositoryReadmeFromID.graphql.dart';
-import 'client.dart';
-import 'favorite_heart_button.dart';
-import 'graphql/type/custom_id.dart';
+import './graphql/get_repository_info_from_id.graphql.dart';
+import './graphql/get_repository_readme_from_id.graphql.dart';
+import 'list_card_right_icon_button.dart';
+import 'provider/github_account_setting_provider.dart';
+import 'graphql/type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
-class RepositoryView extends HookConsumerWidget {
-  const RepositoryView({Key? key, required this.repositoryID})
+class RepositoryInfoView extends HookConsumerWidget {
+  const RepositoryInfoView({Key? key, required this.repositoryID})
       : super(key: key);
-  final GithubAPIID repositoryID;
+  final GithubNodeID repositoryID;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repoData = useQuery$getRepositoryDataFromID(
-      Options$Query$getRepositoryDataFromID(
-          variables: Variables$Query$getRepositoryDataFromID(id: repositoryID)),
+    final repoData = useQuery$getRepositoryInfoFromID(
+      Options$Query$getRepositoryInfoFromID(
+          variables: Variables$Query$getRepositoryInfoFromID(id: repositoryID)),
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
-      return loadingAnimationWithAppbar();
+      return const LoadingAnimationWithAppbar();
     } else if (repoData.result.hasException) {}
 
     if (repoData.result.parsedData != null) {
@@ -50,14 +50,14 @@ class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
   const RepositoryViewAppbar(
       {Key? key, required this.repositoryID, required this.repositoryName})
       : super(key: key);
-  final GithubAPIID repositoryID;
+  final GithubNodeID repositoryID;
   final String repositoryName;
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(repositoryName),
       actions: [
-        StarredButton(id: repositoryID),
+        ListCardRightIconButton(id: repositoryID),
       ],
     );
   }
@@ -70,7 +70,7 @@ class RepositoryViewBody extends StatefulWidget {
   const RepositoryViewBody(
       {Key? key, required this.repositoryID, required this.repositoryName})
       : super(key: key);
-  final GithubAPIID repositoryID;
+  final GithubNodeID repositoryID;
   final String repositoryName;
 
   @override
@@ -114,7 +114,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
 
 class MarkDownView extends HookConsumerWidget {
   const MarkDownView({Key? key, required this.repositoryID}) : super(key: key);
-  final GithubAPIID repositoryID;
+  final GithubNodeID repositoryID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mdData = useQuery$getRepositoryReadmeFromID(
@@ -125,7 +125,7 @@ class MarkDownView extends HookConsumerWidget {
     );
 
     if (mdData.result.isLoading) {
-      return loadingAnimation();
+      return const LoadingAnimation();
     } else if (mdData.result.hasException) {
       return const Text('exception');
     } else if (mdData.result.parsedData?.node != null) {
@@ -182,7 +182,7 @@ class ContributorsView extends HookConsumerWidget {
                   .toList(),
             );
           }
-          return loadingAnimation();
+          return const LoadingAnimation();
         });
   }
 }

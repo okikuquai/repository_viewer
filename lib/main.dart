@@ -7,5 +7,5 @@ import 'toppage_view.dart';
 void main(List<String> arguments) async {
   //終了を待たないとHive.Openbox()を呼ぶ前にMyAppの方でクエリを呼び出してしまうのでawaitをつける
   await initHiveForFlutter();
-  runApp(const ProviderScope(child: TopPage()));
+  runApp(const ProviderScope(child: TopPageView()));
 }

@@ -1,4 +1,4 @@
-query getStarredRepositories{
+query getStarredRepository{
   viewer {
     login,
     starredRepositories {

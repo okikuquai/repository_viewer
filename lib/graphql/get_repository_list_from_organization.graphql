@@ -1,6 +1,8 @@
-query searchMemberInOrganization($orgName: String!, $first: Int!, $after: String) {
+query getRepositoryListFromOrganization($orgName: String!, $first: Int!, $after: String) {
   organization(login: $orgName){
-    membersWithRole(first: $first, after: $after) {
+    repositories(
+      first: $first,
+      after: $after){
       pageInfo{
         endCursor
         hasNextPage
@@ -8,13 +10,10 @@ query searchMemberInOrganization($orgName: String!, $first: Int!, $after: String
         startCursor
       }
       edges{
-        cursor
         node{
           id,
-          login,
           name,
-          bio,
-          avatarUrl,
+          description,
           url
         }
       }
