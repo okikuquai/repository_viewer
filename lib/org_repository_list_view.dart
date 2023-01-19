@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
 import 'package:repositoryviewer/org_members_list_view.dart';
 
 import './graphql/get_repository_list_from_organization.graphql.dart';
 import 'git_repository_card_view.dart';
+import 'loading_animation.dart';
 
 class OrganizationRepositoryListView extends HookConsumerWidget {
   const OrganizationRepositoryListView({super.key});
@@ -55,7 +58,6 @@ class OrganizationRepositoryBody extends HookConsumerWidget {
     } else if (qryResult.result.hasException) {
       return Text(qryResult.result.exception.toString());
     }
-
     if (qryResult.result.parsedData?.organization?.repositories.edges != null) {
       //ハートの状態を変えるためにStatefulWidgetでリポジトリのリストを表示させる
       return OrganizationRepositoryCardList(

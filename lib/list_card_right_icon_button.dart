@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'graphql/type/github_node_id_type.dart';
+import 'loading_animation.dart';
+import 'type/github_node_id_type.dart';
 import 'provider/bookmarked_git_repository_provider.dart';
 
 class ListCardRightIconButton extends HookConsumerWidget {
@@ -12,12 +14,22 @@ class ListCardRightIconButton extends HookConsumerWidget {
   final bool isStarredInGithub;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    //SharedPreferenceで保存したBookmarkデータを読み込む
+    final bookmarkedGitRepositoryState =
+    ref.read(bookmarkedGitRepositoryProvider.notifier);
+
+    final bookmarkedGitRepositoryValueInfo =
+    useMemoized(() => bookmarkedGitRepositoryState.value);
+    useFuture(bookmarkedGitRepositoryValueInfo);
+
     final favState = ref
         .watch(bookmarkedGitRepositoryProvider)
-        .where((element) => element.toString() == id.toString())
+        .where((element) => GithubNodeId(element.toString()) == id)
         .isNotEmpty;
-    final favStateNotifier =
-        ref.watch(bookmarkedGitRepositoryProvider.notifier);
+
+    final bookmarkStateNotifier =
+    ref.watch(bookmarkedGitRepositoryProvider.notifier);
+
     final iconEnable = isStarredInGithub ? Icons.star : Icons.favorite;
     final iconDisable = isStarredInGithub ? Icons.star : Icons.favorite_border;
     final color = isStarredInGithub ? Colors.yellow : Colors.red;
@@ -30,7 +42,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
         ),
         onTap: () {
           if (!isStarredInGithub) {
-            favStateNotifier.toggle(BookmarkedGitRepository(id.toString()));
+            bookmarkStateNotifier.toggle(BookmarkedGitRepository(id.toString()));
           }
         });
   }

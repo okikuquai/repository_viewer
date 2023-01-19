@@ -9,7 +9,7 @@ import './graphql/get_repository_info_from_id.graphql.dart';
 import './graphql/get_repository_readme_from_id.graphql.dart';
 import 'list_card_right_icon_button.dart';
 import 'provider/github_account_setting_provider.dart';
-import 'graphql/type/github_node_id_type.dart';
+import 'type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
 class GitRepositoryInfoView extends HookConsumerWidget {
@@ -163,7 +163,7 @@ class ContributorsView extends HookConsumerWidget {
                   .map((e) => GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => UserView(userID: e.nodeID!),
+                            builder: (context) => UserView(userID: e.nodeId),
                           ),
                         ),
                         child: SizedBox(
@@ -175,7 +175,7 @@ class ContributorsView extends HookConsumerWidget {
                                 image: DecorationImage(
                                     fit: BoxFit.fill,
                                     image:
-                                        NetworkImage(e.avatarURL!.toString()))),
+                                        NetworkImage(e.avatarUri.toString()))),
                           ),
                         ),
                       ))

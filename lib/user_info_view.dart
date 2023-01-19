@@ -7,7 +7,7 @@ import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dar
 
 import './graphql/get_user_info_from_id.graphql.dart';
 import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
-import 'graphql/type/github_node_id_type.dart';
+import 'type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
 class UserView extends HookConsumerWidget {
@@ -46,10 +46,8 @@ class UserView extends HookConsumerWidget {
     } else if (qryResult.result.parsedData?.node != null) {
       final user = qryResult.result.parsedData!.node! as Fragment$UserInfo;
       final starredRepositories = user.starredRepositories.edges;
-      List<GithubNodeId> ids = [];
-      starredRepositories?.forEach((element) {
-        ids.add(element!.node.id);
-      });
+      List<GithubNodeId> ids = starredRepositories!.map((e) => GithubNodeId(e!.node.id.toString())).toList();
+
 
       if (user.isViewer) {
         ids.addAll(bookmarkedGitRepositoryvalue.data!);

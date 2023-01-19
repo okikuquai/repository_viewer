@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:repositoryviewer/type/git_repository_contributor.dart';
 
-import '../graphql/type/github_node_id_type.dart';
-
-Future<List<Contributor>> getContributor(
+Future<List<GitRepositoryContributor>> getContributor(
     String repo, String token, String orgName) async {
   try {
     var res = await Dio()
@@ -16,11 +15,7 @@ Future<List<Contributor>> getContributor(
     if (res.statusCode == 200 && res.data != null) {
       try {
         final data = res.data! as List<dynamic>;
-
-        return data
-            .map((e) => Contributor(
-                avatarURL: e['avatar_url'], nodeID: GithubNodeId(e['node_id'])))
-            .toList();
+        return data.map((e) => GitRepositoryContributor.fromJson(e)).toList();
       } catch (e) {
         debugPrint(e.toString());
         rethrow;
@@ -31,11 +26,4 @@ Future<List<Contributor>> getContributor(
     rethrow;
   }
   throw NullThrownError();
-}
-
-class Contributor {
-  GithubNodeId? nodeID;
-  String? avatarURL;
-
-  Contributor({required this.avatarURL, required this.nodeID});
 }

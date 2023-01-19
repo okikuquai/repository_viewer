@@ -14,9 +14,10 @@ targets:
               type: GithubNodeId
               fromJsonFunctionName: githubNodeIdFromJson
               toJsonFunctionName: githubNodeIdToJson
-              import: package:repositoryviewer/graphql/type/github_node_id_type.dart
+              import: package:repositoryviewer/type/github_node_id_type.dart
             URI:
               type: Uri
+              fromJsonFunctionName: Uri.parse
             GitObjectID:
               type: String
             DateTime:

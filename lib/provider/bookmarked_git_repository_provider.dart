@@ -2,7 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:string_validator/string_validator.dart';
 
-import '../graphql/type/github_node_id_type.dart';
+import '../type/github_node_id_type.dart';
 
 //旧favoriteRepositoryProvider (diffが汚れてしまったのでメモ)
 final bookmarkedGitRepositoryProvider =
@@ -12,16 +12,17 @@ final bookmarkedGitRepositoryProvider =
 
 
 class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<BookmarkedGitRepository>> implements BookmarkedRepositoryNotifier  {
-  BookmarkedRepositoryNotifierImpl() : super(<BookmarkedGitRepository>[]) {
-    () async {
-      _changeState(await value);
-    };
-  }
+  BookmarkedRepositoryNotifierImpl() : super(<BookmarkedGitRepository>[]);
 
   @override
   Future<List<BookmarkedGitRepository>> get value => _load();
 
   final String _saveKey = 'bookmarkedGitRepository';
+
+  @override
+  void init() async {
+    _changeState(await value);
+  }
 
   @override
   void addId(BookmarkedGitRepository id) {
@@ -72,7 +73,7 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<BookmarkedGitR
     final loadedBookmarkedGitRepositoryList =
         prefs.getStringList(_saveKey)?.map((e) => BookmarkedGitRepository(e)).toList() ??
             [];
-
+    _changeState(loadedBookmarkedGitRepositoryList);
     return loadedBookmarkedGitRepositoryList;
   }
 }
@@ -81,6 +82,8 @@ abstract class BookmarkedRepositoryNotifier extends StateNotifier<List<Bookmarke
   BookmarkedRepositoryNotifier(super.state);
 
   Future<List<BookmarkedGitRepository>> get value;
+
+  void init();
 
   void addId(BookmarkedGitRepository id);
 

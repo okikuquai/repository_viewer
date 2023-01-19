@@ -6,7 +6,7 @@ import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dar
 
 import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'graphql/get_starred_repository.graphql.dart';
-import 'graphql/type/github_node_id_type.dart';
+import 'type/github_node_id_type.dart';
 import 'loading_animation.dart';
 import 'git_repository_card_view.dart';
 
