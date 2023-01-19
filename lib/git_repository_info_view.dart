@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/restapi/contributor.dart';
+import 'package:repositoryviewer/restapi/get_contributer.dart';
 import 'package:repositoryviewer/user_info_view.dart';
 
 import './graphql/get_repository_info_from_id.graphql.dart';
