@@ -36,7 +36,7 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
     if (qryResult.result.parsedData?.viewer.starredRepositories.edges != null) {
       final githubStarredRepositories =
           qryResult.result.parsedData!.viewer.starredRepositories.edges!;
-      final starredIDs = <GithubNodeID>[];
+      final starredIDs = <GithubNodeId>[];
       for (final edge in githubStarredRepositories) {
         if (edge == null) continue;
         starredIDs.add(edge.node.id);
@@ -120,7 +120,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
 class GithubStarredCardList extends HookConsumerWidget {
   const GithubStarredCardList({Key? key, required this.githubStarredIds})
       : super(key: key);
-  final List<GithubNodeID> githubStarredIds;
+  final List<GithubNodeId> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
@@ -162,7 +162,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   const GithubAndLocalFavoriteCardList(
       {Key? key, required this.githubStarredIds})
       : super(key: key);
-  final List<GithubNodeID> githubStarredIds;
+  final List<GithubNodeId> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedGitRepositoryState =
@@ -176,7 +176,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
       return const LoadingAnimation();
     }
 
-    List<GithubNodeID> ids = List.from(githubStarredIds)
+    List<GithubNodeId> ids = List.from(githubStarredIds)
       ..addAll(bookmarkedGitRepositoryValue.data!);
     //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
     ids = ids.toSet().toList();

@@ -12,7 +12,7 @@ import 'loading_animation.dart';
 
 class UserView extends HookConsumerWidget {
   const UserView({super.key, required this.userID});
-  final GithubNodeID userID;
+  final GithubNodeId userID;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorTheme = Theme.of(context).primaryColor;
@@ -46,7 +46,7 @@ class UserView extends HookConsumerWidget {
     } else if (qryResult.result.parsedData?.node != null) {
       final user = qryResult.result.parsedData!.node! as Fragment$UserInfo;
       final starredRepositories = user.starredRepositories.edges;
-      List<GithubNodeID> ids = [];
+      List<GithubNodeId> ids = [];
       starredRepositories?.forEach((element) {
         ids.add(element!.node.id);
       });
@@ -96,7 +96,7 @@ class UserView extends HookConsumerWidget {
 
 class UserStarredRepositoriesList extends HookConsumerWidget {
   const UserStarredRepositoriesList({super.key, required this.ids});
-  final List<GithubNodeID> ids;
+  final List<GithubNodeId> ids;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(

@@ -13,7 +13,7 @@ class GitRepositoryCardView extends StatelessWidget {
       required this.description,
       this.isStarredinGithub = false});
 
-  final GithubNodeID id;
+  final GithubNodeId id;
   final String title;
   final String description;
   final bool isStarredinGithub;

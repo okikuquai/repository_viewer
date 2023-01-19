@@ -11,9 +11,9 @@ targets:
           scalars:
             ID:
 #              type: String
-              type: GithubNodeID
-              fromJsonFunctionName: githubNodeIDFromJson
-              toJsonFunctionName: githubNodeIDToJson
+              type: GithubNodeId
+              fromJsonFunctionName: githubNodeIdFromJson
+              toJsonFunctionName: githubNodeIdToJson
               import: package:repositoryviewer/graphql/type/github_node_id_type.dart
             URI:
               type: Uri

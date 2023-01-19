@@ -8,7 +8,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
   const ListCardRightIconButton(
       {super.key, required this.id, this.isStarredInGithub = false});
 
-  final GithubNodeID id;
+  final GithubNodeId id;
   final bool isStarredInGithub;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

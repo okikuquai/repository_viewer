@@ -19,7 +19,7 @@ Future<List<Contributor>?> getContributor(
 
         return data
             .map((e) => Contributor(
-                avatarURL: e['avatar_url'], nodeID: GithubNodeID(e['node_id'])))
+                avatarURL: e['avatar_url'], nodeID: GithubNodeId(e['node_id'])))
             .toList();
       } catch (e) {
         debugPrint(e.toString());
@@ -32,7 +32,7 @@ Future<List<Contributor>?> getContributor(
 }
 
 class Contributor {
-  GithubNodeID? nodeID;
+  GithubNodeId? nodeID;
   String? avatarURL;
 
   Contributor({required this.avatarURL, required this.nodeID});

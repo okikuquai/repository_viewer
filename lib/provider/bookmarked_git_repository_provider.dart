@@ -92,7 +92,7 @@ abstract class BookmarkedRepositoryNotifier extends StateNotifier<List<Bookmarke
 
 }
 
-class BookmarkedGitRepository extends GithubNodeID {
+class BookmarkedGitRepository extends GithubNodeId {
   BookmarkedGitRepository(super.idString);
 
 }
