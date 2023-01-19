@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../graphql/type/github_node_id_type.dart';
 
-Future<List<Contributor>?> getContributor(
+Future<List<Contributor>> getContributor(
     String repo, String token, String orgName) async {
   try {
     var res = await Dio()
@@ -23,12 +23,14 @@ Future<List<Contributor>?> getContributor(
             .toList();
       } catch (e) {
         debugPrint(e.toString());
+        rethrow;
       }
     }
   } catch (e) {
     debugPrint(e.toString());
+    rethrow;
   }
-  return <Contributor>[];
+  throw NullThrownError();
 }
 
 class Contributor {
