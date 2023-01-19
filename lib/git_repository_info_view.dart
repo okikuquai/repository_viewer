@@ -12,8 +12,8 @@ import 'provider/github_account_setting_provider.dart';
 import 'graphql/type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
-class RepositoryInfoView extends HookConsumerWidget {
-  const RepositoryInfoView({Key? key, required this.repositoryID})
+class GitRepositoryInfoView extends HookConsumerWidget {
+  const GitRepositoryInfoView({Key? key, required this.repositoryID})
       : super(key: key);
   final GithubNodeID repositoryID;
 

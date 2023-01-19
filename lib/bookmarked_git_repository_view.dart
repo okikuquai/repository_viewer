@@ -109,7 +109,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
             final name = repository.name;
             final description = repository.description ?? 'No Description';
 
-            return RepositoryCard(
+            return GitRepositoryCardView(
                 id: id, title: name, description: description);
           });
     }
@@ -147,7 +147,7 @@ class GithubStarredCardList extends HookConsumerWidget {
             final repository = repositories[index] as Fragment$RepositoryData;
             final name = repository.name;
             final description = repository.description ?? 'No Description';
-            return RepositoryCard(
+            return GitRepositoryCardView(
                 id: repository.id,
                 title: name,
                 description: description,
@@ -207,7 +207,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
             final description = repository.description ?? 'No Description';
             final favState =
                 favStates.where((element) => element == repository.id).isEmpty;
-            return RepositoryCard(
+            return GitRepositoryCardView(
                 id: repository.id,
                 title: name,
                 description: description,

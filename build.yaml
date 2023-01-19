@@ -10,6 +10,7 @@ targets:
             - graphql_flutter
           scalars:
             ID:
+#              type: String
               type: GithubNodeID
               fromJsonFunctionName: githubNodeIDFromJson
               toJsonFunctionName: githubNodeIDToJson

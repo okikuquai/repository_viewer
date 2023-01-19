@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/repository_info_view.dart';
+import 'package:repositoryviewer/git_repository_info_view.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
 import './graphql/get_user_info_from_id.graphql.dart';
@@ -140,7 +140,7 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) =>
-                  RepositoryInfoView(repositoryID: repository.id),
+                  GitRepositoryInfoView(repositoryID: repository.id),
             ),
           ),
         ));

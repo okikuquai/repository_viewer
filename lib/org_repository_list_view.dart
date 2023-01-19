@@ -119,7 +119,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
             itemCount: repositoriesCount,
             itemBuilder: (context, index) {
               final repository = repositories[index]!.node!;
-              return RepositoryCard(
+              return GitRepositoryCardView(
                   id: repository.id,
                   title: repository.name,
                   description: repository.description ?? 'No Description');

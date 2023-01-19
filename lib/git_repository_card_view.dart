@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:repositoryviewer/list_card_right_icon_button.dart';
 
 import 'graphql/type/github_node_id_type.dart';
-import 'repository_info_view.dart';
+import 'provider/bookmarked_git_repository_provider.dart';
+import 'git_repository_info_view.dart';
 
-class RepositoryCard extends StatelessWidget {
-  const RepositoryCard(
+class GitRepositoryCardView extends StatelessWidget {
+  const GitRepositoryCardView(
       {super.key,
       required this.id,
       required this.title,
@@ -39,7 +40,7 @@ class RepositoryCard extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => RepositoryInfoView(repositoryID: id),
+                builder: (context) => GitRepositoryInfoView(repositoryID: id),
               ),
             );
           }),
