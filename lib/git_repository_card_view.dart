@@ -10,12 +10,12 @@ class GitRepositoryCardView extends StatelessWidget {
       required this.id,
       required this.title,
       required this.description,
-      this.isStarredinGithub = false});
+      this.isStarredInGithub = false});
 
   final GithubNodeId id;
   final String title;
   final String description;
-  final bool isStarredinGithub;
+  final bool isStarredInGithub;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class GitRepositoryCardView extends StatelessWidget {
     return Card(
       child: ListTile(
           trailing: ListCardRightIconButton(
-              id: id, isStarredInGithub: isStarredinGithub),
+              id: id, isStarredInGithub: isStarredInGithub),
           title: Text(
             title,
             style: textTheme.headline5,
@@ -39,7 +39,7 @@ class GitRepositoryCardView extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => GitRepositoryInfoView(repositoryID: id),
+                builder: (context) => GitRepositoryInfoView(repositoryId: id),
               ),
             );
           }),

@@ -14,7 +14,7 @@ fragment UserInfo on User {
   }
 }
 
-query getUserInfoFromID($id: ID!) {
+query getUserInfoFromId($id: ID!) {
   node(id: $id){
     ...UserInfo
   }

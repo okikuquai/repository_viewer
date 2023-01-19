@@ -5,7 +5,7 @@ fragment RepositoryData on Repository {
   description
 }
 
-query getRepositoryInfoFromID($id: ID!) {
+query getRepositoryInfoFromId($id: ID!) {
   node(id: $id){
     ...RepositoryData
   }

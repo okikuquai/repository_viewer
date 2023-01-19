@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'loading_animation.dart';
 import 'type/github_node_id_type.dart';
 import 'provider/bookmarked_git_repository_provider.dart';
 
@@ -16,19 +15,19 @@ class ListCardRightIconButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     //SharedPreferenceで保存したBookmarkデータを読み込む
     final bookmarkedGitRepositoryState =
-    ref.read(bookmarkedGitRepositoryProvider.notifier);
+    ref.read(bookmarkedGitRepositoriesProvider.notifier);
 
     final bookmarkedGitRepositoryValueInfo =
     useMemoized(() => bookmarkedGitRepositoryState.value);
     useFuture(bookmarkedGitRepositoryValueInfo);
 
     final favState = ref
-        .watch(bookmarkedGitRepositoryProvider)
+        .watch(bookmarkedGitRepositoriesProvider)
         .where((element) => GithubNodeId(element.toString()) == id)
         .isNotEmpty;
 
     final bookmarkStateNotifier =
-    ref.watch(bookmarkedGitRepositoryProvider.notifier);
+    ref.watch(bookmarkedGitRepositoriesProvider.notifier);
 
     final iconEnable = isStarredInGithub ? Icons.star : Icons.favorite;
     final iconDisable = isStarredInGithub ? Icons.star : Icons.favorite_border;

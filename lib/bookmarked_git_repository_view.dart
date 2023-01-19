@@ -36,10 +36,10 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
     if (qryResult.result.parsedData?.viewer.starredRepositories.edges != null) {
       final githubStarredRepositories =
           qryResult.result.parsedData!.viewer.starredRepositories.edges!;
-      final starredIDs = <GithubNodeId>[];
+      final starredIds = <GithubNodeId>[];
       for (final edge in githubStarredRepositories) {
         if (edge == null) continue;
-        starredIDs.add(edge.node.id);
+        starredIds.add(edge.node.id);
       }
 
       return DefaultTabController(
@@ -55,11 +55,11 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
               Center(
                   child: Scaffold(
                       body:
-                          GithubStarredCardList(githubStarredIds: starredIDs))),
+                          GithubStarredCardList(githubStarredIds: starredIds))),
               Center(
                   child: Scaffold(
                       body: GithubAndLocalFavoriteCardList(
-                          githubStarredIds: starredIDs))),
+                          githubStarredIds: starredIds))),
             ],
           ),
         ),
@@ -74,7 +74,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedGitRepositoryState =
-        ref.read(bookmarkedGitRepositoryProvider.notifier);
+        ref.read(bookmarkedGitRepositoriesProvider.notifier);
 
     final bookmarkedGitRepositoryValueInfo =
         useMemoized(() => bookmarkedGitRepositoryState.value);
@@ -84,9 +84,9 @@ class LocalFavoriteCardList extends HookConsumerWidget {
       return const LoadingAnimation();
     }
 
-    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
-      Options$Query$getRepositoryInfoFromMultipleIDs(
-          variables: Variables$Query$getRepositoryInfoFromMultipleIDs(
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
+      Options$Query$getRepositoryInfoFromMultipleIds(
+          variables: Variables$Query$getRepositoryInfoFromMultipleIds(
               ids: bookmarkedGitRepositoryValue.data!)),
     );
 
@@ -123,9 +123,9 @@ class GithubStarredCardList extends HookConsumerWidget {
   final List<GithubNodeId> githubStarredIds;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
-      Options$Query$getRepositoryInfoFromMultipleIDs(
-          variables: Variables$Query$getRepositoryInfoFromMultipleIDs(
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
+      Options$Query$getRepositoryInfoFromMultipleIds(
+          variables: Variables$Query$getRepositoryInfoFromMultipleIds(
               ids: githubStarredIds)),
     );
 
@@ -151,7 +151,7 @@ class GithubStarredCardList extends HookConsumerWidget {
                 id: repository.id,
                 title: name,
                 description: description,
-                isStarredinGithub: true);
+                isStarredInGithub: true);
           });
     }
     return const Text('no Repositories');
@@ -166,7 +166,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedGitRepositoryState =
-        ref.read(bookmarkedGitRepositoryProvider.notifier);
+        ref.read(bookmarkedGitRepositoriesProvider.notifier);
 
     final bookmarkedGitRepositoryValueInfo =
         useMemoized(() => bookmarkedGitRepositoryState.value);
@@ -180,10 +180,10 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
       ..addAll(bookmarkedGitRepositoryValue.data!);
     //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
     ids = ids.toSet().toList();
-    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
-      Options$Query$getRepositoryInfoFromMultipleIDs(
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
+      Options$Query$getRepositoryInfoFromMultipleIds(
           variables:
-              Variables$Query$getRepositoryInfoFromMultipleIDs(ids: ids)),
+              Variables$Query$getRepositoryInfoFromMultipleIds(ids: ids)),
     );
 
     //ロード完了していない場合
@@ -211,22 +211,9 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
                 id: repository.id,
                 title: name,
                 description: description,
-                isStarredinGithub: favState);
+                isStarredInGithub: favState);
           });
     }
     return const Text('no Repositories');
-  }
-}
-
-class SideStarIconButton extends StatelessWidget {
-  const SideStarIconButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 48,
-      height: 48,
-      child: Icon(Icons.star, color: Colors.yellow),
-    );
   }
 }

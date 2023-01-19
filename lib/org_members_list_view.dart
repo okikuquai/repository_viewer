@@ -49,7 +49,7 @@ class OrgMemberListView extends HookConsumerWidget {
             return GestureDetector(
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => UserView(userID: member.id),
+                  builder: (context) => UserInfoView(userId: member.id),
                 ),
               ),
               child: Card(

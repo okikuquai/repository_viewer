@@ -13,15 +13,15 @@ import 'type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
 class GitRepositoryInfoView extends HookConsumerWidget {
-  const GitRepositoryInfoView({Key? key, required this.repositoryID})
+  const GitRepositoryInfoView({Key? key, required this.repositoryId})
       : super(key: key);
-  final GithubNodeId repositoryID;
+  final GithubNodeId repositoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repoData = useQuery$getRepositoryInfoFromID(
-      Options$Query$getRepositoryInfoFromID(
-          variables: Variables$Query$getRepositoryInfoFromID(id: repositoryID)),
+    final repoData = useQuery$getRepositoryInfoFromId(
+      Options$Query$getRepositoryInfoFromId(
+          variables: Variables$Query$getRepositoryInfoFromId(id: repositoryId)),
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
@@ -33,9 +33,9 @@ class GitRepositoryInfoView extends HookConsumerWidget {
           repoData.result.parsedData?.node! as Fragment$RepositoryData;
       return Scaffold(
           appBar: RepositoryViewAppbar(
-              repositoryID: repositoryID, repositoryName: parsedData.name),
+              repositoryId: repositoryId, repositoryName: parsedData.name),
           body: RepositoryViewBody(
-              repositoryID: repositoryID, repositoryName: parsedData.name));
+              repositoryId: repositoryId, repositoryName: parsedData.name));
     } else {
       return const Scaffold(
         body: Text('error'),
@@ -48,16 +48,16 @@ class GitRepositoryInfoView extends HookConsumerWidget {
 
 class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
   const RepositoryViewAppbar(
-      {Key? key, required this.repositoryID, required this.repositoryName})
+      {Key? key, required this.repositoryId, required this.repositoryName})
       : super(key: key);
-  final GithubNodeId repositoryID;
+  final GithubNodeId repositoryId;
   final String repositoryName;
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(repositoryName),
       actions: [
-        ListCardRightIconButton(id: repositoryID),
+        ListCardRightIconButton(id: repositoryId),
       ],
     );
   }
@@ -68,9 +68,9 @@ class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
 
 class RepositoryViewBody extends StatefulWidget {
   const RepositoryViewBody(
-      {Key? key, required this.repositoryID, required this.repositoryName})
+      {Key? key, required this.repositoryId, required this.repositoryName})
       : super(key: key);
-  final GithubNodeId repositoryID;
+  final GithubNodeId repositoryId;
   final String repositoryName;
 
   @override
@@ -103,7 +103,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
           title: Text('Readme', style: textTheme.headline5),
           children: [
             MarkDownView(
-              repositoryID: widget.repositoryID,
+              repositoryId: widget.repositoryId,
             )
           ],
         )
@@ -113,15 +113,15 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
 }
 
 class MarkDownView extends HookConsumerWidget {
-  const MarkDownView({Key? key, required this.repositoryID}) : super(key: key);
-  final GithubNodeId repositoryID;
+  const MarkDownView({Key? key, required this.repositoryId}) : super(key: key);
+  final GithubNodeId repositoryId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mdData = useQuery$getRepositoryReadmeFromID(
-      Options$Query$getRepositoryReadmeFromID(
+    final mdData = useQuery$getRepositoryReadmeFromId(
+      Options$Query$getRepositoryReadmeFromId(
           fetchPolicy: FetchPolicy.noCache,
           variables:
-              Variables$Query$getRepositoryReadmeFromID(id: repositoryID)),
+              Variables$Query$getRepositoryReadmeFromId(id: repositoryId)),
     );
 
     if (mdData.result.isLoading) {
@@ -163,7 +163,7 @@ class ContributorsView extends HookConsumerWidget {
                   .map((e) => GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => UserView(userID: e.nodeId),
+                            builder: (context) => UserInfoView(userId: e.nodeId),
                           ),
                         ),
                         child: SizedBox(

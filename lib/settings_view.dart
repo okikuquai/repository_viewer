@@ -16,7 +16,7 @@ class SettingsView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final bookmarkedGitRepositoryState =
-        ref.read(bookmarkedGitRepositoryProvider);
+        ref.read(bookmarkedGitRepositoriesProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -84,7 +84,7 @@ class SettingsView extends HookConsumerWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const Navigate2UserView(),
+                      builder: (context) => const Navigate2UserInfoView(),
                     ),
                   );
                 }),
@@ -103,7 +103,7 @@ class SettingsView extends HookConsumerWidget {
                 onTap: () {
                   showDialog(
                       context: context,
-                      builder: (context) => const SelectOrganizationView());
+                      builder: (context) => const OrganizationSelectDialog());
                 }),
           ],
         ));
@@ -115,7 +115,7 @@ class TokenInputDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ghTokenNotifer = ref.read(githubTokenProvider.notifier);
+    final ghTokenNotifier = ref.read(githubTokenProvider.notifier);
     String valueText = '';
     return AlertDialog(
       title: const Text('Tokenを入力して下さい'),
@@ -135,7 +135,7 @@ class TokenInputDialog extends HookConsumerWidget {
         TextButton(
             child: const Text('OK'),
             onPressed: () {
-              ghTokenNotifer.setValue(valueText);
+              ghTokenNotifier.setValue(valueText);
               Navigator.pop(context);
             }),
       ],
@@ -143,12 +143,12 @@ class TokenInputDialog extends HookConsumerWidget {
   }
 }
 
-class SelectOrganizationView extends HookConsumerWidget {
-  const SelectOrganizationView({super.key});
+class OrganizationSelectDialog extends HookConsumerWidget {
+  const OrganizationSelectDialog({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ghOrganizationNotifer = ref.read(githubOrganizationProvider.notifier);
+    final ghOrganizationNotifier = ref.read(githubOrganizationProvider.notifier);
 
     final qryResult = useQuery$getOrganizationList(
         Options$Query$getOrganizationList(
@@ -169,7 +169,7 @@ class SelectOrganizationView extends HookConsumerWidget {
           children: organizationNames!
               .map((e) => SimpleDialogOption(
                     onPressed: () {
-                      ghOrganizationNotifer.setValue(e.node!.name ?? '');
+                      ghOrganizationNotifier.setValue(e.node!.name ?? '');
                       Navigator.pop(context, 1);
                     },
                     child: Text(e!.node!.name ?? 'no Name'),
@@ -181,8 +181,8 @@ class SelectOrganizationView extends HookConsumerWidget {
   }
 }
 
-class Navigate2UserView extends HookConsumerWidget {
-  const Navigate2UserView({super.key});
+class Navigate2UserInfoView extends HookConsumerWidget {
+  const Navigate2UserInfoView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -206,7 +206,7 @@ class Navigate2UserView extends HookConsumerWidget {
         ],
       );
     } else if (qryResult.result.parsedData?.viewer.id != null) {
-      return UserView(userID: qryResult.result.parsedData!.viewer.id);
+      return UserInfoView(userId: qryResult.result.parsedData!.viewer.id);
     }
     return AlertDialog(
       title: const Text('エラー'),

@@ -7,8 +7,6 @@ import 'package:repositoryviewer/org_repository_list_view.dart';
 import 'package:repositoryviewer/settings_view.dart';
 import 'package:repositoryviewer/bookmarked_git_repository_view.dart';
 
-import 'loading_animation.dart';
-
 class TopPageView extends HookConsumerWidget {
   const TopPageView({Key? key}) : super(key: key);
 
@@ -31,8 +29,6 @@ class TopPageView extends HookConsumerWidget {
         cache: GraphQLCache(store: HiveStore()),
       ),
     );
-    //updateToken(githubTokenLoadingState.data!);
-    //GraphQLProviderでラップすることで使える
     final screens = [
       const OrganizationRepositoryListView(),
       const BookmarkedGitRepositoryView(),
