@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
+import 'package:collection/collection.dart';
 
 import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'graphql/get_starred_repository.graphql.dart';
@@ -35,12 +36,8 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
 
     if (qryResult.result.parsedData?.viewer.starredRepositories.edges != null) {
       final githubStarredRepositories =
-          qryResult.result.parsedData!.viewer.starredRepositories.edges!;
-      final starredIds = <GithubNodeId>[];
-      for (final edge in githubStarredRepositories) {
-        if (edge == null) continue;
-        starredIds.add(edge.node.id);
-      }
+          qryResult.result.parsedData!.viewer.starredRepositories.edges!.whereNotNull().toList();
+      final starredIds = githubStarredRepositories.map((e) => e.node.id).toList();
 
       return DefaultTabController(
         length: _tab.length,
@@ -87,7 +84,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
     final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
       Options$Query$getRepositoryInfoFromMultipleIds(
           variables: Variables$Query$getRepositoryInfoFromMultipleIds(
-              ids: bookmarkedGitRepositoryValue.data!)),
+              ids: bookmarkedGitRepositoryValue.data!.map((e) => e.nodeId).toList())),
     );
 
     //ロード完了していない場合
@@ -177,7 +174,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
     }
 
     List<GithubNodeId> ids = List.from(githubStarredIds)
-      ..addAll(bookmarkedGitRepositoryValue.data!);
+      ..addAll(bookmarkedGitRepositoryValue.data!.map((e) => e.nodeId));
     //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
     ids = ids.toSet().toList();
     final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
@@ -206,7 +203,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
             final name = repository.name;
             final description = repository.description ?? 'No Description';
             final favState =
-                favStates.where((element) => element == repository.id).isEmpty;
+                favStates.where((element) => element.nodeId == repository.id).isEmpty;
             return GitRepositoryCardView(
                 id: repository.id,
                 title: name,

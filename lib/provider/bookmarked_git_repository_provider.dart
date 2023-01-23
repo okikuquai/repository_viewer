@@ -1,90 +1,108 @@
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart';
 
 import '../type/github_node_id_type.dart';
 
 final bookmarkedGitRepositoriesProvider =
-    StateNotifierProvider<BookmarkedRepositoryNotifier, List<BookmarkedGitRepository>>(
+    StateNotifierProvider<BookmarkedRepositoryNotifier, Set<BookmarkedGitRepository>>(
   (ref) => BookmarkedRepositoryNotifierImpl(),
 );
 
-class BookmarkedRepositoryNotifierImpl extends StateNotifier<List<BookmarkedGitRepository>> implements BookmarkedRepositoryNotifier  {
-  BookmarkedRepositoryNotifierImpl() : super(<BookmarkedGitRepository>[]);
+class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRepository>> implements BookmarkedRepositoryNotifier  {
+  BookmarkedRepositoryNotifierImpl() : super(<BookmarkedGitRepository>{});
 
   @override
-  Future<List<BookmarkedGitRepository>> get value => _load();
+  Future<Set<BookmarkedGitRepository>> get value => _load();
+
+  @override
+  Future<bool> get initialized => _initialize();
+
 
   final String _saveKey = 'bookmarkedGitRepository';
 
   @override
-  void addId(BookmarkedGitRepository id) {
-    final value = [...state, id];
-    _changeState(value);
+  void addId(GithubNodeId id) {
+    final value = {...state, BookmarkedGitRepository(id.toString())};
+    _changeState(value.toSet());
   }
 
   @override
-  void removeId(BookmarkedGitRepository id) async {
-    final list = await _load();
-    if (state.where((element) => element.toString() == id.toString()).isNotEmpty) {
+  void removeId(GithubNodeId id) async {
+    final list = await value;
+    if (state.where((element) => element.nodeId == id).isNotEmpty) {
       //idをそのまま渡すと削除されないのでfirstWhereで同じisStringのlistを抽出している
-      list.remove(list.firstWhere((element) => element.toString() == id.toString()));
-      final removedValue = List.of(list);
+      list.remove(list.firstWhere((element) => element.nodeId == id));
+      final removedValue = Set.of(list);
       _changeState(removedValue);
     }
   }
 
   @override
   void clear() {
-    _changeState(<BookmarkedGitRepository>[]);
+    _changeState(<BookmarkedGitRepository>{});
   }
 
   @override
-  void toggle(BookmarkedGitRepository id) async {
-    final list = await _load();
-    if (list.where((element) => element.toString() == id.toString()).isNotEmpty) {
+  void toggle(GithubNodeId id) async {
+    final list = await value;
+    if (list.where((element) => element.nodeId == id).isNotEmpty) {
       removeId(id);
     } else {
       addId(id);
     }
   }
 
-  void _changeState(List<BookmarkedGitRepository> value) {
+  void _changeState(Set<BookmarkedGitRepository> value) {
     state = value;
     _save(value);
   }
 
-  Future<void> _save(List<BookmarkedGitRepository> value) async {
+  Future<void> _save(Set<BookmarkedGitRepository> value) async {
     //重複を削除
-    final saveValue = value.map((e) => e.toString()).toSet().toList();
+    final saveValue = value.map((e) => e.nodeId.toString()).toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList(_saveKey, saveValue);
   }
 
-  Future<List<BookmarkedGitRepository>> _load() async {
+  Future<Set<BookmarkedGitRepository>> _load() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final loadedBookmarkedGitRepositoryList =
-        prefs.getStringList(_saveKey)?.map((e) => BookmarkedGitRepository(e)).toList() ??
-            [];
-    _changeState(loadedBookmarkedGitRepositoryList);
-    return loadedBookmarkedGitRepositoryList;
+    final loadedBookmarkedGitRepositorySet =
+        prefs.getStringList(_saveKey)?.whereNotNull().toSet() ?? <String>{};
+    final returnValue = loadedBookmarkedGitRepositorySet.map((e) => BookmarkedGitRepository(e)).toSet();
+    // _changeState(returnValue);
+    return returnValue.toSet();
+  }
+
+  Future<bool> _initialize() async {
+    _changeState(await value);
+    return true;
   }
 }
 
-abstract class BookmarkedRepositoryNotifier extends StateNotifier<List<BookmarkedGitRepository>> {
+abstract class BookmarkedRepositoryNotifier extends StateNotifier<Set<BookmarkedGitRepository>> {
   BookmarkedRepositoryNotifier(super.state);
 
-  Future<List<BookmarkedGitRepository>> get value;
+  Future<Set<BookmarkedGitRepository>> get value;
 
-  void addId(BookmarkedGitRepository id);
+  Future<bool> get initialized;
 
-  void removeId(BookmarkedGitRepository id);
+  void addId(GithubNodeId id);
+
+  void removeId(GithubNodeId id);
 
   void clear();
 
-  void toggle(BookmarkedGitRepository id);
+  void toggle(GithubNodeId id);
 
 }
 
-class BookmarkedGitRepository extends GithubNodeId {
-  BookmarkedGitRepository(super.idString);
+class BookmarkedGitRepository {
+  BookmarkedGitRepository(String nodeIdString) : _nodeId = GithubNodeId(nodeIdString);
+
+  BookmarkedGitRepository.fromGithubNodeId(GithubNodeId nodeId) : _nodeId = nodeId;
+
+  final GithubNodeId _nodeId;
+  GithubNodeId get nodeId => _nodeId;
 }

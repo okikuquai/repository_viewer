@@ -186,7 +186,7 @@ class Navigate2UserInfoView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getViewerID();
+    final qryResult = useQuery$getViewerID(Options$Query$getViewerID(fetchPolicy: FetchPolicy.networkOnly));
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return const LoadingAnimationWithAppbar();

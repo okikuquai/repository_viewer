@@ -50,7 +50,7 @@ class UserInfoView extends HookConsumerWidget {
 
 
       if (user.isViewer) {
-        ids.addAll(bookmarkedGitRepositoryValue.data!);
+        ids.addAll(bookmarkedGitRepositoryValue.data!.map((e) => e.nodeId).toList());
         //重複消去
         ids = ids.toSet().toList();
       }

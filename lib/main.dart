@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
 import 'toppage_view.dart';
 

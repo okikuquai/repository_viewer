@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:repositoryviewer/type/git_repository_contributor.dart';
@@ -14,7 +16,7 @@ Future<List<GitRepositoryContributor>> getContributor(
             }));
     if (res.statusCode == 200 && res.data != null) {
       try {
-        final data = res.data! as List<dynamic>;
+        final data = jsonDecode(res.data!);
         return data.map((e) => GitRepositoryContributor.fromJson(e)).toList();
       } catch (e) {
         debugPrint(e.toString());

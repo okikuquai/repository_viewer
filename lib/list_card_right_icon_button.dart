@@ -23,7 +23,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
 
     final favState = ref
         .watch(bookmarkedGitRepositoriesProvider)
-        .where((element) => GithubNodeId(element.toString()) == id)
+        .where((element) => GithubNodeId(element.nodeId.toString()) == id)
         .isNotEmpty;
 
     final bookmarkStateNotifier =
@@ -41,7 +41,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
         ),
         onTap: () {
           if (!isStarredInGithub) {
-            bookmarkStateNotifier.toggle(BookmarkedGitRepository(id.toString()));
+            bookmarkStateNotifier.toggle(id);
           }
         });
   }
