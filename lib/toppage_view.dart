@@ -14,6 +14,7 @@ class TopPageView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageState = useState(0);
     final ghTokenProvider = ref.watch(githubTokenProvider);
+
     //接続用のclientクラスのtokenを更新
     final client = ValueNotifier(
       GraphQLClient(
@@ -28,8 +29,6 @@ class TopPageView extends HookConsumerWidget {
         cache: GraphQLCache(store: HiveStore()),
       ),
     );
-    //updateToken(githubTokenLoadingState.data!);
-    //GraphQLProviderでラップすることで使える
     final screens = [
       const OrganizationRepositoryListView(),
       const BookmarkedGitRepositoryView(),

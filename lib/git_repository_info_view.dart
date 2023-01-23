@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/restapi/contributor.dart';
+import 'package:repositoryviewer/restapi/get_contributer.dart';
 import 'package:repositoryviewer/user_info_view.dart';
 
 import './graphql/get_repository_info_from_id.graphql.dart';
 import './graphql/get_repository_readme_from_id.graphql.dart';
 import 'list_card_right_icon_button.dart';
 import 'provider/github_account_setting_provider.dart';
-import 'graphql/type/github_node_id_type.dart';
+import 'type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
-class RepositoryInfoView extends HookConsumerWidget {
-  const RepositoryInfoView({Key? key, required this.repositoryID})
+class GitRepositoryInfoView extends HookConsumerWidget {
+  const GitRepositoryInfoView({Key? key, required this.repositoryId})
       : super(key: key);
-  final GithubNodeID repositoryID;
+  final GithubNodeId repositoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repoData = useQuery$getRepositoryInfoFromID(
-      Options$Query$getRepositoryInfoFromID(
-          variables: Variables$Query$getRepositoryInfoFromID(id: repositoryID)),
+    final repoData = useQuery$getRepositoryInfoFromId(
+      Options$Query$getRepositoryInfoFromId(
+          variables: Variables$Query$getRepositoryInfoFromId(id: repositoryId)),
     );
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
@@ -33,9 +33,9 @@ class RepositoryInfoView extends HookConsumerWidget {
           repoData.result.parsedData?.node! as Fragment$RepositoryData;
       return Scaffold(
           appBar: RepositoryViewAppbar(
-              repositoryID: repositoryID, repositoryName: parsedData.name),
+              repositoryId: repositoryId, repositoryName: parsedData.name),
           body: RepositoryViewBody(
-              repositoryID: repositoryID, repositoryName: parsedData.name));
+              repositoryId: repositoryId, repositoryName: parsedData.name));
     } else {
       return const Scaffold(
         body: Text('error'),
@@ -48,16 +48,16 @@ class RepositoryInfoView extends HookConsumerWidget {
 
 class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
   const RepositoryViewAppbar(
-      {Key? key, required this.repositoryID, required this.repositoryName})
+      {Key? key, required this.repositoryId, required this.repositoryName})
       : super(key: key);
-  final GithubNodeID repositoryID;
+  final GithubNodeId repositoryId;
   final String repositoryName;
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(repositoryName),
       actions: [
-        ListCardRightIconButton(id: repositoryID),
+        ListCardRightIconButton(id: repositoryId),
       ],
     );
   }
@@ -68,9 +68,9 @@ class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
 
 class RepositoryViewBody extends StatefulWidget {
   const RepositoryViewBody(
-      {Key? key, required this.repositoryID, required this.repositoryName})
+      {Key? key, required this.repositoryId, required this.repositoryName})
       : super(key: key);
-  final GithubNodeID repositoryID;
+  final GithubNodeId repositoryId;
   final String repositoryName;
 
   @override
@@ -103,7 +103,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
           title: Text('Readme', style: textTheme.headline5),
           children: [
             MarkDownView(
-              repositoryID: widget.repositoryID,
+              repositoryId: widget.repositoryId,
             )
           ],
         )
@@ -113,15 +113,15 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
 }
 
 class MarkDownView extends HookConsumerWidget {
-  const MarkDownView({Key? key, required this.repositoryID}) : super(key: key);
-  final GithubNodeID repositoryID;
+  const MarkDownView({Key? key, required this.repositoryId}) : super(key: key);
+  final GithubNodeId repositoryId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mdData = useQuery$getRepositoryReadmeFromID(
-      Options$Query$getRepositoryReadmeFromID(
+    final mdData = useQuery$getRepositoryReadmeFromId(
+      Options$Query$getRepositoryReadmeFromId(
           fetchPolicy: FetchPolicy.noCache,
           variables:
-              Variables$Query$getRepositoryReadmeFromID(id: repositoryID)),
+              Variables$Query$getRepositoryReadmeFromId(id: repositoryId)),
     );
 
     if (mdData.result.isLoading) {
@@ -163,7 +163,7 @@ class ContributorsView extends HookConsumerWidget {
                   .map((e) => GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => UserView(userID: e.nodeID!),
+                            builder: (context) => UserInfoView(userId: e.nodeId),
                           ),
                         ),
                         child: SizedBox(
@@ -175,7 +175,7 @@ class ContributorsView extends HookConsumerWidget {
                                 image: DecorationImage(
                                     fit: BoxFit.fill,
                                     image:
-                                        NetworkImage(e.avatarURL!.toString()))),
+                                        NetworkImage(e.avatarUri.toString()))),
                           ),
                         ),
                       ))

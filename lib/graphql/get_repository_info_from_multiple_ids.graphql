@@ -6,7 +6,7 @@ fragment RepositoryData on Repository {
   description
 }
 
-query getRepositoryInfoFromMultipleIDs($ids: [ID!]!) {
+query getRepositoryInfoFromMultipleIds($ids: [ID!]!) {
   nodes(ids: $ids){
     ...RepositoryData
   }

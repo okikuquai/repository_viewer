@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:repositoryviewer/list_card_right_icon_button.dart';
 
-import 'graphql/type/github_node_id_type.dart';
-import 'repository_info_view.dart';
+import 'type/github_node_id_type.dart';
+import 'git_repository_info_view.dart';
 
-class RepositoryCard extends StatelessWidget {
-  const RepositoryCard(
+class GitRepositoryCardView extends StatelessWidget {
+  const GitRepositoryCardView(
       {super.key,
       required this.id,
       required this.title,
       required this.description,
-      this.isStarredinGithub = false});
+      this.isStarredInGithub = false});
 
-  final GithubNodeID id;
+  final GithubNodeId id;
   final String title;
   final String description;
-  final bool isStarredinGithub;
+  final bool isStarredInGithub;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class RepositoryCard extends StatelessWidget {
     return Card(
       child: ListTile(
           trailing: ListCardRightIconButton(
-              id: id, isStarredInGithub: isStarredinGithub),
+              id: id, isStarredInGithub: isStarredInGithub),
           title: Text(
             title,
             style: textTheme.headline5,
@@ -39,7 +39,7 @@ class RepositoryCard extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => RepositoryInfoView(repositoryID: id),
+                builder: (context) => GitRepositoryInfoView(repositoryId: id),
               ),
             );
           }),

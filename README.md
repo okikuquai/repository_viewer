@@ -63,13 +63,16 @@ This app was created for training Flutter and its code
 
 ## Github token Setting
 Please create Personal Access Token below scopes
-* ✅: repo
-  * ✅: repo:status
-  * ✅: repo_deployment
-  * ✅: public_repo
-  * ✅: repo:invite
-  * ✅: security_events
-
+* [x]: repo
+  * [x]: repo:status
+  * [x]: repo_deployment
+  * [x]: public_repo
+  * [x]: repo:invite
+  * [x]: security_events
+* [x]: admin:org
+  * [ ]: write:org
+  * [x]: read:org
+  * [ ]: manage_runners:org
 ## How to build
 All you have to do is just type the following line on the directory with Terminal:
 ### for android

@@ -2,35 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/repository_info_view.dart';
+import 'package:repositoryviewer/git_repository_info_view.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
 import './graphql/get_user_info_from_id.graphql.dart';
 import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
-import 'graphql/type/github_node_id_type.dart';
+import 'type/github_node_id_type.dart';
 import 'loading_animation.dart';
 
-class UserView extends HookConsumerWidget {
-  const UserView({super.key, required this.userID});
-  final GithubNodeID userID;
+class UserInfoView extends HookConsumerWidget {
+  const UserInfoView({super.key, required this.userId});
+  final GithubNodeId userId;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorTheme = Theme.of(context).primaryColor;
     final bookmarkedGitRepositoryState =
-        ref.read(bookmarkedGitRepositoryProvider.notifier);
+        ref.read(bookmarkedGitRepositoriesProvider.notifier);
 
-    final bookmarkedGitRepositoryvalueinfo =
+    final bookmarkedGitRepositoryValueInfo =
         useMemoized(() => bookmarkedGitRepositoryState.value);
-    final bookmarkedGitRepositoryvalue =
-        useFuture(bookmarkedGitRepositoryvalueinfo);
-    if (!bookmarkedGitRepositoryvalue.hasData) {
+    final bookmarkedGitRepositoryValue =
+        useFuture(bookmarkedGitRepositoryValueInfo);
+    if (!bookmarkedGitRepositoryValue.hasData) {
       return const LoadingAnimation();
     }
 
-    final qryResult = useQuery$getUserInfoFromID(
-      Options$Query$getUserInfoFromID(
+    final qryResult = useQuery$getUserInfoFromId(
+      Options$Query$getUserInfoFromId(
           fetchPolicy: FetchPolicy.noCache,
-          variables: Variables$Query$getUserInfoFromID(id: userID)),
+          variables: Variables$Query$getUserInfoFromId(id: userId)),
     );
 
     if (qryResult.result.isLoading) {
@@ -46,18 +46,15 @@ class UserView extends HookConsumerWidget {
     } else if (qryResult.result.parsedData?.node != null) {
       final user = qryResult.result.parsedData!.node! as Fragment$UserInfo;
       final starredRepositories = user.starredRepositories.edges;
-      List<GithubNodeID> ids = [];
-      starredRepositories?.forEach((element) {
-        ids.add(element!.node.id);
-      });
+      List<GithubNodeId> ids = starredRepositories!.map((e) => GithubNodeId(e!.node.id.toString())).toList();
+
 
       if (user.isViewer) {
-        ids.addAll(bookmarkedGitRepositoryvalue.data!);
+        ids.addAll(bookmarkedGitRepositoryValue.data!);
         //重複消去
         ids = ids.toSet().toList();
       }
 
-      if (user.isViewer) {}
       return Scaffold(
           body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -96,13 +93,13 @@ class UserView extends HookConsumerWidget {
 
 class UserStarredRepositoriesList extends HookConsumerWidget {
   const UserStarredRepositoriesList({super.key, required this.ids});
-  final List<GithubNodeID> ids;
+  final List<GithubNodeId> ids;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getRepositoryInfoFromMultipleIDs(
-      Options$Query$getRepositoryInfoFromMultipleIDs(
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
+      Options$Query$getRepositoryInfoFromMultipleIds(
           variables:
-              Variables$Query$getRepositoryInfoFromMultipleIDs(ids: ids)),
+              Variables$Query$getRepositoryInfoFromMultipleIds(ids: ids)),
     );
 
     //ロード完了していない場合
@@ -140,7 +137,7 @@ class UserStarredRepositoriesList extends HookConsumerWidget {
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) =>
-                  RepositoryInfoView(repositoryID: repository.id),
+                  GitRepositoryInfoView(repositoryId: repository.id),
             ),
           ),
         ));

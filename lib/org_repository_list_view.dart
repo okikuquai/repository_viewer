@@ -55,7 +55,6 @@ class OrganizationRepositoryBody extends HookConsumerWidget {
     } else if (qryResult.result.hasException) {
       return Text(qryResult.result.exception.toString());
     }
-
     if (qryResult.result.parsedData?.organization?.repositories.edges != null) {
       //ハートの状態を変えるためにStatefulWidgetでリポジトリのリストを表示させる
       return OrganizationRepositoryCardList(
@@ -119,7 +118,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
             itemCount: repositoriesCount,
             itemBuilder: (context, index) {
               final repository = repositories[index]!.node!;
-              return RepositoryCard(
+              return GitRepositoryCardView(
                   id: repository.id,
                   title: repository.name,
                   description: repository.description ?? 'No Description');

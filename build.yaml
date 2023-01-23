@@ -10,12 +10,14 @@ targets:
             - graphql_flutter
           scalars:
             ID:
-              type: GithubNodeID
-              fromJsonFunctionName: githubNodeIDFromJson
-              toJsonFunctionName: githubNodeIDToJson
-              import: package:repositoryviewer/graphql/type/github_node_id_type.dart
+#              type: String
+              type: GithubNodeId
+              fromJsonFunctionName: githubNodeIdFromJson
+              toJsonFunctionName: githubNodeIdToJson
+              import: package:repositoryviewer/type/github_node_id_type.dart
             URI:
               type: Uri
+              fromJsonFunctionName: Uri.parse
             GitObjectID:
               type: String
             DateTime:
