@@ -5,11 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 import 'package:collection/collection.dart';
 
-import 'graphql/get_repository_info_from_multiple_ids.graphql.dart';
-import 'graphql/get_starred_repository.graphql.dart';
-import 'type/github_node_id_type.dart';
-import 'loading_animation.dart';
-import 'git_repository_card_view.dart';
+import '../graphql/get_repository_info_from_multiple_ids.graphql.dart';
+import '../graphql/get_starred_repository.graphql.dart';
+import '../type/github_node_id_type.dart';
+import 'module/loading_animation.dart';
+import 'module/git_repository_card_view.dart';
 
 class BookmarkedGitRepositoryView extends HookConsumerWidget {
   const BookmarkedGitRepositoryView({Key? key}) : super(key: key);

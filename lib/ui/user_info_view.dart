@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/git_repository_info_view.dart';
+import 'package:repositoryviewer/ui/git_repository_info_view.dart';
 import 'package:repositoryviewer/graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 
-import './graphql/get_user_info_from_id.graphql.dart';
-import 'type/github_node_id_type.dart';
-import 'loading_animation.dart';
+import '../graphql/get_user_info_from_id.graphql.dart';
+import '../type/github_node_id_type.dart';
 import 'package:collection/collection.dart';
+
+import 'module/loading_animation.dart';
 
 class UserInfoView extends HookConsumerWidget {
   const UserInfoView({super.key, required this.userId});

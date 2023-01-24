@@ -3,11 +3,11 @@ import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
-import 'package:repositoryviewer/user_info_view.dart';
+import 'package:repositoryviewer/ui/user_info_view.dart';
 
-import './graphql/get_organization_list.graphql.dart';
-import './graphql/get_viewer_id.graphql.dart';
-import 'loading_animation.dart';
+import '../graphql/get_organization_list.graphql.dart';
+import '../graphql/get_viewer_id.graphql.dart';
+import 'module/loading_animation.dart';
 
 class SettingsView extends HookConsumerWidget {
   const SettingsView({super.key});

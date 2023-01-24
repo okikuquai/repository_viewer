@@ -3,14 +3,14 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/restapi/get_contributer.dart';
-import 'package:repositoryviewer/user_info_view.dart';
+import 'package:repositoryviewer/ui/user_info_view.dart';
 
-import './graphql/get_repository_info_from_id.graphql.dart';
-import './graphql/get_repository_readme_from_id.graphql.dart';
-import 'list_card_right_icon_button.dart';
-import 'provider/github_account_setting_provider.dart';
-import 'type/github_node_id_type.dart';
-import 'loading_animation.dart';
+import '../graphql/get_repository_info_from_id.graphql.dart';
+import '../graphql/get_repository_readme_from_id.graphql.dart';
+import 'module/list_card_right_icon_button.dart';
+import '../provider/github_account_setting_provider.dart';
+import '../type/github_node_id_type.dart';
+import 'module/loading_animation.dart';
 
 class GitRepositoryInfoView extends HookConsumerWidget {
   const GitRepositoryInfoView({Key? key, required this.repositoryId})

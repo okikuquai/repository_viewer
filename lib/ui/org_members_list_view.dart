@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/user_info_view.dart';
+import 'package:repositoryviewer/ui/user_info_view.dart';
 
-import './graphql/get_members_from_organization.graphql.dart';
-import 'loading_animation.dart';
+import '../graphql/get_members_from_organization.graphql.dart';
+import 'module/loading_animation.dart';
+
 
 class OrgMemberListView extends HookConsumerWidget {
   const OrgMemberListView({Key? key, required this.orgName}) : super(key: key);

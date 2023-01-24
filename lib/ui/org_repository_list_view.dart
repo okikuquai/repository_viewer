@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
-import 'package:repositoryviewer/org_members_list_view.dart';
 
-import './graphql/get_repository_list_from_organization.graphql.dart';
-import 'git_repository_card_view.dart';
+import 'module/git_repository_card_view.dart';
+import 'org_members_list_view.dart';
+import '../graphql/get_repository_list_from_organization.graphql.dart';
+
 
 class OrganizationRepositoryListView extends HookConsumerWidget {
   const OrganizationRepositoryListView({super.key});
@@ -75,7 +76,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
     //nullじゃないことが確定しているので!を使う
     final repositories =
         qryResult.result.parsedData!.organization!.repositories.edges!;
-    final pageinfo =
+    final pageInfo =
         qryResult.result.parsedData!.organization!.repositories.pageInfo;
     final repositoriesCount = repositories.length;
 
@@ -87,7 +88,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
             //下端に移動しきったか
             if (before == max) {
               //取得したコンテンツが最後のコンテンツではないか
-              if (!pageinfo.hasNextPage) return false;
+              if (!pageInfo.hasNextPage) return false;
               //さらにリポジトリを取得
               qryResult.fetchMore(
                   FetchMoreOptions$Query$getRepositoryListFromOrganization(
@@ -95,7 +96,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
                           Variables$Query$getRepositoryListFromOrganization(
                               orgName: orgName,
                               first: 15,
-                              after: pageinfo.endCursor),
+                              after: pageInfo.endCursor),
                       updateQuery: (previousResultData, fetchMoreResultData) {
                         final List<dynamic> items = <dynamic>[
                           ...previousResultData?['organization']['repositories']
