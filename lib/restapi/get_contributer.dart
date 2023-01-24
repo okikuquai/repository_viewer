@@ -15,17 +15,12 @@ Future<List<GitRepositoryContributor>> getContributor(
               'X-GitHub-Api-Version': '2022-11-28'
             }));
     if (res.statusCode == 200 && res.data != null) {
-      try {
-        List responseBody = json.decode(res.data!);
+        final List responseBody = json.decode(res.data!);
         return responseBody.map((e) => GitRepositoryContributor.fromJson(e)).toList();
-      } catch (e) {
-        debugPrint(e.toString());
-        rethrow;
-      }
     }
   } catch (e) {
     debugPrint(e.toString());
     rethrow;
   }
-  throw NullThrownError();
+  return <GitRepositoryContributor>[];
 }
