@@ -30,10 +30,10 @@ class GithubSetting extends StateNotifier<String> {
     }
   }
 
-  void setValue(String orgname) {
-    assert(orgname.isNotEmpty);
-    sharedPreferencesUtil.save(orgname);
-    state = orgname;
+  void setValue(String value) {
+    assert(value.isNotEmpty);
+    sharedPreferencesUtil.save(value);
+    state = value;
   }
 }
 

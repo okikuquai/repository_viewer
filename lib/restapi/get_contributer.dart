@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:repositoryviewer/type/git_repository_contributor.dart';
@@ -5,7 +7,7 @@ import 'package:repositoryviewer/type/git_repository_contributor.dart';
 Future<List<GitRepositoryContributor>> getContributor(
     String repo, String token, String orgName) async {
   try {
-    var res = await Dio()
+    final Response<String> res = await Dio()
         .get('https://api.github.com/repos/$orgName/$repo/contributors',
             options: Options(headers: {
               'Accept': 'application/vnd.github+json',
@@ -14,8 +16,8 @@ Future<List<GitRepositoryContributor>> getContributor(
             }));
     if (res.statusCode == 200 && res.data != null) {
       try {
-        final data = res.data! as List<dynamic>;
-        return data.map((e) => GitRepositoryContributor.fromJson(e)).toList();
+        List responseBody = json.decode(res.data!);
+        return responseBody.map((e) => GitRepositoryContributor.fromJson(e)).toList();
       } catch (e) {
         debugPrint(e.toString());
         rethrow;
