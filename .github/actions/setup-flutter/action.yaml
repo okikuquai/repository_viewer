@@ -27,3 +27,4 @@ runs:
         export PATH="$PATH":"$HOME/.pub-cache/bin"
         wget -O ./lib/graphql/schema.graphql https://docs.github.com/public/schema.docs.graphql
         fvm flutter pub run build_runner build --delete-conflicting-outputs
+        fvm flutter pub cache repair
