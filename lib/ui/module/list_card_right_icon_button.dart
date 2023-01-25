@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'type/github_node_id_type.dart';
-import 'provider/bookmarked_git_repository_provider.dart';
+import '../../type/github_node_id_type.dart';
+import '../../provider/bookmarked_git_repository_provider.dart';
 
 class ListCardRightIconButton extends HookConsumerWidget {
   const ListCardRightIconButton(
@@ -23,7 +23,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
 
     final favState = ref
         .watch(bookmarkedGitRepositoriesProvider)
-        .where((element) => GithubNodeId(element.nodeId.toString()) == id)
+        .where((element) => element.nodeId == id)
         .isNotEmpty;
 
     final bookmarkStateNotifier =

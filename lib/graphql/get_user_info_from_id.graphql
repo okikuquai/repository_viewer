@@ -5,16 +5,28 @@ fragment UserInfo on User {
   url,
   avatarUrl,
   isViewer,
-  starredRepositories{
+  starredRepositories(
+    first: $first,
+    after: $after
+  ){
+    pageInfo{
+      endCursor,
+      hasNextPage,
+      hasPreviousPage,
+      startCursor
+    }
     edges {
       node {
-        id
+        id,
+        name,
+        description,
+        url
       }
     }
   }
 }
 
-query getUserInfoFromId($id: ID!) {
+query getUserInfoFromId($id: ID!, $first: Int!, $after: String) {
   node(id: $id){
     ...UserInfo
   }

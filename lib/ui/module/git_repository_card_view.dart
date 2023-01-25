@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:repositoryviewer/list_card_right_icon_button.dart';
+import 'package:repositoryviewer/ui/module/list_card_right_icon_button.dart';
 
-import 'type/github_node_id_type.dart';
-import 'git_repository_info_view.dart';
+import '../../type/github_node_id_type.dart';
+import '../git_repository_info_view.dart';
 
 class GitRepositoryCardView extends StatelessWidget {
   const GitRepositoryCardView(

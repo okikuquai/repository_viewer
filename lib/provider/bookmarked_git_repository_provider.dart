@@ -1,4 +1,3 @@
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:collection/collection.dart';
@@ -24,8 +23,8 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRe
 
   @override
   void addId(GithubNodeId id) {
-    final value = {...state, BookmarkedGitRepository(id.toString())};
-    _changeState(value.toSet());
+    final value = {...state, BookmarkedGitRepository(nodeId: GithubNodeId(id.toString()))};
+    _changeState(value);
   }
 
   @override
@@ -70,7 +69,7 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRe
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final loadedBookmarkedGitRepositorySet =
         prefs.getStringList(_saveKey)?.whereNotNull().toSet() ?? <String>{};
-    final returnValue = loadedBookmarkedGitRepositorySet.map((e) => BookmarkedGitRepository(e)).toSet();
+    final returnValue = loadedBookmarkedGitRepositorySet.map((e) => BookmarkedGitRepository(nodeId: GithubNodeId(e))).toSet();
     // _changeState(returnValue);
     return returnValue.toSet();
   }
@@ -99,10 +98,6 @@ abstract class BookmarkedRepositoryNotifier extends StateNotifier<Set<Bookmarked
 }
 
 class BookmarkedGitRepository {
-  BookmarkedGitRepository(String nodeIdString) : _nodeId = GithubNodeId(nodeIdString);
-
-  BookmarkedGitRepository.fromGithubNodeId(GithubNodeId nodeId) : _nodeId = nodeId;
-
-  final GithubNodeId _nodeId;
-  GithubNodeId get nodeId => _nodeId;
+  BookmarkedGitRepository({required this.nodeId});
+  final GithubNodeId nodeId;
 }
