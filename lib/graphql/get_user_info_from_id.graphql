@@ -17,10 +17,7 @@ fragment UserInfo on User {
     }
     edges {
       node {
-        id,
-        name,
-        description,
-        url
+        ...RepositoryData
       }
     }
   }

@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 
 import '../graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import '../graphql/get_starred_repository.graphql.dart';
+import '../graphql/repository_data.graphql.dart';
 import '../type/github_node_id_type.dart';
 import 'module/loading_animation.dart';
 import 'module/git_repository_card_view.dart';
