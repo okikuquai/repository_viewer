@@ -10,6 +10,7 @@ import 'package:repositoryviewer/ui/git_repository_info_view.dart';
 
 import '../graphql/get_user_info_from_id.graphql.dart';
 import '../type/github_node_id_type.dart';
+import 'exception_message_view.dart';
 import 'module/loading_animation.dart';
 
 class UserInfoView extends HookConsumerWidget {
@@ -27,24 +28,17 @@ class UserInfoView extends HookConsumerWidget {
     if (qryResult.result.isLoading && qryResult.result.parsedData == null) {
       return const LoadingAnimationWithAppbar();
     } else if (qryResult.result.hasException) {
-      return displayErrorMessage(qryResult.result.exception.toString());
+      return ExceptionMessageView(
+          message: qryResult.result.exception.toString());
     } else if (qryResult.result.parsedData?.node != null) {
       try {
         return UserInfoSliverView(qryResult: qryResult);
       } catch (e) {
-        return displayErrorMessage(e.toString());
+        return ExceptionMessageView(message: e.toString());
       }
     } else {
-      return displayErrorMessage(NullThrownError().toString());
+      return ExceptionMessageView(message: TypeError().toString());
     }
-  }
-
-  Widget displayErrorMessage(String message) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Exception'),
-        ),
-        body: Text(message));
   }
 }
 
@@ -56,17 +50,12 @@ class UserInfoSliverView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userInfo = qryResult.result.parsedData!.node as Fragment$UserInfo;
-    if (userInfo.starredRepositories.edges == null) throw NullThrownError();
     final List<Fragment$RepositoryData> repositoryList = userInfo
-        .starredRepositories.edges!
-        .toList()
-        .whereNotNull()
-        .map((e) => Fragment$RepositoryData(
-            id: e.node.id,
-            name: e.node.name,
-            url: e.node.url,
-            $__typename: e.node.$__typename))
-        .toList();
+            .starredRepositories.edges
+            ?.map((e) => e?.node)
+            .whereNotNull()
+            .toList() ??
+        [];
     if (userInfo.isViewer) {
       try {
         //empty:loading, catch:例外をスローした時
@@ -91,7 +80,8 @@ class UserInfoSliverView extends HookConsumerWidget {
                 isLoading: qryResult.result.isLoading)));
   }
 
-  bool onScrollNotification(ScrollNotification scrollNotification, QueryHookResult<Query$getUserInfoFromId> qryResult) {
+  bool onScrollNotification(ScrollNotification scrollNotification,
+      QueryHookResult<Query$getUserInfoFromId> qryResult) {
     final userInfo = qryResult.result.parsedData!.node! as Fragment$UserInfo;
 
     if (scrollNotification is ScrollEndNotification) {
@@ -103,20 +93,18 @@ class UserInfoSliverView extends HookConsumerWidget {
 
         qryResult.fetchMore(FetchMoreOptions$Query$getUserInfoFromId(
             variables: Variables$Query$getUserInfoFromId(
-                id: userInfo.id,
-                first: 15,
-                after: pageInfo.endCursor),
+                id: userInfo.id, first: 15, after: pageInfo.endCursor),
             updateQuery: (previousResultData, fetchMoreResultData) {
               final List<dynamic> items = <dynamic>[
-                ...previousResultData?['node']['starredRepositories']
-                ['edges'] as List<dynamic>? ??
-                    <dynamic>[],
-                ...fetchMoreResultData?['node']['starredRepositories']
-                ['edges'] as List<dynamic>? ??
-                    <dynamic>[],
+                ...previousResultData?['node']['starredRepositories']['edges']
+                        as List<dynamic>? ??
+                    [],
+                ...fetchMoreResultData?['node']['starredRepositories']['edges']
+                        as List<dynamic>? ??
+                    [],
               ];
-              fetchMoreResultData?['node']['starredRepositories']
-              ['edges'] = items;
+              fetchMoreResultData?['node']['starredRepositories']['edges'] =
+                  items;
               return fetchMoreResultData;
             }));
         return true;
@@ -146,23 +134,20 @@ class UserInfoSliverView extends HookConsumerWidget {
                         .map((e) => e.nodeId)
                         .toList())));
 
-    //ちょっと冗長というか、ロジックが複雑な気がする
     if (bookmarkedRepositoryDataQryResult.result.isLoading) {
       return <Fragment$RepositoryData>[];
+    }
+    if (bookmarkedRepositoryDataQryResult.result.hasException) {
+      throw Exception(bookmarkedRepositoryDataQryResult.result.exception);
+    }
+    if (bookmarkedRepositoryDataQryResult.result.parsedData != null &&
+        bookmarkedRepositoryDataQryResult.result.parsedData!.nodes.isNotEmpty) {
+      return bookmarkedRepositoryDataQryResult.result.parsedData!.nodes
+          .whereNotNull()
+          .map((e) => e as Fragment$RepositoryData)
+          .toList();
     } else {
-      if (bookmarkedRepositoryDataQryResult.result.hasException) {
-        throw Exception(bookmarkedRepositoryDataQryResult.result.exception);
-      } else if (bookmarkedRepositoryDataQryResult.result.parsedData != null) {
-        if (bookmarkedRepositoryDataQryResult
-            .result.parsedData!.nodes.isNotEmpty) {
-          return bookmarkedRepositoryDataQryResult.result.parsedData!.nodes.whereNotNull().map((e) => e as Fragment$RepositoryData).toList();
-              // as List<Fragment$RepositoryData>;
-        } else {
-          throw NullThrownError();
-        }
-      } else {
-        throw NullThrownError();
-      }
+      throw Exception("Values is null");
     }
   }
 }
@@ -259,7 +244,7 @@ class UserStarredRepositorySliverList extends HookConsumerWidget {
           child: ListTile(
         title: Text(
           name,
-          style: textTheme.headline5,
+          style: textTheme.headlineSmall,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

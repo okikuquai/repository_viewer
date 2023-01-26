@@ -76,7 +76,7 @@ class OrgMemberListView extends HookConsumerWidget {
                           children: <Widget>[
                             Text(
                               member.name ?? '',
-                              style: textTheme.headline6,
+                              style: textTheme.titleLarge,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

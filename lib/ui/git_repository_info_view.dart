@@ -8,9 +8,9 @@ import 'package:repositoryviewer/ui/user_info_view.dart';
 import '../graphql/get_repository_info_from_id.graphql.dart';
 import '../graphql/get_repository_readme_from_id.graphql.dart';
 import '../graphql/repository_data.graphql.dart';
-import 'module/list_card_right_icon_button.dart';
 import '../provider/github_account_setting_provider.dart';
 import '../type/github_node_id_type.dart';
+import 'module/list_card_right_icon_button.dart';
 import 'module/loading_animation.dart';
 
 class GitRepositoryInfoView extends HookConsumerWidget {
@@ -53,6 +53,7 @@ class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
       : super(key: key);
   final GithubNodeId repositoryId;
   final String repositoryName;
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -87,10 +88,11 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
       children: [
         Container(
             padding: const EdgeInsets.all(10),
-            child: Text(widget.repositoryName, style: textTheme.headline4)),
+            child:
+                Text(widget.repositoryName, style: textTheme.headlineMedium)),
         ExpansionTile(
           initiallyExpanded: true,
-          title: Text('Contributors', style: textTheme.headline5),
+          title: Text('Contributors', style: textTheme.headlineSmall),
           children: [
             Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -101,7 +103,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
         ),
         const Divider(),
         ExpansionTile(
-          title: Text('Readme', style: textTheme.headline5),
+          title: Text('Readme', style: textTheme.headlineSmall),
           children: [
             MarkDownView(
               repositoryId: widget.repositoryId,
@@ -116,6 +118,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
 class MarkDownView extends HookConsumerWidget {
   const MarkDownView({Key? key, required this.repositoryId}) : super(key: key);
   final GithubNodeId repositoryId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mdData = useQuery$getRepositoryReadmeFromId(
@@ -148,6 +151,7 @@ class ContributorsView extends HookConsumerWidget {
   const ContributorsView({Key? key, required this.repositoryName})
       : super(key: key);
   final String repositoryName;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ghTokenProvider = ref.read(githubTokenProvider);
@@ -164,7 +168,8 @@ class ContributorsView extends HookConsumerWidget {
                   .map((e) => GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => UserInfoView(userId: e.nodeId),
+                            builder: (context) =>
+                                UserInfoView(userId: e.nodeId),
                           ),
                         ),
                         child: SizedBox(
