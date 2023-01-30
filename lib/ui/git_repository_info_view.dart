@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/restapi/get_contributer.dart';
+import 'package:repositoryviewer/ui/exception_message_view.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
 import '../graphql/get_repository_info_from_id.graphql.dart';
@@ -164,6 +165,8 @@ class ContributorsView extends HookConsumerWidget {
         repositoryName, ghTokenProvider, ghOrganizationProvider)));
     if (!contributorsData.hasData) {
       return const LoadingAnimation();
+    } else if (contributorsData.hasError) {
+      return ExceptionMessageView(message: contributorsData.error!.toString());
     }
 
     if (contributorsData.data != null) {
@@ -191,6 +194,6 @@ class ContributorsView extends HookConsumerWidget {
             .toList(),
       );
     }
-    return const LoadingAnimation();
+    return const ExceptionMessageView(message: "Value is null");
   }
 }
