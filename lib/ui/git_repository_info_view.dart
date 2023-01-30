@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -157,38 +158,39 @@ class ContributorsView extends HookConsumerWidget {
     final ghTokenProvider = ref.read(githubTokenProvider);
     final ghOrganizationProvider = ref.read(githubOrganizationProvider);
 
-    return FutureBuilder(
-        future: getContributor(
-            repositoryName, ghTokenProvider, ghOrganizationProvider),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            return Wrap(
-              spacing: 5,
-              children: snapshot.data!
-                  .map((e) => GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                UserInfoView(userId: e.nodeId),
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: 40.0,
-                          height: 40.0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    fit: BoxFit.fill,
-                                    image:
-                                        NetworkImage(e.avatarUri.toString()))),
-                          ),
-                        ),
-                      ))
-                  .toList(),
-            );
-          }
-          return const LoadingAnimation();
-        });
+    useMemoized(() => getContributor(
+        repositoryName, ghTokenProvider, ghOrganizationProvider));
+    final contributorsData = useFuture(useMemoized(() => getContributor(
+        repositoryName, ghTokenProvider, ghOrganizationProvider)));
+    if (!contributorsData.hasData) {
+      return const LoadingAnimation();
+    }
+
+    if (contributorsData.data != null) {
+      return Wrap(
+        spacing: 5,
+        children: contributorsData.data!
+            .map((e) => GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserInfoView(userId: e.nodeId),
+                    ),
+                  ),
+                  child: SizedBox(
+                    width: 40.0,
+                    height: 40.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image: NetworkImage(e.avatarUri.toString()))),
+                    ),
+                  ),
+                ))
+            .toList(),
+      );
+    }
+    return const LoadingAnimation();
   }
 }

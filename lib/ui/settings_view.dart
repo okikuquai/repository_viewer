@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
+import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
 import '../graphql/get_organization_list.graphql.dart';
@@ -51,7 +53,13 @@ class SettingsView extends HookConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () {}),
+                onTap: () async {
+                  PackageInfo.fromPlatform().then((value) => showLicensePage(
+                      context: context,
+                      applicationName: value.appName,
+                      applicationVersion: value.version,
+                      applicationIcon: const FlutterLogo()));
+                }),
             ListTile(
                 title: Text(
                   'github token',
@@ -121,6 +129,12 @@ class TokenInputDialog extends HookConsumerWidget {
       title: const Text('Tokenを入力して下さい'),
       content: TextField(
         decoration: const InputDecoration(hintText: 'ここに入力'),
+        keyboardType: TextInputType.visiblePassword,
+        //半角英数字のみ入力可能
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(
+              RegExp(r'^[ -~]*$')),
+        ],
         onChanged: (value) {
           valueText = value;
         },
@@ -148,7 +162,8 @@ class OrganizationSelectDialog extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ghOrganizationNotifier = ref.read(githubOrganizationProvider.notifier);
+    final ghOrganizationNotifier =
+        ref.read(githubOrganizationProvider.notifier);
 
     final qryResult = useQuery$getOrganizationList(
         Options$Query$getOrganizationList(
@@ -186,7 +201,8 @@ class Navigate2UserInfoView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final qryResult = useQuery$getViewerID(Options$Query$getViewerID(fetchPolicy: FetchPolicy.networkOnly));
+    final qryResult = useQuery$getViewerID(
+        Options$Query$getViewerID(fetchPolicy: FetchPolicy.networkOnly));
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return const LoadingAnimationWithAppbar();
