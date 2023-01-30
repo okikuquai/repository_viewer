@@ -1,11 +1,3 @@
-
-fragment RepositoryData on Repository {
-  id,
-  name,
-  url,
-  description
-}
-
 query getRepositoryInfoFromMultipleIds($ids: [ID!]!) {
   nodes(ids: $ids){
     ...RepositoryData

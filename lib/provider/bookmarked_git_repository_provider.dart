@@ -1,15 +1,17 @@
+import 'package:collection/collection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:collection/collection.dart';
 
 import '../type/github_node_id_type.dart';
 
-final bookmarkedGitRepositoriesProvider =
-    StateNotifierProvider<BookmarkedRepositoryNotifier, Set<BookmarkedGitRepository>>(
+final bookmarkedGitRepositoriesProvider = StateNotifierProvider<
+    BookmarkedRepositoryNotifier, Set<BookmarkedGitRepository>>(
   (ref) => BookmarkedRepositoryNotifierImpl(),
 );
 
-class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRepository>> implements BookmarkedRepositoryNotifier  {
+class BookmarkedRepositoryNotifierImpl
+    extends StateNotifier<Set<BookmarkedGitRepository>>
+    implements BookmarkedRepositoryNotifier {
   BookmarkedRepositoryNotifierImpl() : super(<BookmarkedGitRepository>{});
 
   @override
@@ -18,12 +20,11 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRe
   @override
   Future<bool> get initialized => _initialize();
 
-
   final String _saveKey = 'bookmarkedGitRepository';
 
   @override
   void addId(GithubNodeId id) {
-    final value = {...state, BookmarkedGitRepository(nodeId: GithubNodeId(id.toString()))};
+    final value = {...state, BookmarkedGitRepository(nodeId: id)};
     _changeState(value);
   }
 
@@ -69,9 +70,11 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRe
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final loadedBookmarkedGitRepositorySet =
         prefs.getStringList(_saveKey)?.whereNotNull().toSet() ?? <String>{};
-    final returnValue = loadedBookmarkedGitRepositorySet.map((e) => BookmarkedGitRepository(nodeId: GithubNodeId(e))).toSet();
+    final returnValue = loadedBookmarkedGitRepositorySet
+        .map((e) => BookmarkedGitRepository(nodeId: GithubNodeId(e)))
+        .toSet();
     // _changeState(returnValue);
-    return returnValue.toSet();
+    return returnValue;
   }
 
   Future<bool> _initialize() async {
@@ -80,7 +83,8 @@ class BookmarkedRepositoryNotifierImpl extends StateNotifier<Set<BookmarkedGitRe
   }
 }
 
-abstract class BookmarkedRepositoryNotifier extends StateNotifier<Set<BookmarkedGitRepository>> {
+abstract class BookmarkedRepositoryNotifier
+    extends StateNotifier<Set<BookmarkedGitRepository>> {
   BookmarkedRepositoryNotifier(super.state);
 
   Future<Set<BookmarkedGitRepository>> get value;
@@ -94,10 +98,10 @@ abstract class BookmarkedRepositoryNotifier extends StateNotifier<Set<Bookmarked
   void clear();
 
   void toggle(GithubNodeId id);
-
 }
 
 class BookmarkedGitRepository {
   BookmarkedGitRepository({required this.nodeId});
+
   final GithubNodeId nodeId;
 }

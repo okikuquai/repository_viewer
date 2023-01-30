@@ -1,0 +1,6 @@
+fragment RepositoryData on Repository {
+  id,
+  name,
+  url,
+  description
+}
