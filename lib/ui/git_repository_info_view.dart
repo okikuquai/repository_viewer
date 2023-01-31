@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/restapi/get_contributer.dart';
+import 'package:repositoryviewer/restapi/get_contributor.dart';
 import 'package:repositoryviewer/ui/exception_message_view.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
