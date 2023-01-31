@@ -27,7 +27,7 @@ class SettingsView extends HookConsumerWidget {
             ListTile(
                 title: Text(
                   'Favoriteリストのクリア',
-                  style: textTheme.headline5,
+                  style: textTheme.headlineSmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -42,7 +42,7 @@ class SettingsView extends HookConsumerWidget {
             ListTile(
                 title: Text(
                   'OSS License',
-                  style: textTheme.headline5,
+                  style: textTheme.headlineSmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -55,7 +55,7 @@ class SettingsView extends HookConsumerWidget {
             ListTile(
                 title: Text(
                   'github token',
-                  style: textTheme.headline5,
+                  style: textTheme.headlineSmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -72,7 +72,7 @@ class SettingsView extends HookConsumerWidget {
             ListTile(
                 title: Text(
                   'Viewer Infomation',
-                  style: textTheme.headline5,
+                  style: textTheme.headlineSmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -91,7 +91,7 @@ class SettingsView extends HookConsumerWidget {
             ListTile(
                 title: Text(
                   'Select Organization',
-                  style: textTheme.headline5,
+                  style: textTheme.headlineSmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

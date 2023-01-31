@@ -27,7 +27,7 @@ class GitRepositoryCardView extends StatelessWidget {
               id: id, isStarredInGithub: isStarredInGithub),
           title: Text(
             title,
-            style: textTheme.headline5,
+            style: textTheme.headlineSmall,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

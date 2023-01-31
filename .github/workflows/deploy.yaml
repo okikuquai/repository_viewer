@@ -1,8 +1,7 @@
 name: deploy-to-firebase-distribution
 on:
   pull_request:
-    branches:
-      - main
+    types: [opened]
 
 jobs:
   android-build:
