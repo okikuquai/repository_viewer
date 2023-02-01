@@ -37,7 +37,7 @@ class SettingsView extends HookConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () => ref
-                    .read(bookmarkedRepositoryNotifierImplProvider.notifier)
+                    .read(bookmarkedRepositoryProvider.notifier)
                     .clear()),
             ListTile(
                 title: Text(

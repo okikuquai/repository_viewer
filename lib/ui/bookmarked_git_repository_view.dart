@@ -47,7 +47,7 @@ class LocalFavoriteCardList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedGitRepositoryAsyncState =
-        ref.watch(bookmarkedRepositoryNotifierImplProvider);
+        ref.watch(bookmarkedRepositoryProvider);
 
     return bookmarkedGitRepositoryAsyncState.when(
         data: (bookmarkedRepos) {
@@ -157,7 +157,7 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
             .result.parsedData?.viewer.starredRepositories.edges !=
         null) {
       final bookmarkedGitRepositoryAsyncState =
-          ref.watch(bookmarkedRepositoryNotifierImplProvider);
+          ref.watch(bookmarkedRepositoryProvider);
       final githubStarredRepositories = githubStarredReposQryResult
           .result.parsedData!.viewer.starredRepositories.edges!
           .whereNotNull()

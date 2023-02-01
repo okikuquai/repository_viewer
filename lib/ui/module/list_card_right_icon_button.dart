@@ -15,7 +15,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     //SharedPreferenceで保存したBookmarkデータを読み込む
     final bookmarkedGitRepositoryAsyncState =
-        ref.watch(bookmarkedRepositoryNotifierImplProvider);
+        ref.watch(bookmarkedRepositoryProvider);
 
     return bookmarkedGitRepositoryAsyncState.when(
         data: (bookmarkedRepos) {
@@ -37,7 +37,7 @@ class ListCardRightIconButton extends HookConsumerWidget {
               onTap: () {
                 if (!isStarredInGithub) {
                   ref
-                      .read(bookmarkedRepositoryNotifierImplProvider.notifier)
+                      .read(bookmarkedRepositoryProvider.notifier)
                       .toggle(id);
                 }
               });

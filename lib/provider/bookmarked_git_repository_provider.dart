@@ -6,12 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../type/github_node_id_type.dart';
 
-part 'bookmarked_git_repository_provider.g.dart';
+final bookmarkedRepositoryProvider = AsyncNotifierProvider<BookmarkedRepositoryNotifier, Set<BookmarkedGitRepository>>(() {
+  return BookmarkedRepositoryNotifierImpl();
+});
 
-//generator使わず実装してみたかったけど断念...
 @riverpod
 class BookmarkedRepositoryNotifierImpl
-    extends _$BookmarkedRepositoryNotifierImpl
+    extends AsyncNotifier<Set<BookmarkedGitRepository>>
     implements BookmarkedRepositoryNotifier {
   final String _saveKey = 'bookmarkedGitRepository';
 
@@ -33,7 +34,7 @@ class BookmarkedRepositoryNotifierImpl
   }
 
   @override
-  FutureOr<Set<BookmarkedGitRepository>> build() async {
+  Future<Set<BookmarkedGitRepository>> build() async {
     // Load initial todo list from the remote repository
     return await _load();
   }
@@ -83,7 +84,7 @@ class BookmarkedRepositoryNotifierImpl
 
 }
 
-abstract class BookmarkedRepositoryNotifier {
+abstract class BookmarkedRepositoryNotifier extends AsyncNotifier<Set<BookmarkedGitRepository>>{
   BookmarkedRepositoryNotifier();
 
   void clear();

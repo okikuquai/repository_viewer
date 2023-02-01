@@ -114,7 +114,7 @@ class UserInfoSliverView extends HookConsumerWidget {
 
   List<Fragment$RepositoryData> getBookmarkedRepositoryData(WidgetRef ref) {
     final bookmarkedGitRepositoryAsyncState =
-        ref.read(bookmarkedRepositoryNotifierImplProvider);
+        ref.read(bookmarkedRepositoryProvider);
     return bookmarkedGitRepositoryAsyncState.when(
         data: (bookmarkedRepos) {
           final bookmarkedRepositoryDataQryResult =
