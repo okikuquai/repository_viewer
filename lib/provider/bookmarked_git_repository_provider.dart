@@ -35,7 +35,7 @@ class BookmarkedRepositoryNotifierImpl
   @override
   FutureOr<Set<BookmarkedGitRepository>> build() async {
     // Load initial todo list from the remote repository
-    return _load();
+    return await _load();
   }
 
   @override

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
 import 'package:repositoryviewer/ui/bookmarked_git_repository_view.dart';
-import 'package:repositoryviewer/ui/module/loading_animation.dart';
 import 'package:repositoryviewer/ui/settings_view.dart';
 
 import 'org_repository_list_view.dart';
@@ -17,12 +15,6 @@ class TopPageView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageState = useState(0);
     final ghTokenProvider = ref.watch(githubTokenProvider);
-
-    final bookmarkedGitRepositoryInitialized = useFuture(useMemoized(() =>
-        ref.watch(bookmarkedGitRepositoriesProvider.notifier).initialized));
-    if (!bookmarkedGitRepositoryInitialized.hasData) {
-      return const MaterialApp(home: LoadingAnimationWithAppbar());
-    }
 
     //接続用のclientクラスのtokenを更新
     final client = ValueNotifier(

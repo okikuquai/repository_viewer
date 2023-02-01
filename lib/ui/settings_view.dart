@@ -17,8 +17,6 @@ class SettingsView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final bookmarkedGitRepositoryState =
-        ref.read(bookmarkedGitRepositoriesProvider);
 
     return Scaffold(
         appBar: AppBar(
@@ -38,9 +36,9 @@ class SettingsView extends HookConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () {
-                  bookmarkedGitRepositoryState.clear();
-                }),
+                onTap: () => ref
+                    .read(bookmarkedRepositoryNotifierImplProvider.notifier)
+                    .clear()),
             ListTile(
                 title: Text(
                   'OSS License',
@@ -132,8 +130,7 @@ class TokenInputDialog extends HookConsumerWidget {
         keyboardType: TextInputType.visiblePassword,
         //半角英数字のみ入力可能
         inputFormatters: [
-          FilteringTextInputFormatter.allow(
-              RegExp(r'^[ -~]*$')),
+          FilteringTextInputFormatter.allow(RegExp(r'^[ -~]*$')),
         ],
         onChanged: (value) {
           valueText = value;
