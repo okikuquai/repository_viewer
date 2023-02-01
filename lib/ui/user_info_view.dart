@@ -35,9 +35,8 @@ class UserInfoView extends HookConsumerWidget {
       } catch (e) {
         return ExceptionMessageView(message: e.toString());
       }
-    } else {
-      return ExceptionMessageView(message: TypeError().toString());
     }
+    return ExceptionMessageView(message: TypeError().toString());
   }
 }
 
@@ -118,13 +117,14 @@ class UserInfoSliverView extends HookConsumerWidget {
     return bookmarkedGitRepositoryAsyncState.when(
         data: (bookmarkedRepos) {
           final bookmarkedRepositoryDataQryResult =
-          useQuery$getRepositoryInfoFromMultipleIds(
-              Options$Query$getRepositoryInfoFromMultipleIds(
-                  fetchPolicy: FetchPolicy.cacheFirst,
-                  variables: Variables$Query$getRepositoryInfoFromMultipleIds(
-                      ids: bookmarkedRepos
-                          .map((e) => e.nodeId)
-                          .toList())));
+              useQuery$getRepositoryInfoFromMultipleIds(
+                  Options$Query$getRepositoryInfoFromMultipleIds(
+                      fetchPolicy: FetchPolicy.cacheFirst,
+                      variables:
+                          Variables$Query$getRepositoryInfoFromMultipleIds(
+                              ids: bookmarkedRepos
+                                  .map((e) => e.nodeId)
+                                  .toList())));
 
           if (bookmarkedRepositoryDataQryResult.result.isLoading) {
             return <Fragment$RepositoryData>[];
@@ -133,7 +133,8 @@ class UserInfoSliverView extends HookConsumerWidget {
             throw Exception(bookmarkedRepositoryDataQryResult.result.exception);
           }
           if (bookmarkedRepositoryDataQryResult.result.parsedData != null &&
-              bookmarkedRepositoryDataQryResult.result.parsedData!.nodes.isNotEmpty) {
+              bookmarkedRepositoryDataQryResult
+                  .result.parsedData!.nodes.isNotEmpty) {
             return bookmarkedRepositoryDataQryResult.result.parsedData!.nodes
                 .whereNotNull()
                 .map((e) => e as Fragment$RepositoryData)
@@ -143,7 +144,8 @@ class UserInfoSliverView extends HookConsumerWidget {
           }
         },
         loading: () => <Fragment$RepositoryData>[],
-        error: (Object error, StackTrace stackTrace) => throw Exception(error.toString()));
+        error: (Object error, StackTrace stackTrace) =>
+            throw Exception(error.toString()));
   }
 }
 

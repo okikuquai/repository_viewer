@@ -65,15 +65,14 @@ class LocalFavoriteCardList extends HookConsumerWidget {
             return Text(qryResult.result.exception.toString());
           }
 
-          if (qryResult.result.parsedData?.nodes != null) {
-            return RepositoryCardsView(
-                repositoryDataList: qryResult.result.parsedData!.nodes
-                    .map((e) => e as Fragment$RepositoryData)
-                    .toList(),
-                bookmarkedNodeIds:
-                    bookmarkedRepos.map((e) => e.nodeId).toSet());
+          if (qryResult.result.parsedData!.nodes.isEmpty) {
+            return const ExceptionMessageView(message: 'リポジトリがありません');
           }
-          return const Text('no Repositories');
+          return RepositoryCardsView(
+              repositoryDataList: qryResult.result.parsedData!.nodes
+                  .map((e) => e as Fragment$RepositoryData)
+                  .toList(),
+              bookmarkedNodeIds: bookmarkedRepos.map((e) => e.nodeId).toSet());
         },
         loading: () => const LoadingAnimation(),
         error: (Object error, StackTrace stackTrace) =>
@@ -124,14 +123,14 @@ class GithubStarredCardList extends HookConsumerWidget {
         return Text(repositoryDataQryResult.result.exception.toString());
       }
 
-      if (repositoryDataQryResult.result.parsedData?.nodes != null) {
+      if (repositoryDataQryResult.result.parsedData!.nodes.isNotEmpty) {
         return RepositoryCardsView(
             repositoryDataList: repositoryDataQryResult.result.parsedData!.nodes
                 .map((e) => e as Fragment$RepositoryData)
                 .toList());
       }
     }
-    return const Text('no Repositories');
+    return const ExceptionMessageView(message: 'リポジトリがありません');
   }
 }
 
@@ -153,55 +152,47 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
       return Text(githubStarredReposQryResult.result.exception.toString());
     }
 
-    if (githubStarredReposQryResult
-            .result.parsedData?.viewer.starredRepositories.edges !=
-        null) {
-      final bookmarkedGitRepositoryAsyncState =
-          ref.watch(bookmarkedRepositoryProvider);
-      final githubStarredRepositories = githubStarredReposQryResult
-          .result.parsedData!.viewer.starredRepositories.edges!
-          .whereNotNull()
-          .toList();
-      final starredIds =
-          githubStarredRepositories.map((e) => e.node.id).toList();
+    final bookmarkedGitRepositoryAsyncState =
+        ref.watch(bookmarkedRepositoryProvider);
+    final githubStarredRepositories = githubStarredReposQryResult
+        .result.parsedData!.viewer.starredRepositories.edges!
+        .whereNotNull()
+        .toList();
+    final starredIds = githubStarredRepositories.map((e) => e.node.id).toList();
 
-      return bookmarkedGitRepositoryAsyncState.when(
-          data: (bookmarkedRepos) {
-            List<GithubNodeId> ids = List.from(starredIds)
-              ..addAll(bookmarkedRepos.map((e) => e.nodeId));
-            //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
-            ids = ids.toSet().toList();
-            final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
-              Options$Query$getRepositoryInfoFromMultipleIds(
-                  variables: Variables$Query$getRepositoryInfoFromMultipleIds(
-                      ids: ids)),
-            );
+    return bookmarkedGitRepositoryAsyncState.when(
+        data: (bookmarkedRepos) {
+          List<GithubNodeId> ids = List.from(starredIds)
+            ..addAll(bookmarkedRepos.map((e) => e.nodeId));
+          //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
+          ids = ids.toSet().toList();
+          final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
+            Options$Query$getRepositoryInfoFromMultipleIds(
+                variables:
+                    Variables$Query$getRepositoryInfoFromMultipleIds(ids: ids)),
+          );
 
-            //ロード完了していない場合
-            if (qryResult.result.isLoading) {
-              return const LoadingAnimation();
-            }
-            //例外スローした場合
-            else if (qryResult.result.hasException) {
-              return Text(qryResult.result.exception.toString());
-            }
+          //ロード完了していない場合
+          if (qryResult.result.isLoading) {
+            return const LoadingAnimation();
+          }
+          //例外スローした場合
+          else if (qryResult.result.hasException) {
+            return Text(qryResult.result.exception.toString());
+          }
 
-            if (qryResult.result.parsedData?.nodes != null) {
-              return RepositoryCardsView(
-                  repositoryDataList: qryResult.result.parsedData!.nodes
-                      .map((e) => e as Fragment$RepositoryData)
-                      .toList(),
-                  bookmarkedNodeIds:
-                      bookmarkedRepos.map((e) => e.nodeId).toSet());
-            }
-            return const Text('no Repositories');
-          },
-          loading: () => const LoadingAnimation(),
-          error: (Object error, StackTrace stackTrace) =>
-              ExceptionMessageView(message: error.toString()));
-    } else {
-      return const Text('no Repositories');
-    }
+          if (qryResult.result.parsedData!.nodes.isEmpty) {
+            return const ExceptionMessageView(message: 'リポジトリがありません');
+          }
+          return RepositoryCardsView(
+              repositoryDataList: qryResult.result.parsedData!.nodes
+                  .map((e) => e as Fragment$RepositoryData)
+                  .toList(),
+              bookmarkedNodeIds: bookmarkedRepos.map((e) => e.nodeId).toSet());
+        },
+        loading: () => const LoadingAnimation(),
+        error: (Object error, StackTrace stackTrace) =>
+            ExceptionMessageView(message: error.toString()));
   }
 }
 
