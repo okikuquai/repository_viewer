@@ -4,8 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../provider/bookmarked_git_repository_provider.dart';
 import '../../type/github_node_id_type.dart';
 
-class ListCardRightIconButton extends HookConsumerWidget {
-  const ListCardRightIconButton(
+class ToggleableIconButton extends HookConsumerWidget {
+  const ToggleableIconButton(
       {super.key, required this.id, this.isStarredInGithub = false});
 
   final GithubNodeId id;

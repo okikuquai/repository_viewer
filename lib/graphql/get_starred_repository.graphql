@@ -1,12 +1,15 @@
-query getStarredRepository{
+query getRepositoryFromStarredAndMultipleIds($ids: [ID!]!){
   viewer {
     login,
     starredRepositories {
       edges {
         node {
-          id
+          ...RepositoryData
         }
       }
     }
   }
+  nodes(ids: $ids){
+    ...RepositoryData
+  },
 }

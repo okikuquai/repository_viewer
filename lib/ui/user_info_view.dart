@@ -95,11 +95,9 @@ class UserInfoSliverView extends HookConsumerWidget {
             updateQuery: (previousResultData, fetchMoreResultData) {
               final List<dynamic> items = <dynamic>[
                 ...previousResultData?['node']['starredRepositories']['edges']
-                        as List<dynamic>? ??
-                    [],
+                        as List<dynamic>? ?? [],
                 ...fetchMoreResultData?['node']['starredRepositories']['edges']
-                        as List<dynamic>? ??
-                    [],
+                        as List<dynamic>? ?? [],
               ];
               fetchMoreResultData?['node']['starredRepositories']['edges'] =
                   items;
@@ -132,15 +130,14 @@ class UserInfoSliverView extends HookConsumerWidget {
           if (bookmarkedRepositoryDataQryResult.result.hasException) {
             throw Exception(bookmarkedRepositoryDataQryResult.result.exception);
           }
-          if (bookmarkedRepositoryDataQryResult.result.parsedData != null &&
-              bookmarkedRepositoryDataQryResult
-                  .result.parsedData!.nodes.isNotEmpty) {
+          if (bookmarkedRepositoryDataQryResult
+                  .result.parsedData?.nodes.isNotEmpty == true) {
             return bookmarkedRepositoryDataQryResult.result.parsedData!.nodes
                 .whereNotNull()
                 .map((e) => e as Fragment$RepositoryData)
                 .toList();
           } else {
-            throw Exception("Values is null");
+            return [];
           }
         },
         loading: () => <Fragment$RepositoryData>[],

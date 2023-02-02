@@ -1,13 +1,14 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:repositoryviewer/graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'package:repositoryviewer/restapi/get_contributor.dart';
 import 'package:repositoryviewer/ui/exception_message_view.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
-import '../graphql/get_repository_info_from_id.graphql.dart';
 import '../graphql/get_repository_readme_from_id.graphql.dart';
 import '../graphql/repository_data.graphql.dart';
 import '../provider/github_account_setting_provider.dart';
@@ -22,50 +23,39 @@ class GitRepositoryInfoView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repoData = useQuery$getRepositoryInfoFromId(
-      Options$Query$getRepositoryInfoFromId(
-          variables: Variables$Query$getRepositoryInfoFromId(id: repositoryId)),
+    final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
+      Options$Query$getRepositoryInfoFromMultipleIds(
+          variables: Variables$Query$getRepositoryInfoFromMultipleIds(
+              ids: [repositoryId])),
     );
-    if (repoData.result.isLoading) {
+    if (qryResult.result.isLoading) {
       //loading時はappbarがないのでここでつける
       return const LoadingAnimationWithAppbar();
-    } else if (repoData.result.hasException) {
+    } else if (qryResult.result.hasException) {
       return ExceptionMessageView(
-          message: repoData.result.exception.toString());
+          message: qryResult.result.exception.toString());
     }
 
-    final parsedData =
-        repoData.result.parsedData?.node! as Fragment$RepositoryData;
-    return Scaffold(
-        appBar: RepositoryViewAppbar(
-            repositoryId: repositoryId, repositoryName: parsedData.name),
-        body: RepositoryViewBody(
-            repositoryId: repositoryId, repositoryName: parsedData.name));
+    final repositoryData = qryResult.result.parsedData?.nodes.firstOrNull
+        as Fragment$RepositoryData?;
+    if (repositoryData != null) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(repositoryData.name),
+            actions: [
+              ToggleableIconButton(id: repositoryId),
+            ],
+          ),
+          body: RepositoryViewBody(
+              repositoryId: repositoryId, repositoryName: repositoryData.name));
+    } else {
+      return const ExceptionMessageView(
+          message: 'Failed to load Repository data');
+    }
   }
 }
 
-class RepositoryViewAppbar extends StatelessWidget with PreferredSizeWidget {
-  const RepositoryViewAppbar(
-      {Key? key, required this.repositoryId, required this.repositoryName})
-      : super(key: key);
-  final GithubNodeId repositoryId;
-  final String repositoryName;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(repositoryName),
-      actions: [
-        ListCardRightIconButton(id: repositoryId),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-
-class RepositoryViewBody extends StatefulWidget {
+class RepositoryViewBody extends HookConsumerWidget {
   const RepositoryViewBody(
       {Key? key, required this.repositoryId, required this.repositoryName})
       : super(key: key);
@@ -73,20 +63,14 @@ class RepositoryViewBody extends StatefulWidget {
   final String repositoryName;
 
   @override
-  createState() => _RepositoryViewBody();
-}
-
-class _RepositoryViewBody extends State<RepositoryViewBody> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return ListView(
       children: [
         Container(
             padding: const EdgeInsets.all(10),
-            child:
-                Text(widget.repositoryName, style: textTheme.headlineMedium)),
+            child: Text(repositoryName, style: textTheme.headlineMedium)),
         ExpansionTile(
           initiallyExpanded: true,
           title: Text('Contributors', style: textTheme.headlineSmall),
@@ -94,7 +78,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
             Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: ContributorsView(
-                  repositoryName: widget.repositoryName,
+                  repositoryName: repositoryName,
                 )),
           ],
         ),
@@ -103,7 +87,7 @@ class _RepositoryViewBody extends State<RepositoryViewBody> {
           title: Text('Readme', style: textTheme.headlineSmall),
           children: [
             MarkDownView(
-              repositoryId: widget.repositoryId,
+              repositoryId: repositoryId,
             )
           ],
         )
@@ -130,15 +114,10 @@ class MarkDownView extends HookConsumerWidget {
     } else if (mdData.result.hasException) {
       return const Text('exception');
     }
-    final parsedMdData = mdData.result.parsedData?.node! as Fragment$Readme;
-    if (parsedMdData.object != null) {
-      final mdString = parsedMdData.object as Fragment$ReadmeMDString;
-      return MarkdownBody(
-          fitContent: false,
-          shrinkWrap: true,
-          data: mdString.text ?? '表示できません');
-    }
-    return const Text('表示できません');
+    final mdString = (mdData.result.parsedData?.node as Fragment$Readme?)
+        ?.object as Fragment$ReadmeMDString?;
+    return MarkdownBody(
+        fitContent: false, shrinkWrap: true, data: mdString?.text ?? '表示できません');
   }
 }
 
@@ -159,31 +138,33 @@ class ContributorsView extends HookConsumerWidget {
     if (!contributorsData.hasData) {
       return const LoadingAnimation();
     } else if (contributorsData.hasError) {
-      return ExceptionMessageView(message: contributorsData.error!.toString());
+      return ExceptionMessageView(
+          message: contributorsData.error?.toString() ?? "Unknown Error");
     }
 
     return Wrap(
       spacing: 5,
-      children: contributorsData.data!
-          .map((e) => GestureDetector(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => UserInfoView(userId: e.nodeId),
-                  ),
-                ),
-                child: SizedBox(
-                  width: 40.0,
-                  height: 40.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: NetworkImage(e.avatarUri.toString()))),
-                  ),
-                ),
-              ))
-          .toList(),
+      children: contributorsData.data
+              ?.map((e) => GestureDetector(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => UserInfoView(userId: e.nodeId),
+                      ),
+                    ),
+                    child: SizedBox(
+                      width: 40.0,
+                      height: 40.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: NetworkImage(e.avatarUri.toString()))),
+                      ),
+                    ),
+                  ))
+              .toList() ??
+          [Container()],
     );
   }
 }

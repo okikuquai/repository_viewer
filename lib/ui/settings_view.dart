@@ -58,8 +58,8 @@ class SettingsView extends HookConsumerWidget {
                 ),
                 onTap: () => showLicensePage(
                     context: context,
-                    applicationName: packageInfo.data!.appName,
-                    applicationVersion: packageInfo.data!.version,
+                    applicationName: packageInfo.data?.appName,
+                    applicationVersion: packageInfo.data?.version,
                     applicationIcon: const FlutterLogo())),
             ListTile(
                 title: Text(
@@ -174,23 +174,22 @@ class OrganizationSelectDialog extends HookConsumerWidget {
     } else if (qryResult.result.hasException) {
       return ExceptionMessageView(
           message: qryResult.result.exception.toString());
-    } else if (qryResult.result.data!.isEmpty) {
-      return const ExceptionMessageView(message: "所属しているOrganizationがありません");
     }
 
     final organizationNames =
-        qryResult.result.parsedData?.viewer.organizations.edges;
-    return SimpleDialog(
-        title: const Text('選択'),
-        children: organizationNames!
+        qryResult.result.parsedData?.viewer.organizations.edges ?? [];
+    return SimpleDialog(title: const Text('選択'), children: [
+      if (organizationNames.isNotEmpty)
+        ...organizationNames
             .map((e) => SimpleDialogOption(
                   onPressed: () {
-                    ghOrganizationNotifier.setValue(e.node!.name ?? '');
+                    ghOrganizationNotifier.setValue(e?.node?.name ?? '');
                     Navigator.pop(context, 1);
                   },
-                  child: Text(e!.node!.name ?? 'no Name'),
+                  child: Text(e?.node?.name ?? 'no Name'),
                 ))
-            .toList());
+            .toList()
+    ]);
   }
 }
 
@@ -204,22 +203,10 @@ class Navigate2UserInfoView extends HookConsumerWidget {
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return const LoadingAnimationWithAppbar();
-    } else if (qryResult.result.hasException) {
-      //例外スローした場合
-      return AlertDialog(
-        title: const Text('エラー'),
-        content: Text(qryResult.result.exception.toString()),
-        actions: <Widget>[
-          MaterialButton(
-              color: Colors.white,
-              textColor: Colors.blue,
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-        ],
-      );
+    } else if (qryResult.result.hasException || qryResult.result.parsedData == null) {
+      return const ExceptionMessageView(message: "Failed to get user id");
     }
+    //nullじゃないこと確定してるので!を使う
     return UserInfoView(userId: qryResult.result.parsedData!.viewer.id);
   }
 }
