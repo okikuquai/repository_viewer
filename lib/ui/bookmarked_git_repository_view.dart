@@ -1,8 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
+import 'package:repositoryviewer/type/error_type.dart';
 import 'package:repositoryviewer/ui/exception_message_view.dart';
+import 'package:repositoryviewer/ui/module/graphql_linkexception.dart';
 
 import '../graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import '../graphql/get_starred_repository.graphql.dart';
@@ -63,7 +66,8 @@ class BookmarkedRepositoryCardList extends HookConsumerWidget {
           }
           //例外スローした場合
           else if (qryResult.result.hasException) {
-            return Text(qryResult.result.exception.toString());
+            return GraphQLLinkException(
+                exception: qryResult.result.exception?.linkException);
           }
 
           return RepositoryCardsView(
@@ -76,7 +80,7 @@ class BookmarkedRepositoryCardList extends HookConsumerWidget {
         },
         loading: () => const LoadingAnimation(),
         error: (Object error, StackTrace stackTrace) =>
-            ExceptionMessageView(message: error.toString()));
+            const ExceptionMessageView(errorType: ErrorType.internalError));
   }
 }
 
@@ -108,7 +112,8 @@ class GithubStarredRepositoryCardList extends HookConsumerWidget {
 
     return RepositoryCardsView(
         repositoryDataList: githubStarredRepositories
-            .map((e) => e as Fragment$RepositoryData)
+            .map((e) => e?.node)
+            .whereNotNull()
             .toSet());
   }
 }
@@ -142,23 +147,22 @@ class GithubStarredAndBookmarkedRepositoryCardList extends HookConsumerWidget {
           }
           final starredRepos = qryResult
                   .result.parsedData?.viewer.starredRepositories.edges
-                  ?.map((e) => e as Fragment$RepositoryData)
+                  ?.map((e) => e?.node)
+                  .whereNotNull()
                   .toList() ??
               [];
           final bookmarkedRepos = qryResult.result.parsedData?.nodes
                   .map((e) => e as Fragment$RepositoryData) ??
               [];
 
-          return RepositoryCardsView(repositoryDataList:
-              //setで初期化して重複削除(自動整形がみづらい...)
-              {
-            ...starredRepos,
-            ...bookmarkedRepos
-          }, bookmarkedNodeIds: bookmarkedReposId.map((e) => e.nodeId).toSet());
+          return RepositoryCardsView(
+            repositoryDataList: {...starredRepos, ...bookmarkedRepos},
+            bookmarkedNodeIds: bookmarkedReposId.map((e) => e.nodeId).toSet(),
+          );
         },
         loading: () => const LoadingAnimation(),
         error: (Object error, StackTrace stackTrace) =>
-            ExceptionMessageView(message: error.toString()));
+            const ExceptionMessageView(errorType: ErrorType.internalError));
   }
 }
 

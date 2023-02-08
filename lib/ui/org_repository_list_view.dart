@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/type/error_type.dart';
 import 'package:repositoryviewer/ui/exception_message_view.dart';
+import 'package:repositoryviewer/ui/module/graphql_linkexception.dart';
 
 import '../graphql/get_repository_list_from_organization.graphql.dart';
 import 'module/git_repository_card_view.dart';
+import 'module/loading_animation.dart';
 import 'org_members_list_view.dart';
 
 class OrganizationRepositoryListView extends HookConsumerWidget {
@@ -50,13 +53,14 @@ class OrganizationRepositoryBody extends HookConsumerWidget {
 
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
-      // return loadingAnimation()
+      return const LoadingAnimation();
       // ;
       //例外スローした場合
     } else if (qryResult.result.hasException) {
-      return Text(qryResult.result.exception.toString());
+      return GraphQLLinkException(
+          exception: qryResult.result.exception?.linkException);
     } else if (qryResult.result.data!.isEmpty) {
-      return const ExceptionMessageView(message: "リポジトリがありません");
+      return const ExceptionMessageView(errorType: ErrorType.empty);
     }
     return OrganizationRepositoryCardList(
         qryResult: qryResult, orgName: orgName);

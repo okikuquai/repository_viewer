@@ -17,7 +17,9 @@ fragment UserInfo on User {
     }
     edges {
       node {
-        ...RepositoryData
+        ... on Repository {
+          ...RepositoryData
+        }
       }
     }
   }
@@ -25,6 +27,8 @@ fragment UserInfo on User {
 
 query getUserInfoFromId($id: ID!, $first: Int!, $after: String) {
   node(id: $id){
-    ...UserInfo
+    ... on User {
+      ...UserInfo
+    }
   }
 }

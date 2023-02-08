@@ -5,11 +5,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'package:repositoryviewer/graphql/repository_data.graphql.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
+import 'package:repositoryviewer/type/error_type.dart';
 import 'package:repositoryviewer/ui/git_repository_info_view.dart';
 
 import '../graphql/get_user_info_from_id.graphql.dart';
 import '../type/github_node_id_type.dart';
 import 'exception_message_view.dart';
+import 'module/graphql_linkexception.dart';
 import 'module/loading_animation.dart';
 
 class UserInfoView extends HookConsumerWidget {
@@ -27,16 +29,16 @@ class UserInfoView extends HookConsumerWidget {
     if (qryResult.result.isLoading && qryResult.result.parsedData == null) {
       return const LoadingAnimationWithAppbar();
     } else if (qryResult.result.hasException) {
-      return ExceptionMessageView(
-          message: qryResult.result.exception.toString());
+      return GraphQLLinkException(
+          exception: qryResult.result.exception?.linkException);
     } else if (qryResult.result.parsedData?.node != null) {
       try {
         return UserInfoSliverView(qryResult: qryResult);
       } catch (e) {
-        return ExceptionMessageView(message: e.toString());
+        return const ExceptionMessageView(errorType: ErrorType.internalError,);
       }
     }
-    return ExceptionMessageView(message: TypeError().toString());
+    return const ExceptionMessageView(errorType: ErrorType.empty);
   }
 }
 

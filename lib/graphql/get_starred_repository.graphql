@@ -4,12 +4,16 @@ query getRepositoryFromStarredAndMultipleIds($ids: [ID!]!){
     starredRepositories {
       edges {
         node {
-          ...RepositoryData
+          ... on Repository {
+            ...RepositoryData
+          }
         }
       }
     }
   }
   nodes(ids: $ids){
-    ...RepositoryData
+    ... on Repository {
+      ...RepositoryData
+    }
   },
 }
