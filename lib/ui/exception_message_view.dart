@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:repositoryviewer/type/error_type.dart';
 
 class ExceptionMessageView extends StatelessWidget {
-  const ExceptionMessageView({super.key, required this.errorType});
+  const ExceptionMessageView(
+      {super.key, required this.errorType, this.message});
 
   final ErrorType errorType;
-
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
@@ -18,16 +19,15 @@ class ExceptionMessageView extends StatelessWidget {
           children: <Widget>[
             if (errorType == ErrorType.networkError)
               const Text('データを取得できませんでした。ネットワーク接続を確認してください'),
-            if (errorType == ErrorType.noCredential)
-              const Text('権限がありません。'),
-            if (errorType == ErrorType.unknown)
-              const Text('原因不明のエラーです')
+            if (errorType == ErrorType.unknown) const Text('原因不明のエラーです'),
+            if (errorType == ErrorType.httpResponseError)
+              Text('Http Response Error\n$message'),
           ],
         ),
       ),
       actions: <Widget>[
         TextButton(
-          child: const Text('Approve'),
+          child: const Text('OK'),
           onPressed: () {
             if (ModalRoute.of(context)?.settings.name == '/') {
               exit(0);
