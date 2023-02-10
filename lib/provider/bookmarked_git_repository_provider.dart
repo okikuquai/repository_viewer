@@ -6,12 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../type/github_node_id_type.dart';
 
-part 'bookmarked_git_repository_provider.g.dart';
+final bookmarkedRepositoryProvider = AsyncNotifierProvider<
+    BookmarkedRepositoryNotifier, Set<BookmarkedGitRepository>>(() {
+  return BookmarkedRepositoryNotifierImpl();
+});
 
-//generator使わず実装してみたかったけど断念...
-@riverpod
 class BookmarkedRepositoryNotifierImpl
-    extends _$BookmarkedRepositoryNotifierImpl
+    extends AsyncNotifier<Set<BookmarkedGitRepository>>
     implements BookmarkedRepositoryNotifier {
   final String _saveKey = 'bookmarkedGitRepository';
 
@@ -26,16 +27,14 @@ class BookmarkedRepositoryNotifierImpl
   }
 
   Future<void> _save(Set<BookmarkedGitRepository> value) async {
-    //重複を削除
     final saveValue = value.map((e) => e.nodeId.toString()).toList();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList(_saveKey, saveValue);
   }
 
   @override
-  FutureOr<Set<BookmarkedGitRepository>> build() async {
-    // Load initial todo list from the remote repository
-    return _load();
+  Future<Set<BookmarkedGitRepository>> build() async {
+    return await _load();
   }
 
   @override
@@ -49,7 +48,8 @@ class BookmarkedRepositoryNotifierImpl
     });
   }
 
-  Future<Set<BookmarkedGitRepository>> _addId(GithubNodeId id) async {
+  @override
+  Future<Set<BookmarkedGitRepository>> addId(GithubNodeId id) async {
     final setStateValue = <BookmarkedGitRepository>{
       ...await _load(),
       BookmarkedGitRepository(nodeId: id)
@@ -58,7 +58,8 @@ class BookmarkedRepositoryNotifierImpl
     return setStateValue;
   }
 
-  Future<Set<BookmarkedGitRepository>> _removeId(GithubNodeId id) async {
+  @override
+  Future<Set<BookmarkedGitRepository>> removeId(GithubNodeId id) async {
     final setStateValue = await _load();
     if (setStateValue.where((element) => element.nodeId == id).isNotEmpty) {
       setStateValue.removeWhere((element) => element.nodeId == id);
@@ -74,17 +75,21 @@ class BookmarkedRepositoryNotifierImpl
     state = await AsyncValue.guard(() async {
       final currentValue = await _load();
       if (currentValue.where((element) => element.nodeId == id).isNotEmpty) {
-        return await _removeId(id);
+        return await removeId(id);
       } else {
-        return await _addId(id);
+        return await addId(id);
       }
     });
   }
-
 }
 
-abstract class BookmarkedRepositoryNotifier {
+abstract class BookmarkedRepositoryNotifier
+    extends AsyncNotifier<Set<BookmarkedGitRepository>> {
   BookmarkedRepositoryNotifier();
+
+  Future<Set<BookmarkedGitRepository>> removeId(GithubNodeId id);
+
+  Future<Set<BookmarkedGitRepository>> addId(GithubNodeId id);
 
   void clear();
 

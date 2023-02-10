@@ -5,7 +5,6 @@ import 'package:repositoryviewer/ui/user_info_view.dart';
 import '../graphql/get_members_from_organization.graphql.dart';
 import 'module/loading_animation.dart';
 
-
 class OrgMemberListView extends HookConsumerWidget {
   const OrgMemberListView({Key? key, required this.orgName}) : super(key: key);
   final String orgName;
@@ -35,74 +34,70 @@ class OrgMemberListView extends HookConsumerWidget {
       return Text(qryResult.result.exception.toString());
     }
 
-    if (qryResult.result.parsedData?.organization?.membersWithRole.edges !=
-        null) {
-      final members =
-          qryResult.result.parsedData!.organization!.membersWithRole.edges!;
-      members.removeWhere((element) => element?.node == null);
+    final members =
+        qryResult.result.parsedData!.organization!.membersWithRole.edges!;
+    members.removeWhere((element) => element?.node == null);
 
-      final membersCount = members.length;
-      return ListView.builder(
-          itemCount: membersCount,
-          itemBuilder: (context, index) {
-            final TextTheme textTheme = Theme.of(context).textTheme;
-            final member = members[index]!.node!;
-            return GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UserInfoView(userId: member.id),
-                ),
+    final membersCount = members.length;
+    return ListView.builder(
+        itemCount: membersCount,
+        itemBuilder: (context, index) {
+          final TextTheme textTheme = Theme.of(context).textTheme;
+          final member = members[index]!.node!;
+          return GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UserInfoView(userId: member.id),
               ),
-              child: Card(
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 80.0,
-                      width: 80.0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image:
-                                    NetworkImage(member.avatarUrl.toString()))),
+            ),
+            child: Card(
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 80.0,
+                    width: 80.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image:
+                                  NetworkImage(member.avatarUrl.toString()))),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            member.name ?? '',
+                            style: textTheme.titleLarge,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            member.login,
+                            style: textTheme.labelLarge!
+                                .apply(color: Colors.black45),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 10.0),
+                          Text(
+                            member.bio ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              member.name ?? '',
-                              style: textTheme.titleLarge,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              member.login,
-                              style: textTheme.labelLarge!
-                                  .apply(color: Colors.black45),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 10.0),
-                            Text(
-                              member.bio ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          });
-    }
-    return const Text('This Organization has no members');
+            ),
+          );
+        });
   }
 }

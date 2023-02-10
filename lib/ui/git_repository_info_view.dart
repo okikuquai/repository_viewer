@@ -29,23 +29,18 @@ class GitRepositoryInfoView extends HookConsumerWidget {
     if (repoData.result.isLoading) {
       //loading時はappbarがないのでここでつける
       return const LoadingAnimationWithAppbar();
-    } else if (repoData.result.hasException) {}
-
-    if (repoData.result.parsedData != null) {
-      final parsedData =
-          repoData.result.parsedData?.node! as Fragment$RepositoryData;
-      return Scaffold(
-          appBar: RepositoryViewAppbar(
-              repositoryId: repositoryId, repositoryName: parsedData.name),
-          body: RepositoryViewBody(
-              repositoryId: repositoryId, repositoryName: parsedData.name));
-    } else {
-      return const Scaffold(
-        body: Text('error'),
-      );
-      //リポジトリのデータを取得できなかった場合
-      //うっすら出るダイアログと一緒にpopする
+    } else if (repoData.result.hasException) {
+      return ExceptionMessageView(
+          message: repoData.result.exception.toString());
     }
+
+    final parsedData =
+        repoData.result.parsedData?.node! as Fragment$RepositoryData;
+    return Scaffold(
+        appBar: RepositoryViewAppbar(
+            repositoryId: repositoryId, repositoryName: parsedData.name),
+        body: RepositoryViewBody(
+            repositoryId: repositoryId, repositoryName: parsedData.name));
   }
 }
 
@@ -134,16 +129,14 @@ class MarkDownView extends HookConsumerWidget {
       return const LoadingAnimation();
     } else if (mdData.result.hasException) {
       return const Text('exception');
-    } else if (mdData.result.parsedData?.node != null) {
-      final parsedmdData = mdData.result.parsedData?.node! as Fragment$Readme;
-      if (parsedmdData.object != null) {
-        final mdString = parsedmdData.object as Fragment$ReadmeMDString;
-        return MarkdownBody(
-            fitContent: false,
-            shrinkWrap: true,
-            data: mdString.text ?? '表示できません');
-      }
-      return const Text('表示できません');
+    }
+    final parsedMdData = mdData.result.parsedData?.node! as Fragment$Readme;
+    if (parsedMdData.object != null) {
+      final mdString = parsedMdData.object as Fragment$ReadmeMDString;
+      return MarkdownBody(
+          fitContent: false,
+          shrinkWrap: true,
+          data: mdString.text ?? '表示できません');
     }
     return const Text('表示できません');
   }
@@ -169,31 +162,28 @@ class ContributorsView extends HookConsumerWidget {
       return ExceptionMessageView(message: contributorsData.error!.toString());
     }
 
-    if (contributorsData.data != null) {
-      return Wrap(
-        spacing: 5,
-        children: contributorsData.data!
-            .map((e) => GestureDetector(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserInfoView(userId: e.nodeId),
-                    ),
+    return Wrap(
+      spacing: 5,
+      children: contributorsData.data!
+          .map((e) => GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserInfoView(userId: e.nodeId),
                   ),
-                  child: SizedBox(
-                    width: 40.0,
-                    height: 40.0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: NetworkImage(e.avatarUri.toString()))),
-                    ),
+                ),
+                child: SizedBox(
+                  width: 40.0,
+                  height: 40.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: NetworkImage(e.avatarUri.toString()))),
                   ),
-                ))
-            .toList(),
-      );
-    }
-    return const ExceptionMessageView(message: "Value is null");
+                ),
+              ))
+          .toList(),
+    );
   }
 }

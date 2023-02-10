@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/ui/exception_message_view.dart';
 
+import '../graphql/get_repository_list_from_organization.graphql.dart';
 import 'module/git_repository_card_view.dart';
 import 'org_members_list_view.dart';
-import '../graphql/get_repository_list_from_organization.graphql.dart';
-
 
 class OrganizationRepositoryListView extends HookConsumerWidget {
   const OrganizationRepositoryListView({super.key});
@@ -55,13 +55,11 @@ class OrganizationRepositoryBody extends HookConsumerWidget {
       //例外スローした場合
     } else if (qryResult.result.hasException) {
       return Text(qryResult.result.exception.toString());
+    } else if (qryResult.result.data!.isEmpty) {
+      return const ExceptionMessageView(message: "リポジトリがありません");
     }
-    if (qryResult.result.parsedData?.organization?.repositories.edges != null) {
-      //ハートの状態を変えるためにStatefulWidgetでリポジトリのリストを表示させる
-      return OrganizationRepositoryCardList(
-          qryResult: qryResult, orgName: orgName);
-    }
-    return const Text('no Teams in this Organization');
+    return OrganizationRepositoryCardList(
+        qryResult: qryResult, orgName: orgName);
   }
 }
 
@@ -71,6 +69,7 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
       : super(key: key);
   final QueryHookResult<Query$getRepositoryListFromOrganization> qryResult;
   final String orgName;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //nullじゃないことが確定しているので!を使う
@@ -118,6 +117,8 @@ class OrganizationRepositoryCardList extends HookConsumerWidget {
         child: ListView.builder(
             itemCount: repositoriesCount,
             itemBuilder: (context, index) {
+              if (repositories[index] == null ||
+                  repositories[index]?.node == null) return Container();
               final repository = repositories[index]!.node!;
               return GitRepositoryCardView(
                   id: repository.id,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/ui/exception_message_view.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
 import '../graphql/get_organization_list.graphql.dart';
@@ -17,15 +19,17 @@ class SettingsView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final bookmarkedGitRepositoryState =
-        ref.read(bookmarkedGitRepositoriesProvider);
+    final packageInfo =
+        useFuture(useMemoized(() => PackageInfo.fromPlatform()));
 
     return Scaffold(
         appBar: AppBar(
           title: const Text('Settings'),
         ),
-        body: ListView(
-          children: [
+        body: ListView(children: [
+          if (!packageInfo.hasData)
+            const LoadingAnimation()
+          else ...[
             ListTile(
                 title: Text(
                   'Favoriteリストのクリア',
@@ -38,9 +42,8 @@ class SettingsView extends HookConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () {
-                  bookmarkedGitRepositoryState.clear();
-                }),
+                onTap: () =>
+                    ref.read(bookmarkedRepositoryProvider.notifier).clear()),
             ListTile(
                 title: Text(
                   'OSS License',
@@ -53,13 +56,11 @@ class SettingsView extends HookConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () async {
-                  PackageInfo.fromPlatform().then((value) => showLicensePage(
-                      context: context,
-                      applicationName: value.appName,
-                      applicationVersion: value.version,
-                      applicationIcon: const FlutterLogo()));
-                }),
+                onTap: () => showLicensePage(
+                    context: context,
+                    applicationName: packageInfo.data!.appName,
+                    applicationVersion: packageInfo.data!.version,
+                    applicationIcon: const FlutterLogo())),
             ListTile(
                 title: Text(
                   'github token',
@@ -113,8 +114,8 @@ class SettingsView extends HookConsumerWidget {
                       context: context,
                       builder: (context) => const OrganizationSelectDialog());
                 }),
-          ],
-        ));
+          ]
+        ]));
   }
 }
 
@@ -132,8 +133,7 @@ class TokenInputDialog extends HookConsumerWidget {
         keyboardType: TextInputType.visiblePassword,
         //半角英数字のみ入力可能
         inputFormatters: [
-          FilteringTextInputFormatter.allow(
-              RegExp(r'^[ -~]*$')),
+          FilteringTextInputFormatter.allow(RegExp(r'^[ -~]*$')),
         ],
         onChanged: (value) {
           valueText = value;
@@ -172,27 +172,25 @@ class OrganizationSelectDialog extends HookConsumerWidget {
     if (qryResult.result.isLoading) {
       return const AlertDialog(title: Text('ロード中'));
     } else if (qryResult.result.hasException) {
-      return AlertDialog(
-          title: const Text('エラー'),
-          content: Text(qryResult.result.exception.toString()));
-    } else if (qryResult.result.parsedData?.viewer.organizations.edges !=
-        null) {
-      final organizationNames =
-          qryResult.result.parsedData?.viewer.organizations.edges;
-      return SimpleDialog(
-          title: const Text('選択'),
-          children: organizationNames!
-              .map((e) => SimpleDialogOption(
-                    onPressed: () {
-                      ghOrganizationNotifier.setValue(e.node!.name ?? '');
-                      Navigator.pop(context, 1);
-                    },
-                    child: Text(e!.node!.name ?? 'no Name'),
-                  ))
-              .toList());
+      return ExceptionMessageView(
+          message: qryResult.result.exception.toString());
+    } else if (qryResult.result.data!.isEmpty) {
+      return const ExceptionMessageView(message: "所属しているOrganizationがありません");
     }
-    return const AlertDialog(
-        title: Text('エラー'), content: Text('所属しているOrganizationがありません'));
+
+    final organizationNames =
+        qryResult.result.parsedData?.viewer.organizations.edges;
+    return SimpleDialog(
+        title: const Text('選択'),
+        children: organizationNames!
+            .map((e) => SimpleDialogOption(
+                  onPressed: () {
+                    ghOrganizationNotifier.setValue(e.node!.name ?? '');
+                    Navigator.pop(context, 1);
+                  },
+                  child: Text(e!.node!.name ?? 'no Name'),
+                ))
+            .toList());
   }
 }
 
@@ -221,21 +219,7 @@ class Navigate2UserInfoView extends HookConsumerWidget {
               }),
         ],
       );
-    } else if (qryResult.result.parsedData?.viewer.id != null) {
-      return UserInfoView(userId: qryResult.result.parsedData!.viewer.id);
     }
-    return AlertDialog(
-      title: const Text('エラー'),
-      content: const Text('ユーザー情報を取得できませんでした'),
-      actions: <Widget>[
-        MaterialButton(
-            color: Colors.white,
-            textColor: Colors.blue,
-            child: const Text('OK'),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-      ],
-    );
+    return UserInfoView(userId: qryResult.result.parsedData!.viewer.id);
   }
 }
