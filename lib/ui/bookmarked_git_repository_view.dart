@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -31,9 +30,11 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
         ),
         body: const TabBarView(
           children: <Widget>[
-            Center(child: Scaffold(body: LocalFavoriteCardList())),
-            Center(child: Scaffold(body: GithubStarredCardList())),
-            Center(child: Scaffold(body: GithubAndLocalFavoriteCardList())),
+            Center(child: Scaffold(body: BookmarkedRepositoryCardList())),
+            Center(child: Scaffold(body: GithubStarredRepositoryCardList())),
+            Center(
+                child: Scaffold(
+                    body: GithubStarredAndBookmarkedRepositoryCardList())),
           ],
         ),
       ),
@@ -41,8 +42,8 @@ class BookmarkedGitRepositoryView extends HookConsumerWidget {
   }
 }
 
-class LocalFavoriteCardList extends HookConsumerWidget {
-  const LocalFavoriteCardList({Key? key}) : super(key: key);
+class BookmarkedRepositoryCardList extends HookConsumerWidget {
+  const BookmarkedRepositoryCardList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,11 +51,11 @@ class LocalFavoriteCardList extends HookConsumerWidget {
         ref.watch(bookmarkedRepositoryProvider);
 
     return bookmarkedGitRepositoryAsyncState.when(
-        data: (bookmarkedRepos) {
+        data: (bookmarkedReposId) {
           final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
             Options$Query$getRepositoryInfoFromMultipleIds(
                 variables: Variables$Query$getRepositoryInfoFromMultipleIds(
-                    ids: bookmarkedRepos.map((e) => e.nodeId).toList())),
+                    ids: bookmarkedReposId.map((e) => e.nodeId).toList())),
           );
           //ロード完了していない場合
           if (qryResult.result.isLoading) {
@@ -65,14 +66,13 @@ class LocalFavoriteCardList extends HookConsumerWidget {
             return Text(qryResult.result.exception.toString());
           }
 
-          if (qryResult.result.parsedData!.nodes.isEmpty) {
-            return const ExceptionMessageView(message: 'リポジトリがありません');
-          }
           return RepositoryCardsView(
-              repositoryDataList: qryResult.result.parsedData!.nodes
-                  .map((e) => e as Fragment$RepositoryData)
-                  .toList(),
-              bookmarkedNodeIds: bookmarkedRepos.map((e) => e.nodeId).toSet());
+              repositoryDataList: qryResult.result.parsedData?.nodes
+                      .map((e) => e as Fragment$RepositoryData)
+                      .toSet() ??
+                  {},
+              bookmarkedNodeIds:
+                  bookmarkedReposId.map((e) => e.nodeId).toSet());
         },
         loading: () => const LoadingAnimation(),
         error: (Object error, StackTrace stackTrace) =>
@@ -80,96 +80,56 @@ class LocalFavoriteCardList extends HookConsumerWidget {
   }
 }
 
-class GithubStarredCardList extends HookConsumerWidget {
-  const GithubStarredCardList({Key? key}) : super(key: key);
+class GithubStarredRepositoryCardList extends HookConsumerWidget {
+  const GithubStarredRepositoryCardList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final githubStarredReposQryResult = useQuery$getStarredRepository(
-      Options$Query$getStarredRepository(fetchPolicy: FetchPolicy.noCache),
+    final githubStarredReposQryResult =
+        useQuery$getRepositoryFromStarredAndMultipleIds(
+      Options$Query$getRepositoryFromStarredAndMultipleIds(
+        variables:
+            Variables$Query$getRepositoryFromStarredAndMultipleIds(ids: []),
+        fetchPolicy: FetchPolicy.noCache,
+      ),
     );
 
-    //ロード完了していない場合
     if (githubStarredReposQryResult.result.isLoading) {
       return const LoadingAnimation();
-    }
-    //例外スローした場合
-    else if (githubStarredReposQryResult.result.hasException) {
+    } else if (githubStarredReposQryResult.result.hasException) {
       return Text(githubStarredReposQryResult.result.exception.toString());
     }
 
-    if (githubStarredReposQryResult
-            .result.parsedData?.viewer.starredRepositories.edges !=
-        null) {
-      final githubStarredRepositories = githubStarredReposQryResult
-          .result.parsedData!.viewer.starredRepositories.edges!
-          .whereNotNull()
-          .toList();
-      final starredIds =
-          githubStarredRepositories.map((e) => e.node.id).toList();
+    //starしてない場合はそのまま空配列を渡す
+    final githubStarredRepositories = githubStarredReposQryResult
+            .result.parsedData?.viewer.starredRepositories.edges
+            ?.toList() ??
+        [];
 
-      final repositoryDataQryResult = useQuery$getRepositoryInfoFromMultipleIds(
-        Options$Query$getRepositoryInfoFromMultipleIds(
-            variables: Variables$Query$getRepositoryInfoFromMultipleIds(
-                ids: starredIds)),
-      );
-
-      //ロード完了していない場合
-      if (repositoryDataQryResult.result.isLoading) {
-        return const LoadingAnimation();
-      }
-      //例外スローした場合
-      else if (repositoryDataQryResult.result.hasException) {
-        return Text(repositoryDataQryResult.result.exception.toString());
-      }
-
-      if (repositoryDataQryResult.result.parsedData!.nodes.isNotEmpty) {
-        return RepositoryCardsView(
-            repositoryDataList: repositoryDataQryResult.result.parsedData!.nodes
-                .map((e) => e as Fragment$RepositoryData)
-                .toList());
-      }
-    }
-    return const ExceptionMessageView(message: 'リポジトリがありません');
+    return RepositoryCardsView(
+        repositoryDataList: githubStarredRepositories
+            .map((e) => e as Fragment$RepositoryData)
+            .toSet());
   }
 }
 
-class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
-  const GithubAndLocalFavoriteCardList({Key? key}) : super(key: key);
+class GithubStarredAndBookmarkedRepositoryCardList extends HookConsumerWidget {
+  const GithubStarredAndBookmarkedRepositoryCardList({Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final githubStarredReposQryResult = useQuery$getStarredRepository(
-      Options$Query$getStarredRepository(fetchPolicy: FetchPolicy.noCache),
-    );
-
-    //ロード完了していない場合
-    if (githubStarredReposQryResult.result.isLoading) {
-      return const LoadingAnimation();
-    }
-    //例外スローした場合
-    else if (githubStarredReposQryResult.result.hasException) {
-      return Text(githubStarredReposQryResult.result.exception.toString());
-    }
-
     final bookmarkedGitRepositoryAsyncState =
         ref.watch(bookmarkedRepositoryProvider);
-    final githubStarredRepositories = githubStarredReposQryResult
-        .result.parsedData!.viewer.starredRepositories.edges!
-        .whereNotNull()
-        .toList();
-    final starredIds = githubStarredRepositories.map((e) => e.node.id).toList();
 
     return bookmarkedGitRepositoryAsyncState.when(
-        data: (bookmarkedRepos) {
-          List<GithubNodeId> ids = List.from(starredIds)
-            ..addAll(bookmarkedRepos.map((e) => e.nodeId));
-          //重複を削除（LocalとGithubどちらもお気に入り登録するとどちらも表示されるため）
-          ids = ids.toSet().toList();
-          final qryResult = useQuery$getRepositoryInfoFromMultipleIds(
-            Options$Query$getRepositoryInfoFromMultipleIds(
-                variables:
-                    Variables$Query$getRepositoryInfoFromMultipleIds(ids: ids)),
+        data: (bookmarkedReposId) {
+          final qryResult = useQuery$getRepositoryFromStarredAndMultipleIds(
+            Options$Query$getRepositoryFromStarredAndMultipleIds(
+              variables: Variables$Query$getRepositoryFromStarredAndMultipleIds(
+                  ids: bookmarkedReposId.map((e) => e.nodeId).toList()),
+              fetchPolicy: FetchPolicy.noCache,
+            ),
           );
 
           //ロード完了していない場合
@@ -180,15 +140,21 @@ class GithubAndLocalFavoriteCardList extends HookConsumerWidget {
           else if (qryResult.result.hasException) {
             return Text(qryResult.result.exception.toString());
           }
+          final starredRepos = qryResult
+                  .result.parsedData?.viewer.starredRepositories.edges
+                  ?.map((e) => e as Fragment$RepositoryData)
+                  .toList() ??
+              [];
+          final bookmarkedRepos = qryResult.result.parsedData?.nodes
+                  .map((e) => e as Fragment$RepositoryData) ??
+              [];
 
-          if (qryResult.result.parsedData!.nodes.isEmpty) {
-            return const ExceptionMessageView(message: 'リポジトリがありません');
-          }
-          return RepositoryCardsView(
-              repositoryDataList: qryResult.result.parsedData!.nodes
-                  .map((e) => e as Fragment$RepositoryData)
-                  .toList(),
-              bookmarkedNodeIds: bookmarkedRepos.map((e) => e.nodeId).toSet());
+          return RepositoryCardsView(repositoryDataList:
+              //setで初期化して重複削除(自動整形がみづらい...)
+              {
+            ...starredRepos,
+            ...bookmarkedRepos
+          }, bookmarkedNodeIds: bookmarkedReposId.map((e) => e.nodeId).toSet());
         },
         loading: () => const LoadingAnimation(),
         error: (Object error, StackTrace stackTrace) =>
@@ -200,7 +166,7 @@ class RepositoryCardsView extends HookConsumerWidget {
   const RepositoryCardsView(
       {super.key, required this.repositoryDataList, this.bookmarkedNodeIds});
 
-  final List<Fragment$RepositoryData> repositoryDataList;
+  final Set<Fragment$RepositoryData> repositoryDataList;
   final Set<GithubNodeId>? bookmarkedNodeIds;
 
   @override
@@ -208,7 +174,7 @@ class RepositoryCardsView extends HookConsumerWidget {
     return ListView.builder(
         itemCount: repositoryDataList.length,
         itemBuilder: (context, index) {
-          final repository = repositoryDataList[index];
+          final repository = repositoryDataList.toList()[index];
           final name = repository.name;
           final description = repository.description ?? 'No Description';
           final favState = bookmarkedNodeIds

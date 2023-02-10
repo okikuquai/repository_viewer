@@ -23,7 +23,7 @@ class GitRepositoryCardView extends StatelessWidget {
 
     return Card(
       child: ListTile(
-          trailing: ListCardRightIconButton(
+          trailing: ToggleableIconButton(
               id: id, isStarredInGithub: isStarredInGithub),
           title: Text(
             title,

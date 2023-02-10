@@ -1,5 +1,0 @@
-query getRepositoryInfoFromId($id: ID!) {
-  node(id: $id){
-    ...RepositoryData
-  }
-}

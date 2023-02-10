@@ -1,5 +1,5 @@
 query getRepositoryInfoFromMultipleIds($ids: [ID!]!) {
   nodes(ids: $ids){
     ...RepositoryData
-  }
+  },
 }
