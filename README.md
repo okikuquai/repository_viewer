@@ -69,13 +69,13 @@ Please create Personal Access Token below scopes
     - [x] : public_repo
     - [x] : repo:invite
     - [x] : security_events
-- [x] : admin:org
+- [ ] : admin:org
     - [ ] : write:org
     - [x] : read:org
     - [ ] : manage_runners:org
 ## How to build
 All you have to do is just type the following line on the directory with Terminal:
-### for android
+### for Android
 ```shell
 fvm flutter build apk --release \
   --target lib/main.dart \
