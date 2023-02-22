@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:graphql/client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:repositoryviewer/provider/bookmarked_git_repository_provider.dart';
 import 'package:repositoryviewer/provider/github_account_setting_provider.dart';
+import 'package:repositoryviewer/type/error_type.dart';
 import 'package:repositoryviewer/ui/exception_message_view.dart';
+import 'package:repositoryviewer/ui/module/graphql_linkexception.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
 import '../graphql/get_organization_list.graphql.dart';
@@ -42,8 +45,10 @@ class SettingsView extends HookConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                onTap: () =>
-                    ref.read(bookmarkedRepositoryProvider.notifier).clear()),
+                onTap: () {
+                  ref.read(bookmarkedRepositoryProvider.notifier).clear();
+                  Fluttertoast.showToast(msg: '削除完了しました',);
+                }),
             ListTile(
                 title: Text(
                   'OSS License',
@@ -172,8 +177,8 @@ class OrganizationSelectDialog extends HookConsumerWidget {
     if (qryResult.result.isLoading) {
       return const AlertDialog(title: Text('ロード中'));
     } else if (qryResult.result.hasException) {
-      return ExceptionMessageView(
-          message: qryResult.result.exception.toString());
+      return GraphQLLinkException(
+          exception: qryResult.result.exception?.linkException);
     }
 
     final organizationNames =
@@ -203,8 +208,11 @@ class Navigate2UserInfoView extends HookConsumerWidget {
     //ロード完了していない場合
     if (qryResult.result.isLoading) {
       return const LoadingAnimationWithAppbar();
-    } else if (qryResult.result.hasException || qryResult.result.parsedData == null) {
-      return const ExceptionMessageView(message: "Failed to get user id");
+    } else if (qryResult.result.hasException) {
+      return GraphQLLinkException(
+          exception: qryResult.result.exception?.linkException);
+    } else if (qryResult.result.parsedData == null) {
+      return const ExceptionMessageView(errorType: ErrorType.empty);
     }
     //nullじゃないこと確定してるので!を使う
     return UserInfoView(userId: qryResult.result.parsedData!.viewer.id);

@@ -6,7 +6,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:repositoryviewer/graphql/get_repository_info_from_multiple_ids.graphql.dart';
 import 'package:repositoryviewer/restapi/get_contributor.dart';
+import 'package:repositoryviewer/type/error_type.dart';
 import 'package:repositoryviewer/ui/exception_message_view.dart';
+import 'package:repositoryviewer/ui/module/graphql_linkexception.dart';
 import 'package:repositoryviewer/ui/user_info_view.dart';
 
 import '../graphql/get_repository_readme_from_id.graphql.dart';
@@ -32,8 +34,8 @@ class GitRepositoryInfoView extends HookConsumerWidget {
       //loading時はappbarがないのでここでつける
       return const LoadingAnimationWithAppbar();
     } else if (qryResult.result.hasException) {
-      return ExceptionMessageView(
-          message: qryResult.result.exception.toString());
+      return GraphQLLinkException(
+          exception: qryResult.result.exception?.linkException);
     }
 
     final repositoryData = qryResult.result.parsedData?.nodes.firstOrNull
@@ -49,8 +51,7 @@ class GitRepositoryInfoView extends HookConsumerWidget {
           body: RepositoryViewBody(
               repositoryId: repositoryId, repositoryName: repositoryData.name));
     } else {
-      return const ExceptionMessageView(
-          message: 'Failed to load Repository data');
+      return const ExceptionMessageView(errorType: ErrorType.empty); 
     }
   }
 }
@@ -138,8 +139,8 @@ class ContributorsView extends HookConsumerWidget {
     if (!contributorsData.hasData) {
       return const LoadingAnimation();
     } else if (contributorsData.hasError) {
-      return ExceptionMessageView(
-          message: contributorsData.error?.toString() ?? "Unknown Error");
+      //本当はcredentialなのかnetworkなのかわからないけどとりあえずnetworkerrorとする
+      return const ExceptionMessageView(errorType: ErrorType.networkError);
     }
 
     return Wrap(
