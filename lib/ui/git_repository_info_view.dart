@@ -15,6 +15,7 @@ import '../graphql/get_repository_readme_from_id.graphql.dart';
 import '../graphql/repository_data.graphql.dart';
 import '../provider/github_account_setting_provider.dart';
 import '../type/github_node_id_type.dart';
+import 'module/http_response_error.dart';
 import 'module/list_card_right_icon_button.dart';
 import 'module/loading_animation.dart';
 
@@ -39,7 +40,7 @@ class GitRepositoryInfoView extends HookConsumerWidget {
     }
 
     final repositoryData = qryResult.result.parsedData?.nodes.firstOrNull
-        as Fragment$RepositoryData?;
+    as Fragment$RepositoryData?;
     if (repositoryData != null) {
       return Scaffold(
           appBar: AppBar(
@@ -51,7 +52,7 @@ class GitRepositoryInfoView extends HookConsumerWidget {
           body: RepositoryViewBody(
               repositoryId: repositoryId, repositoryName: repositoryData.name));
     } else {
-      return const ExceptionMessageView(errorType: ErrorType.empty); 
+      return const ExceptionMessageView(errorType: ErrorType.empty);
     }
   }
 }
@@ -65,7 +66,9 @@ class RepositoryViewBody extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme
+        .of(context)
+        .textTheme;
 
     return ListView(
       children: [
@@ -107,7 +110,7 @@ class MarkDownView extends HookConsumerWidget {
       Options$Query$getRepositoryReadmeFromId(
           fetchPolicy: FetchPolicy.noCache,
           variables:
-              Variables$Query$getRepositoryReadmeFromId(id: repositoryId)),
+          Variables$Query$getRepositoryReadmeFromId(id: repositoryId)),
     );
 
     if (mdData.result.isLoading) {
@@ -132,40 +135,50 @@ class ContributorsView extends HookConsumerWidget {
     final ghTokenProvider = ref.read(githubTokenProvider);
     final ghOrganizationProvider = ref.read(githubOrganizationProvider);
 
-    useMemoized(() => getContributor(
-        repositoryName, ghTokenProvider, ghOrganizationProvider));
-    final contributorsData = useFuture(useMemoized(() => getContributor(
-        repositoryName, ghTokenProvider, ghOrganizationProvider)));
-    if (!contributorsData.hasData) {
-      return const LoadingAnimation();
-    } else if (contributorsData.hasError) {
-      //本当はcredentialなのかnetworkなのかわからないけどとりあえずnetworkerrorとする
-      return const ExceptionMessageView(errorType: ErrorType.networkError);
-    }
+    try {
+      useMemoized(() =>
+          getContributor(
+              repositoryName, ghTokenProvider, ghOrganizationProvider));
+      final contributorsData = useFuture(useMemoized(() =>
+          getContributor(
+              repositoryName, ghTokenProvider, ghOrganizationProvider)));
+      if (!contributorsData.hasData) {
+        return const LoadingAnimation();
+      } else if (contributorsData.hasError) {
+        //contributorの取得の例外がここにこない(ドキュメントみる感じここで引っかかるはず)
+        return const ExceptionMessageView(errorType: ErrorType.internalError);
+      }
 
-    return Wrap(
-      spacing: 5,
-      children: contributorsData.data
-              ?.map((e) => GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => UserInfoView(userId: e.nodeId),
-                      ),
+      return Wrap(
+        spacing: 5,
+        children: contributorsData.data
+            ?.map((e) =>
+            GestureDetector(
+              onTap: () =>
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserInfoView(userId: e.nodeId),
                     ),
-                    child: SizedBox(
-                      width: 40.0,
-                      height: 40.0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage(e.avatarUri.toString()))),
-                      ),
-                    ),
-                  ))
-              .toList() ??
-          [Container()],
-    );
+                  ),
+              child: SizedBox(
+                width: 40.0,
+                height: 40.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: NetworkImage(e.avatarUri.toString()))),
+                ),
+              ),
+            ))
+            .toList() ??
+            [Container()],
+      );
+    } on HttpLinkServerException catch (e) {
+      //contributorの取得の例外がここにこない（useFutureの動き的にここに入らない気もするけど...）
+      return HttpResponseError(
+          httpResponse: e);
+    }
   }
 }
